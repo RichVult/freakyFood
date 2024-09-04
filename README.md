@@ -36,4 +36,4 @@ The website will feature different user interfaces based on the type of user:
 - **Differentiation**: The project will initially clone existing functionalities of similar services, with differentiation left to creative development.
 - **Feedback and Advice**: Regular consultations with project stakeholders, including Seamus, will guide feature implementations and project direction.
 
-## Installation and Setup
+## Installation and Setup 
