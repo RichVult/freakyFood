@@ -4,6 +4,7 @@ This project aims to create a **food delivery service website** that allows user
 
 ## Project Overview
 
+
 The website will start with **static mock data** and may later expand to use the **Google Maps API** for location-based features. The core functionalities include:
 
 - **Restaurant Listings**: Users can browse a list of area restaurants.
