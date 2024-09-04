@@ -37,3 +37,4 @@ The website will feature different user interfaces based on the type of user:
 - **Feedback and Advice**: Regular consultations with project stakeholders, including Seamus, will guide feature implementations and project direction.
 
 ## Installation and Setup 
+
