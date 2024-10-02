@@ -1,4 +1,4 @@
-"""db.py: connect to Postgres database and create tables"""
+"""server.py: connect to Postgres database and create tables"""
 import os
 
 from dotenv import load_dotenv
