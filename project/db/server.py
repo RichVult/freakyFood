@@ -23,6 +23,7 @@ db = SQLAlchemy(app)
 
 # import table to be created in postgres
 from db.schema.Users import Users
+from db.schema.UserTypes import UserTypes
 
 # verify the db connection is successful
 with app.app_context():
