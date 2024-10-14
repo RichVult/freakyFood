@@ -24,7 +24,7 @@ db = SQLAlchemy(app)
 # import table to be created in postgres
 from db.schema.Users import Users
 from db.schema.UserTypes import UserTypes
-
+from db.schema.Store import Store
 # verify the db connection is successful
 with app.app_context():
     # attempt to connect to db, print msgs if successful
