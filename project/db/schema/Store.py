@@ -4,7 +4,7 @@ from db.server import db
 class Store(db.Model):
     __tablename__='Store'
     StoreID=db.Column(db.Integer,primary_key=True,autoincrement=True)
-    UserID=db.Column(db.Integer, db.ForeignKey('Store.UserID'), nullable=False)
+    UserID=db.Column(db.Integer, db.ForeignKey('Users.UserID'), nullable=False)
     StoreName=db.Column(db.String)
 
     #define relationship
