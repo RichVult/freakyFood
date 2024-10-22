@@ -4,19 +4,18 @@ class Menu(db.Model):
     __tablename__='Menu'
 
     # Define Columns
-    MenuID=db.Column(db.Integer,primary_key=True,autoincrement=True)
-    MenuID=db.Column(db.Integer, db.ForeignKey('Store.StoreID'), nullable=False)
-    StoreID=db.Column(db.String)
+    MenuID = db.Column(db.Integer, primary_key = True, autoincrement= True)
+    StoreID = db.Column(db.Integer, db.ForeignKey('Store.StoreID'), nullable=False)
 
-    #Define Relationship
-    menu_id=db.relationship('StoreID', back_populates='Menu')
 
-    def __init__(self, newStoreID, newMenuID):
-        self.MenuID = newMenuID
+    # Define Relationship
+    store = db.relationship('Store', back_populates='Store')
+
+    # Constructor
+    def __init__(self, newStoreID):
         self.newStoreID = newStoreID
 
-        pass
-
+    # Debug
     def __repr__(self):
         # add text to f-string
         return f"""

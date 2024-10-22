@@ -18,8 +18,7 @@ class Orders(db.Model):
     store = db.relationship('Store', back_populates='orders')
  
     # Constructor
-    def __init__(self, newUserID, newDriverID, newStoreID, newOrderStatusID, newOrderDate):
-        self.UserID = newUserID
+    def __init__(self, newDriverID, newStoreID, newOrderStatusID, newOrderDate):
         self.DriverID = newDriverID
         self.StoreID = newStoreID
         self.OrderStatusID = newOrderStatusID

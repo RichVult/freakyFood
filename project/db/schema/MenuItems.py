@@ -15,8 +15,7 @@ class MenuItems(db.Model):
     # Define relationship
     menu = db.relationship('Menu', backref=db.backref('menu_items', lazy=True))
 
-    def __init__(self, newMenuItemID, newMenuID, newMIName, newMIDesc, newMICal, newMIPrice):
-        self.MenuItemID = newMenuItemID
+    def __init__(self, newMenuID, newMIName, newMIDesc, newMICal, newMIPrice):
         self.MenuID = newMenuID
         self.MIName = newMIName
         self.MIDesc = newMIDesc

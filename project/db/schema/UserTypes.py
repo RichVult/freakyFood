@@ -9,8 +9,7 @@ class UserTypes(db.Model):
     TypeName = db.Column(db.String)
 
     # Constructor
-    def __init__(self, newUserTypeID, newTypeName):
-        self.UserTypeID = newUserTypeID
+    def __init__(self, newTypeName):
         self.TypeName = newTypeName
 
     # Debug

@@ -4,7 +4,7 @@ class OrderItems(db.Model):
     __tablename__='OrderItems'
 
     # Define Columns
-    OrderID=db.Column(db.Integer,primary_key=True,autoincrement=True)
+    OrderID=db.Column(db.Integer, primary_key=True, autoincrement=True)
     MenuItemID=db.Column(db.Integer, db.ForeignKey('MenuItems.MenuItemID'), nullable=False)
     ItemQuantity=db.Column(db.Integer)
 
@@ -12,8 +12,7 @@ class OrderItems(db.Model):
     menu_items = db.relationship('MenuItemID', back_populates='OrderItems')
 
     # Constructor
-    def __init__(self, newOrderID, newMenuItemID, newItemQuantity):
-        self.OrderID=newOrderID
+    def __init__(self, newMenuItemID, newItemQuantity):
         self.MenuItemID=newMenuItemID
         self.ItemQuantity=newItemQuantity
 
