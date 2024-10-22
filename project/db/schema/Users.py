@@ -14,6 +14,7 @@ class Users(db.Model):
     # Define relationship
     user_type = db.relationship('UserTypes', back_populates='Users')
 
+    # Constructor
     def __init__(self, newUserTypeID, newEmail, newPassword, newFirstName, newLastName, newAddress, newCardNumber):
         self.UserTypeID = newUserTypeID 
         self.Email = newEmail

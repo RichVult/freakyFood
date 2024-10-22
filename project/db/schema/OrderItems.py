@@ -5,7 +5,6 @@ class OrderItems(db.Model):
 
     # Define Columns
     OrderItemID = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    MenuItemID = db.Column(db.Integer, primary_key=True, autoincrement=True)
     OrderID = db.Column(db.Integer, db.ForeignKey('Orders.OrderID'), nullable=False)
     ItemQuantity = db.Column(db.Integer)
 
