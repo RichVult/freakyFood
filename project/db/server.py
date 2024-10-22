@@ -22,11 +22,14 @@ app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
 db = SQLAlchemy(app)
 
 # import table to be created in postgres
-from db.schema.Users import Users
+from db.schema.table import Table
 from db.schema.UserTypes import UserTypes
+from db.schema.Users import Users
 from db.schema.Store import Store
 from db.schema.OrderItems import OrderItems
-from db.schema.MenuItems import MenuItems
+from db.schema.MenuItems import MenuItem
+from db.schema.Orders import Orders
+from db.schema.OrderItems import OrderItems
 
 # verify the db connection is successful
 with app.app_context():
@@ -44,3 +47,4 @@ with app.app_context():
     
     # create all database tables
     db.create_all()
+
