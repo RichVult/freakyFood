@@ -25,6 +25,9 @@ db = SQLAlchemy(app)
 from db.schema.Users import Users
 from db.schema.UserTypes import UserTypes
 from db.schema.Store import Store
+from db.schema.OrderItems import OrderItems
+from db.schema.MenuItems import MenuItems
+
 # verify the db connection is successful
 with app.app_context():
     # attempt to connect to db, print msgs if successful
