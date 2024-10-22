@@ -1,28 +1,23 @@
-"""Store.py: create a table named Store in the freakyfood database"""
 from db.server import db
 
 class Store(db.Model):
-    __tablename__='Store'
-    StoreID=db.Column(db.Integer,primary_key=True,autoincrement=True)
-    UserID=db.Column(db.Integer, db.ForeignKey('Users.UserID'), nullable=False)
-    StoreName=db.Column(db.String)
+    __tablename__ = 'Store'
+    
+    # Column definitions
+    StoreID = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    UserID = db.Column(db.Integer, db.ForeignKey('Users.UserID'), nullable=False)
+    StoreName = db.Column(db.String(100), nullable=False)
 
-    #define relationship
-    user_id=db.relationship('UserID', back_populates='Store')
+    # Define relationship
+    user = db.relationship('Users', back_populates='stores')  # Assuming 'stores' is defined in the Users model
 
-    def __init__(self, newStoreID, newUserID, newStorename):
-        self.StoreID=newStoreID
-        self.newUserID=newUserID
-        self.StoreName=newStorename
-        pass
+    def __init__(self, newUserID, newStorename):
+        self.UserID = newUserID
+        self.StoreName = newStorename
 
-    def __repr__ (self):
-        #add text to f-string
+    def __repr__(self):
         return f"""
             StoreID : {self.StoreID}
             UserID : {self.UserID}
             StoreName : {self.StoreName}
         """
-    
-    def __repr__(self):
-        return self.__repr__()
