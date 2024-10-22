@@ -1,9 +1,9 @@
 from db.server import db
-from datetime import datetime
 
 class Orders(db.Model):
     __tablename__ = 'Orders'
 
+    # Define Columns
     OrderID = db.Column(db.Integer, primary_key=True, autoincrement=True)
     UserID = db.Column(db.Integer, db.ForeignKey('Users.UserID'), nullable=False)
     DriverID = db.Column(db.Integer, db.ForeignKey('Users.UserID'), nullable=False)
@@ -11,19 +11,20 @@ class Orders(db.Model):
     OrderStatus = db.Column(db.String(100), nullable=False)
     OrderDate = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
-    # Relationships
+    # Define Relationships
     user = db.relationship('Users', foreign_keys=[UserID])
     driver = db.relationship('Users', foreign_keys=[DriverID])
     store = db.relationship('Store', backref='orders')
  
-
-    def __init__(self, newUserID, newDriverID, newStoreID, newOrderStatusID, newOrderDate=None):
+    # Constructor
+    def __init__(self, newUserID, newDriverID, newStoreID, newOrderStatusID, newOrderDate):
         self.UserID = newUserID
         self.DriverID = newDriverID
         self.StoreID = newStoreID
         self.OrderStatusID = newOrderStatusID
-        self.OrderDate = newOrderDate if newOrderDate else datetime.utcnow()
+        self.OrderDate = newOrderDate
 
+    # Debug
     def __repr__(self):
         return f"""
             OrderID : {self.OrderID}
@@ -33,3 +34,6 @@ class Orders(db.Model):
             OrderStatusID : {self.OrderStatusID}
             OrderDate : {self.OrderDate}
         """
+
+    def __repr__(self):
+        return self.__repr__()

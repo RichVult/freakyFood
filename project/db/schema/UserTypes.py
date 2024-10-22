@@ -3,16 +3,18 @@ from db.server import db
 
 class UserTypes(db.Model):
     __tablename__ = 'UserTypes'
+
+    # Define Columns
     UserTypeID = db.Column(db.Integer,primary_key=True, autoincrement=True)
     TypeName = db.Column(db.String)
 
+    # Constructor
     def __init__(self, newUserTypeID, newTypeName):
         self.UserTypeID = newUserTypeID
         self.TypeName = newTypeName
-        pass
 
-    def __repr__    (self):
-        # add text to the f-string
+    # Debug
+    def __repr__(self):
         return f"""
             UserTypeID : {self.UserTypeID}
             TypeName : {self.TypeName}

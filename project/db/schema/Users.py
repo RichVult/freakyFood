@@ -1,4 +1,3 @@
-"""professor.py: create a table named professors in the marist database"""
 from db.server import db
 
 class Users(db.Model):
@@ -24,8 +23,8 @@ class Users(db.Model):
         self.Address = newAddress
         self.CardNumber = newCardNumber
 
+    # Debug
     def __repr__(self):
-        # add text to the f-string
         return f"""
             UserID : {self.UserID}
             UserTypeID : {self.UserTypeID}
@@ -39,10 +38,3 @@ class Users(db.Model):
     
     def __repr__(self):
         return self.__repr__()
-
-
-
-    # ex 1:1  user = db.relationship('User', back_populates='profile'), and profile = db.relationship('Profile', back_populates='user', uselist=False)
-
-    # ex 1:many posts = db.relationship('Post', backref='author', lazy=True) user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    # In User, db.relationship('Post', backref='author', lazy=True) allows each user to have multiple posts. The backref creates a reverse relationship in Post called author.
