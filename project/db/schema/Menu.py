@@ -12,17 +12,17 @@ class Menu(db.Model):
     menu_id=db.relationship('StoreID', back_populates='Menu')
 
     def __init__(self, newStoreID, newMenuID):
-        self.MenuID=newMenuID
-        self.newStoreID=newStoreID
-        
+        self.MenuID = newMenuID
+        self.newStoreID = newStoreID
+
         pass
 
-    def __repr__ (self):
-        #add text to f-string
+    def __repr__(self):
+        # add text to f-string
         return f"""
             StoreID : {self.StoreID}
             MenuID : {self.MenuID}
         """
-    
+
     def __repr__(self):
         return self.__repr__()
