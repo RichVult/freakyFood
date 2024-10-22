@@ -9,7 +9,7 @@ class Menu(db.Model):
 
 
     # Define Relationship
-    store = db.relationship('Store', back_populates='Store')
+    store = db.relationship('Store', back_populates='Menu')
 
     # Constructor
     def __init__(self, newStoreID):

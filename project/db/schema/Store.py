@@ -7,10 +7,10 @@ class Store(db.Model):
     StoreID = db.Column(db.Integer, primary_key=True, autoincrement=True)
     UserID = db.Column(db.Integer, db.ForeignKey('Users.UserID'), nullable=False)
     StoreName = db.Column(db.String(100), nullable=False)
-    
+
 
     # Define Relationship
-    user = db.relationship('Users', back_populates='stores')  # Assuming 'stores' is defined in the Users model
+    user = db.relationship('Users', back_populates='Store')
 
     # Construction
     def __init__(self, newStorename):

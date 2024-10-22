@@ -12,7 +12,7 @@ class Users(db.Model):
     CardNumber = db.Column(db.String(16))
 
     # Define relationship
-    user_type = db.relationship('UserTypes', back_populates='users')
+    user_type = db.relationship('UserTypes', back_populates='Users')
 
     def __init__(self, newUserTypeID, newEmail, newPassword, newFirstName, newLastName, newAddress, newCardNumber):
         self.UserTypeID = newUserTypeID 
