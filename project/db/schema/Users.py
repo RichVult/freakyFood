@@ -1,4 +1,4 @@
-"""professor.py: create a table named professors in the marist database"""
+"""Users.py: create a table named Users in the freakyfood database"""
 from db.server import db
 
 class Users(db.Model):
