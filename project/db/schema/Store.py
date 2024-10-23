@@ -10,7 +10,9 @@ class Store(db.Model):
 
 
     # Define Relationship
-    user = db.relationship('Users', back_populates='Store')
+    user = db.relationship('Users', back_populates='stores')
+    menus = db.relationship('Menu', back_populates='store')
+    orders = db.relationship('Orders', back_populates='store')
 
     # Construction
     def __init__(self, newStorename):

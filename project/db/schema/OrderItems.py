@@ -9,7 +9,7 @@ class OrderItems(db.Model):
     ItemQuantity = db.Column(db.Integer)
 
     # Define Relationship
-    associated_order = db.relationship('Order', back_populates='OrderItems')
+    order = db.relationship('Orders', back_populates='order_items')
     
     # Constructor
     def __init__(self, newMenuItemID, newItemQuantity):

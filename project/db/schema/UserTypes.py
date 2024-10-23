@@ -8,6 +8,9 @@ class UserTypes(db.Model):
     UserTypeID = db.Column(db.Integer,primary_key=True, autoincrement=True)
     TypeName = db.Column(db.String)
 
+    # Define Relationship
+    Users = db.relationship('Users', back_populates='user_type', cascade='all, delete-orphan')
+
     # Constructor
     def __init__(self, newTypeName):
         self.TypeName = newTypeName

@@ -13,7 +13,7 @@ class MenuItems(db.Model):
     MIPrice = db.Column(db.Float, nullable=False)
 
     # Define relationship
-    menu = db.relationship('Menu', back_populates='MenuItems')
+    menu = db.relationship('Menu', back_populates='menu_items')
 
     def __init__(self, newMenuID, newMIName, newMIDesc, newMICal, newMIPrice):
         self.MenuID = newMenuID

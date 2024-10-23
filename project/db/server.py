@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
+from db.scripts.dummyData import insert_user_types
 
 # import environment variables from .env
 load_dotenv()
@@ -46,4 +47,7 @@ with app.app_context():
     
     # create all database tables
     db.create_all()
+
+    # load dummy data
+    insert_user_types()
 
