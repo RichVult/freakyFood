@@ -79,9 +79,9 @@ def login():
             return redirect(url_for('login'))
     return render_template('login.html')
 
-@app.route('/users')
+@app.route('/account')
 def users():
-    return render_template('users.html')
+    return render_template('account.html')
 
 if __name__ == "__main__":
     app.run(debug=True)
