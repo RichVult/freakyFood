@@ -82,8 +82,12 @@ def logout():
     return redirect(url_for('index'))
 
 @app.route('/reset')
-def reset():
+def reset():  # This route remains for the reset functionality
     return render_template('reset.html')
+
+@app.route('/home')  # Renamed the function to avoid conflict
+def home():  # This function is now uniquely named
+    return render_template('home.html')
 
 if __name__ == "__main__":
     app.run(debug=True)

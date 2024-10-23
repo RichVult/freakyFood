@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freaky Food</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    
+</head>
+
+<body>
+    
+    <header>
+        Freaky Food Home Page
+        <!--<audio id="audio" controls autoplay>
+            <source src="Tequila.mp3" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>-->
+
+        <a style="position: absolute; top: 0; left: 0; padding: 10px;">
+            <div><img src="../static/images/FFLogo.png" alt="Logo" height="65px" weight="65px"> </div>
+        </a>
+
+        <a href="/account" style="position: absolute; top: 0; right: 0; padding: 20px;">
+            <div>🙂</div>
+        </a>
+        <br>
+        <br>
+    </header>
+
+    <div class="search-bar">
+        <form action="https://www.google.com/search" method="get">
+            <input type="text" name="q" placeholder="Search Freaky Food" />
+            <button type="submit">Search</button>
+        </form>
+    </div>
+
+
+
+    <!--<div class="content">
+        <img src="BK_Logo.png" class="logo" alt="Burger King">
+        <img src="WingStop_logo.png" class="logo" alt="Wing Stop">
+        <img src="Chipotle_logo.png" class="logo" alt="Chipotle">
+        <img src="OliveGarden_Logo.png" class="logo" alt="Olive Garden">
+    </div> -->
+
+    <footer>
+        <br>
+        <br>
+        <br>
+    </footer>
+
+</body>
+</html>
