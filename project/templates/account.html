@@ -1,0 +1,68 @@
+<!--
+
+    THIS IS OUR ACCOUNT INFORMATION PAGE
+
+    This page should ONLY be accessable when LOGGED IN 
+
+    This page should ONLY show information associated with the LOGGED IN USER
+
+    This page will provide functions/redirects to update information
+
+    IMPORTANT PLEASE READ \/\/\/\/
+
+    Currently this page is our "LOGGED IN HOME PAGE" It should be replaced by the actual homepage and be accessable from there when new homepage is made
+
+-->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Account - FreakyFood</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <h1>Your Account Information</h1>
+    <div>
+        <table>
+            <!-- Column Names -->
+            <tr>
+                <th>User ID</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email</th>
+                <th>Phone Number</th>
+                <th>Address</th>
+                <th>Card Number</th>
+                <th>Password</th>
+            </tr>
+            <!-- display user information -->
+            <tr>
+                <td>{{ user.UserID }}</td>
+                <td>{{ user.FirstName }}</td>
+                <td>{{ user.LastName }}</td>
+                <td>{{ user.Email }}</td>
+                <td>{{ user.PhoneNumber }}</td>
+                <td>{{ user.Address }}</td>
+                <td>{{ user.CardNumber}}</td>
+                <td>{{ user.Password }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Return to home page -->
+    <br>
+    <a href="/">
+        <button type="button" id="home">Home</button>
+    </a>
+    <a href="{{ url_for('reset') }}">
+        <button type="button" id="reset">Reset Password</button>
+    </a>
+    <a href="{{ url_for('logout') }}">
+        <button type="button" id="logout">Sign Out</button>
+    </a>
+
+</body>
+
+</html>

@@ -1,0 +1,64 @@
+<!--
+
+    THIS IS OUR SIGNUP PAGE
+
+    This page posts information to our databse
+
+    IMPORTANT PLEASE READ \/\/\/\/
+
+    Still need data verification, filtration, regex, etc
+
+-->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Sign Up - FreakyFood</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <h1>Sign Up</h1>
+    <div style=" display: flex; justify-content: center; align-items: center;">
+        <!-- Create a sign up form here -->
+        <div style="text-align: center; max-width: 200px;">
+            <form method="post">
+                <label for="FirstName">First Name:</label><br>
+                <input type="text" id="FirstName" name="FirstName" minlength="2" required><br>
+
+                <label for="LastName">Last Name:</label><br>
+                <input type="text" id="LastName" name="LastName" minlength="2" required><br>
+
+                <label for="Email">Email Address:</label><br>
+                <input type="text" id="Email" name="Email" required><br>
+
+                <label for="Password">Password:</label><br>
+                <input type="password" id="password" name="Password" required>
+
+                <label for="UserType">How Do You Use FreakyFood? </label><br><br>
+
+                <label for="Driver">Driver</label><br>
+                <input type="radio" name="UserType" value="Driver" required>
+
+                <label for="Customer">Customer</label><br>
+                <input type="radio" name="UserType" value="Customer" required>
+
+
+                <label>Store Owner </label><br>
+                <input type="radio" name="UserType" value="StoreOwner" required>
+
+                <br>
+                <input type="submit">
+            </form>
+        </div>
+    </div>
+
+    <br>
+    <a href="/">
+        <button type="button" id="home">Home</button>
+    </a>
+</body>
+
+</html>
+<!--FirstName", "LastName", "Email", "PhoneNumber", "Password"-->

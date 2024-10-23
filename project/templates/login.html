@@ -1,0 +1,42 @@
+<!--
+
+    THIS IS OUR LOGIN PAGE
+
+    This page should pull information from the databse
+
+    CURRENTLY redirects to itself if incorrect, or if correct -> passes user instance through to account info (should be hompage soon)
+
+-->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Login - FreakyFood</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+    <h1>Log In</h1>
+    <div style=" display: flex; justify-content: center; align-items: center;">
+        <!-- Create a log in form here -->
+        <div style="text-align: center; max-width: 200px;">
+            <form method="POST">
+                <label for="Email">Email</label><br>
+                <input type="text" id="Email" name="Email" required><br>
+                <label for="Password">Password:</label><br>
+                <input type="password" id="password" name="Password" required>
+                <br>
+                <input type="submit">
+            </form>
+        </div>
+    </div>
+
+    <br>
+    <a href="/">
+        <button type="button" id="home">Home</button>
+    </a>
+</body>
+
+</html>

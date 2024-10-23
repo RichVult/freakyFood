@@ -8,12 +8,13 @@ class Menu(db.Model):
     StoreID = db.Column(db.Integer, db.ForeignKey('Store.StoreID'), nullable=False)
 
 
-    # Define Relationship
-    store = db.relationship('Store', back_populates='Menu')
+    # Define Relationships
+    store = db.relationship('Store', back_populates='menus')
+    menu_items = db.relationship('MenuItems', back_populates='menu')
 
     # Constructor
     def __init__(self, newStoreID):
-        self.newStoreID = newStoreID
+        self.StoreID = newStoreID
 
     # Debug
     def __repr__(self):

@@ -17,6 +17,8 @@ class Orders(db.Model):
     driver = db.relationship('Users', foreign_keys=[DriverID])
     store = db.relationship('Store', back_populates='orders')
  
+    order_items = db.relationship('OrderItems', back_populates='order')
+
     # Constructor
     def __init__(self, newDriverID, newStoreID, newOrderStatusID, newOrderDate):
         self.DriverID = newDriverID
