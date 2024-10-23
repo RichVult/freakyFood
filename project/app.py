@@ -1,9 +1,13 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session
 from db.server import app, db  # import all from server
 from sqlalchemy import *
+import os
 
 from db.schema.Users import Users
 from db.schema.UserTypes import UserTypes
+
+# Import need a SECRET KEY -> Please Store one in your .env file really doesnt matter what it is set to mine is buttcheeks
+app.secret_key = os.getenv('SECRET_KEY')
 
 @app.route('/')
 def index():
@@ -65,23 +69,31 @@ def login():
         entered_pass = request.form["Password"]
         entered_email = request.form["Email"]
 
-        # select password from users where Email == entered_email and compare to input password
-        pass_query = select(Users.Password).where(Users.Email == entered_email)
+        # find user associated with email
+        user_query = select(Users).where(Users.Email == entered_email)
+        user = db.session.execute(user_query).scalar_one_or_none()
 
-        # return redirect if accepted to new page to be created for login
-        user_pass = db.session.execute(pass_query).fetchone()
+        # Check if the user exists and the password matches
+        if user and user.Password == entered_pass:  
 
-        # return to homepage/maybe send message of failure
-        if user_pass[0] == entered_pass:
-            return redirect(url_for('index'))
+            # set our session user id -> this allows for us to keep track of the current user throughout pages
+            session['user_id'] = user.UserID 
+
+            return redirect(url_for('account'))  
         else:
-            # redirect to login
-            return redirect(url_for('login'))
+            return render_template('login.html')
     return render_template('login.html')
 
 @app.route('/account')
-def users():
-    return render_template('account.html')
+def account():
+    # Redirect to login if not logged in
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    # Fetch user details from the database using the user ID
+    user_id = session['user_id']
+    user = db.session.execute(select(Users).where(Users.UserID == user_id)).scalar_one_or_none()
+    return render_template('account.html', user=user)
 
 if __name__ == "__main__":
     app.run(debug=True)

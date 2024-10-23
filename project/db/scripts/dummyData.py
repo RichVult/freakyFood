@@ -8,10 +8,15 @@ def insert_user_types():
     
     # Iterate over each user type
     for user_type in user_types:
-        # Add All Instances
+        # Check if the user type already exists
         existing_user_type = db.session.execute(select(UserTypes).where(UserTypes.TypeName == user_type)).scalar_one_or_none()
-        
-        print(f"Inserted User type: {user_type}")
+    
+        if existing_user_type is None:
+            # Create a new UserTypes instance and add it to the session
+            db.session.execute(insert(UserTypes).values(TypeName=user_type))
+            print(f"DUMMY DATA: Inserted User type: {user_type}")
+        else:
+            print(f"DUMMY DATA: User type '{user_type}' already exists. Skipping.")
 
-    # Commit the changes to the database
+# Commit the changes to the database
     db.session.commit()
