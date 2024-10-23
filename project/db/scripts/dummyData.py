@@ -1,5 +1,6 @@
 from sqlalchemy import insert, select
 
+# Function to populate user types with the 3 acceptable user types if they dont already exist in the db
 def insert_user_types():
     from db.schema.UserTypes import UserTypes
     from db.server import db

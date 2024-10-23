@@ -11,6 +11,9 @@ app.secret_key = os.getenv('SECRET_KEY')
 
 @app.route('/')
 def index():
+    # if logged in redirect to account info
+    if 'user_id' in session:
+        return redirect(url_for('account'))
     return render_template('index.html')
 
 @app.route('/signup', methods=['GET','POST'])
@@ -94,6 +97,16 @@ def account():
     user_id = session['user_id']
     user = db.session.execute(select(Users).where(Users.UserID == user_id)).scalar_one_or_none()
     return render_template('account.html', user=user)
+
+@app.route('/logout')
+def logout():
+    # Remove the user ID from the session
+    session.pop('user_id', None)
+    return redirect(url_for('index'))
+
+@app.route('/reset')
+def reset():
+    return render_template('reset.html')
 
 if __name__ == "__main__":
     app.run(debug=True)
