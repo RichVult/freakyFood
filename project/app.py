@@ -19,20 +19,27 @@ def index():
 def login():
     if request.method == 'POST':
 
+        print("Form submitted")
+
         try:
 
+            
             username = request.form.get("email")
             password = request.form.get("password")
+
+            print("Username: %s" % username)
 
             db_password = db.session.execute(text("""SELECT "Password" FROM "Users" WHERE "Email" = :username"""), {
                 "username": username}).fetchone()
 
+            print(db_password)
+
             if db_password is None:
-                return render_template('fail.html')
+                return render_template('auth_fail.html')
 
             if db_password[0] == password:
                 print("Login Successful")
-                return render_template('success.html')
+                return render_template('auth.html')
 
         except Exception as e:
             print(f"An error occurred: {e}")
