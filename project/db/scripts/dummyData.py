@@ -21,19 +21,34 @@ def insert_user_types():
 
 def insert_user():
     from db.schema.Users import Users
+    from db.schema.UserTypes import UserTypes
     from db.server import db
-    user=[ '', '', 'max@gmail.com', '123456', 'Marcus', 'Regan', '14577938948']
-    for user2 in user:
-        # Check if the user type already exists
-        existing_user= db.session.execute(select(Users).where(Users.UserID==user2)).scalar_one_or_none()
+    users=[
+        ["Driver", "CFdefence@gmail.com", "Password", "Christian", "Farrell"],
+        [],
+        ]
     
-        if existing_user is None:
-            # Create a new UserTypes instance and add it to the session
-            db.session.execute(insert(Users).values(UserID=user2))
-            print(f"DUMMY DATA: Inserted User : {user2}")
-        else:
-            print(f"DUMMY DATA: User '{user2}' already exists. Skipping.")
+    for user in users:
+        # Check if the user already exists -> Email 
+        existing_user = db.session.execute(select(Users).where(Users.Email==user[1])).scalar_one_or_none()
 
+        # find user based on email
+        existing_user_type = db.session.execute(select(UserTypes).where(UserTypes.TypeName == user[0])).scalar_one_or_none()
+
+        # if existing user is none that the user DNE
+        if existing_user is not None:
+            # create the user
+            db.session.execute(insert(Users).values(
+                UserTypeID=existing_user_type.UserTypeID, 
+                Email=user[1],
+                Password=user[2], 
+                FirstName=user[3], 
+                LastName=user[4],
+                Address=None, 
+                CardNumber=None))
+            print(f"DUMMY DATA: Inserted User : {user}")
+        else:
+            print(f"DUMMY DATA: User already Exists : {user}")
 def insert_store():
     from db.schema.Store import Store
     from db.server import db
