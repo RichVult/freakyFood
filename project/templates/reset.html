@@ -1,15 +1,3 @@
-<!--
-
-    THIS IS THE PASSWORD RESET PAGE
-
-    This page will update information in the database
-
-    (TO BE IMPLEMENTED) -> This page will redirect to itself if new password does not meet criteria
-
-    Otherwise it will redirect to account information (Should go to home page when homepage is made)
-
--->
-
 <!DOCTYPE html>
 <html>
 
@@ -20,16 +8,25 @@
 
 <body>
 
-    <h1>Reset Password - Not Implemented</h1>
-    <div style=" display: flex; justify-content: center; align-items: center;">
-        <!-- Create a log in form here -->
+    <h1>Reset Password</h1>
+
+    <div style="display: flex; justify-content: center; align-items: center;">
         <div style="text-align: center; max-width: 200px;">
-            <!-- Implement Reset Fields Here-->
+            <form method="POST">
+                <br>
+                <label for="CurrentPassword">Current Password:</label><br>
+                <input type="password" id="CurrentPassword" name="CurrentPassword" required>
+                <br>
+                <label for="NewPassword">New Password:</label><br>
+                <input type="password" id="NewPassword" name="NewPassword" required>
+                <br>
+                <input type="submit" value="Reset Password">
+            </form>
         </div>
     </div>
 
     <br>
-    <a href="/">
+    <a href="/home">
         <button type="button" id="home">Home</button>
     </a>
 </body>

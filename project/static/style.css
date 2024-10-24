@@ -6,7 +6,7 @@ div {
 
 #home {
   width: 25%;
-  background-color: #b103fc;
+  background-color: #00BFFF;
   color: white;
   padding: 14px 20px;
   margin: 8px 0;
@@ -20,7 +20,7 @@ div {
 
 #reset {
   width: 25%;
-  background-color: #b103fc;
+  background-color: #00BFFF;
   color: white;
   padding: 14px 20px;
   margin: 8px 0;
@@ -34,7 +34,7 @@ div {
 
 #logout {
   width: 25%;
-  background-color: #b103fc;
+  background-color: #00BFFF;
   color: white;
   padding: 14px 20px;
   margin: 8px 0;
@@ -54,7 +54,7 @@ div {
 
 button {
   width: 25%;
-  background-color: #b103fc;
+  background-color: #00BFFF;
   color: white;
   padding: 14px 20px;
   margin: 8px 0;
@@ -64,7 +64,7 @@ button {
 }
 
 button:hover {
-  background-color: #ba03fc;
+  background-color: #00BFFF;
 }
 
 h1 {
@@ -84,7 +84,7 @@ select {
 
 input[type=submit] {
   width: 100%;
-  background-color: #b103fc;
+  background-color: #00BFFF;
   color: white;
   padding: 14px 20px;
   margin: 8px 0;
@@ -94,7 +94,7 @@ input[type=submit] {
 }
 
 input[type=submit]:hover {
-  background-color: #ba03fc;
+  background-color: #00BFFF;
 }
 
 table {
@@ -112,4 +112,48 @@ th {
 
 tr:nth-child(even) {
   background-color: #dddddd;
+}
+
+
+
+body {
+    background-color: #FFF;
+    font-family: 'Times New Roman', Times, serif;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+.search-bar {
+    margin: 200px;
+    
+}
+/*.logo {
+    display: inline-block;
+    width: 150px;
+    height: 150px;
+    margin: 20px;
+}*/
+.content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #00BFFF;
+    padding: 30px;
+    display: flex;
+    justify-content: space-around;
+}
+footer div {
+    font-size: 2em;
+}
+header {
+    background-color: #00BFFF;
+    padding: 20px;
+    color: white;
+    font-size: 2em;
 }
