@@ -19,5 +19,94 @@ def insert_user_types():
         else:
             print(f"DUMMY DATA: User type '{user_type}' already exists. Skipping.")
 
+def insert_user():
+    from db.schema.Users import Users
+    from db.server import db
+    user=[ '', '', 'max@gmail.com', '123456', 'Marcus', 'Regan', '14577938948']
+    for user2 in user:
+        # Check if the user type already exists
+        existing_user= db.session.execute(select(Users).where(Users.UserID==user2)).scalar_one_or_none()
+    
+        if existing_user is None:
+            # Create a new UserTypes instance and add it to the session
+            db.session.execute(insert(Users).values(UserID=user2))
+            print(f"DUMMY DATA: Inserted User : {user2}")
+        else:
+            print(f"DUMMY DATA: User '{user2}' already exists. Skipping.")
+
+def insert_store():
+    from db.schema.Store import Store
+    from db.server import db
+    store=['444', '', 'Wendys']
+    for stores in store:
+        # Check if the user type already exists
+        existing_store= db.session.execute(select(Store).where(Store.StoreID==stores)).scalar_one_or_none()
+    
+        if existing_store is None:
+            # Create a new UserTypes instance and add it to the session
+            db.session.execute(insert(Store).values(StoreID=stores))
+            print(f"DUMMY DATA: Inserted Store: {stores}")
+        else:
+            print(f"DUMMY DATA: Store '{stores}' already exists. Skipping.")
+
+def insert_orders():
+    from db.schema.Orders import Orders
+    from db.server import db
+    order=['332', '', '3', '', 'Ready', '2024']
+    for orders in order:
+        # Check if the user type already exists
+        existing_order= db.session.execute(select(Orders).where(Orders.OrderID==orders)).scalar_one_or_none()
+    
+        if existing_order is None:
+            # Create a new UserTypes instance and add it to the session
+            db.session.execute(insert(Orders).values(OrderID=orders))
+            print(f"DUMMY DATA: Inserted Order: {orders}")
+        else:
+            print(f"DUMMY DATA: Order '{orders}' already exists. Skipping.")
+
+def insert_orderitems():
+    from db.schema.OrderItems import OrderItems
+    from db.server import db
+    orderitem=['','','100']
+    for orderitem in orderitem:
+        # Check if the user type already exists
+        existing_orderitems= db.session.execute(select(OrderItems).where(OrderItems.OrderID==orderitem)).scalar_one_or_none()
+    
+        if existing_orderitems is None:
+            # Create a new UserTypes instance and add it to the session
+            db.session.execute(insert(OrderItems).values(OrderID=orderitem))
+            print(f"DUMMY DATA: Inserted Orderitem: {orderitem}")
+        else:
+            print(f"DUMMY DATA: OrderItem '{orderitem}' already exists. Skipping.")
+
+def insert_menuitems():
+    from db.schema.MenuItems import MenuItems
+    from db.server import db
+    orderitem=['1212', '', 'Dessert', 'Meat', '10000', '20.00']
+    for menuitems in orderitem:
+        # Check if the user type already exists
+        existing_menuitems= db.session.execute(select(MenuItems).where(MenuItems.MenuItemID==menuitems)).scalar_one_or_none()
+    
+        if existing_menuitems is None:
+            # Create a new UserTypes instance and add it to the session
+            db.session.execute(insert(MenuItems).values(MenuItemID=menuitems))
+            print(f"DUMMY DATA: Inserted Menuitem: {menuitems}")
+        else:
+            print(f"DUMMY DATA: Menuitem '{menuitems}' already exists. Skipping.")
+
+def insert_menu():
+    from db.schema.Menu import Menu
+    from db.server import db
+    menu=['222', '']
+    for menus in menu:
+        # Check if the user type already exists
+        existing_menu= db.session.execute(select(Menu).where(Menu.MenuID==menus)).scalar_one_or_none()
+    
+        if existing_menu is None:
+            # Create a new UserTypes instance and add it to the session
+            db.session.execute(insert(Menu).values(MenuID=menus))
+            print(f"DUMMY DATA: Menu: {menus}")
+        else:
+            print(f"DUMMY DATA: Menu '{menus}' already exists. Skipping.")
 # Commit the changes to the database
     db.session.commit()
