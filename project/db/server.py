@@ -51,3 +51,7 @@ with app.app_context():
     # load dummy data
     insert_user_types()
 
+    #insert_users()
+
+    db.session.commit()
+
