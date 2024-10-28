@@ -7,14 +7,17 @@ class OrderItems(db.Model):
     OrderItemID = db.Column(db.Integer, primary_key=True, autoincrement=True)
     OrderID = db.Column(db.Integer, db.ForeignKey('Orders.OrderID'), nullable=False)
     ItemQuantity = db.Column(db.Integer)
+    FirstName = db.Column(db.String)
 
     # Define Relationship
     order = db.relationship('Orders', back_populates='order_items')
     
     # Constructor
-    def __init__(self, newMenuItemID, newItemQuantity):
+    def __init__(self, newMenuItemID, newItemQuantity, newFirstName):
         self.MenuItemID=newMenuItemID
         self.ItemQuantity=newItemQuantity
+        self.FirstName=newFirstName
+
 
     # Debug
     def __repr__ (self):
@@ -23,6 +26,7 @@ class OrderItems(db.Model):
             Order ID : {self.OrderID}
             Menu Item ID : {self.MenuItemID}
             Item Quantity : {self.ItemQuantity}
+            First Name :{self.FirstName}
         """
     
     def __repr__(self):

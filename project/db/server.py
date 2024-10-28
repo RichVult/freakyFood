@@ -57,8 +57,9 @@ with app.app_context():
     # load dummy data
     insert_user_types()
     insert_user()
-    #insert_store()
-    #insert_orders()
-    #insert_orderitems
-    #insert_menuitems
-    #insert_menu
+    insert_store()
+    insert_orders()
+    insert_orderitems()
+    insert_menu()
+    insert_menuitems()
+    db.session.commit()
