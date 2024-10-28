@@ -31,6 +31,3 @@ class MenuItems(db.Model):
         MICal : {self.MICal}
         MIPrice : {self.MIPrice}
     """
-
-    def __repr__(self):
-        return self.__repr__()

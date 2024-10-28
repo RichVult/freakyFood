@@ -21,6 +21,3 @@ class UserTypes(db.Model):
             UserTypeID : {self.UserTypeID}
             TypeName : {self.TypeName}
         """
-    
-    def __repr__(self):
-        return self.__repr__()

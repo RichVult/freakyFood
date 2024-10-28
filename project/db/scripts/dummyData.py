@@ -1,4 +1,4 @@
-from sqlalchemy import insert, select
+from sqlalchemy import insert, select, and_
 
 # Function to populate user types with the 3 acceptable user types if they dont already exist in the db
 def insert_user_types():
@@ -26,7 +26,8 @@ def insert_user():
     users=[
         ["Driver", "CFdefence@gmail.com", "Password", "Christian", "Farrell"],
         ["Customer", "socks@gmail.com", "4444", "Alex", "Borelli"],
-        ["StoreOwner", "dude@gmail.com", "777", "Guy", "Meyer"]
+        ["StoreOwner", "dude@gmail.com", "777", "Guy", "Meyer"],
+        ["Customer", "test@gmail.com", "222", "test", "man"],
         ]
     
     for user in users:
@@ -85,7 +86,8 @@ def insert_orders():
     orders=[
         [ "Alex", "McDonalds", "Christian", "Ready", "10/20/2005"],
         [ "Guy", "Wendys", "Christian", "Not Ready", "12/31/2004"],
-        [ "Guy", "McDonalds", "Christian", "Ready", "9/12/2021"],
+        [ "test", "McDonalds", "Christian", "Ready", "9/12/2021"],
+
     ]
 
     for order in orders:
@@ -118,28 +120,32 @@ def insert_orderitems():
     from db.schema.Users import Users
     from db.server import db
     orderitems=[
-        ["Christian", 22],
-        ["Alex", 33],
-        ["Guy", 44],
+        ["Alex", "Fries", 22],
+        ["test", "Burger", 33],
+        ["Guy", "CheeseBurger", 44],
+        ["Guy", "Fries", 50],
+
     ]
     for orderitem in orderitems:
-        # Check if order already exists
-            #MUST be changed to UserID later on
-        existing_orderitem= db.session.execute(select(OrderItems).where(OrderItems.FirstName==orderitem[0])).scalar_one_or_none()
-        #Find userID of the name 
+        # Check if order already exists -> should make first and last
+
+        # Grab the userid associated with the firstname
         existing_user=db.session.execute(select(Users).where(Users.FirstName==orderitem[0])).scalar_one_or_none()
-        #Find order WITH the userID
+
+        # See if an order exists with existing user id -> can one user have many orders?
         existing_order=db.session.execute(select(Orders).where(Orders.UserID==existing_user.UserID)).scalar_one_or_none()
+
+        # See if the order item is made
+        existing_orderitem = db.session.execute(select(OrderItems).where(and_(OrderItems.UserID == existing_user.UserID, OrderItems.OrderItemName == orderitem[1]))).scalar_one_or_none()
+
         #Takes orderID of order and create new orderitem
         if existing_orderitem is None:
-            print(existing_orderitem)
-            print(existing_order)
-            print(existing_user)
             # Create a new UserTypes instance and add it to the session
             db.session.execute(insert(OrderItems).values(
                 OrderID=existing_order.OrderID,
-                ItemQuantity=orderitem[1],
-                FirstName=orderitem[0]
+                ItemQuantity=orderitem[2],
+                OrderItemName=orderitem[1],
+                UserID = existing_user.UserID,
             ))
             db.session.commit()
             print(f"DUMMY DATA: Inserted Orderitem: {orderitem}")

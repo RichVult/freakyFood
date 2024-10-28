@@ -1,10 +1,12 @@
 """server.py: connect to Postgres database and create tables"""
-import os
 
+import os
 from dotenv import load_dotenv
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
+
+# import our schemas
 from db.scripts.dummyData import insert_user_types
 from db.scripts.dummyData import insert_user
 from db.scripts.dummyData import insert_store
@@ -60,6 +62,6 @@ with app.app_context():
     insert_store()
     insert_orders()
     insert_orderitems()
-    insert_menu()
-    insert_menuitems()
+    #insert_menu()
+    #insert_menuitems()
     db.session.commit()
