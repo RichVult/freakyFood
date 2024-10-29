@@ -1,13 +1,12 @@
 from flask import Flask, render_template, request, redirect, url_for, session
-from db.server import app, db  # import all from server
+from db.server import app, db
 from sqlalchemy import *
 import os
-
 from db.schema.Users import Users
 from db.schema.UserTypes import UserTypes
 
 # Import need a SECRET KEY -> Please Store one in your .env file really doesnt matter what it is set to mine is buttcheeks
-app.secret_key = os.getenv('SECRET_KEY')
+app.secret_key = os.getenv('SECRET_KEY', 'your_default_secret_key_here')
 
 @app.route('/')
 def index():
@@ -16,7 +15,7 @@ def index():
         return redirect(url_for('account'))
     return render_template('index.html')
 
-@app.route('/signup', methods=['GET','POST'])
+@app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
         # Get values from form
@@ -63,12 +62,11 @@ def signup():
         return redirect(url_for('index'))
 
     return render_template('signup.html')
-    return render_template('signup.html')
 
-@app.route('/login', methods=['GET','POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-    # from request.form extract password and Email
+        # from request.form extract password and Email
         entered_pass = request.form["Password"]
         entered_email = request.form["Email"]
 
@@ -81,10 +79,9 @@ def login():
 
             # set our session user id -> this allows for us to keep track of the current user throughout pages
             session['user_id'] = user.UserID 
-
-            return redirect(url_for('account'))  
+            return redirect(url_for('home'))  
         else:
-            return render_template('login.html')
+            return render_template('login.html', error="Invalid email or password.")
     return render_template('login.html')
 
 @app.route('/account')
@@ -104,9 +101,30 @@ def logout():
     session.pop('user_id', None)
     return redirect(url_for('index'))
 
-@app.route('/reset')
+@app.route('/reset', methods=['GET', 'POST'])
 def reset():
+
+    if request.method == 'POST':
+        #checks current password and changes it to new password.
+        user_id = session['user_id']
+        current_password = request.form["CurrentPassword"]
+        new_password = request.form["NewPassword"]
+
+
+        user = db.session.execute(select(Users).where(Users.UserID == user_id)).scalar_one_or_none()
+
+        if user and user.Password == current_password:
+            user.Password = new_password
+            db.session.commit()
+            return redirect(url_for('account')) 
+        else:
+            return render_template('reset.html', error="Current password is incorrect.")
+
     return render_template('reset.html')
+
+@app.route('/home')
+def home():
+    return render_template('home.html')
 
 if __name__ == "__main__":
     app.run(debug=True)
