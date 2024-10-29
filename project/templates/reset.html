@@ -1,34 +1,43 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-    <title>Reset Password - FreakyFood</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Password - Freaky Food</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
 
-    <h1>Reset Password</h1>
+    <header style="position: relative; padding: 10px;">
+        <a href="/home" style="position: absolute; top: 10px; left: 10px;">
+            <img src="../static/images/FFLogo.png" alt="Logo" height="65px" width="65px">
+        </a>
+        <h1 style="text-align: center; margin: 0;">Reset your Password</h1>
+    </header>
 
-    <div style="display: flex; justify-content: center; align-items: center;">
-        <div style="text-align: center; max-width: 200px;">
+    <div class="form-container" style="display: flex; justify-content: center; align-items: center; height: 60vh;">
+        <div class="form-box" style="text-align: center; max-width: 300px; padding: 20px; border: 1px solid #ccc; border-radius: 8px;">
+            <h2>Reset Your Password</h2>
             <form method="POST">
-                <br>
                 <label for="CurrentPassword">Current Password:</label><br>
-                <input type="password" id="CurrentPassword" name="CurrentPassword" required>
-                <br>
+                <input type="password" id="CurrentPassword" name="CurrentPassword" required><br><br>
+                
                 <label for="NewPassword">New Password:</label><br>
-                <input type="password" id="NewPassword" name="NewPassword" required>
-                <br>
+                <input type="password" id="NewPassword" name="NewPassword" required><br><br>
+
                 <input type="submit" value="Reset Password">
             </form>
         </div>
     </div>
 
-    <br>
-    <a href="/home">
-        <button type="button" id="home">Home</button>
-    </a>
-</body>
+    <footer style="text-align: center; padding: 20px;">
+        <a href="/home">
+            <button type="button" id="home" style="display: inline-block; width: auto; padding: 10px 20px; background-color: #333; color: #fff; cursor: pointer; border: none;">
+                Back to Home
+            </button>
+        </a>
+    </footer>
 
+</body>
 </html>
