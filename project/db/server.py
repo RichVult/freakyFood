@@ -54,7 +54,9 @@ with app.app_context():
         print(f" * ERROR: {error}")
     
     # create all database tables
+    db.drop_all() # remove when persisting data
     db.create_all()
+    
 
     # load dummy data
     insert_user_types()
@@ -62,6 +64,6 @@ with app.app_context():
     insert_store()
     insert_orders()
     insert_orderitems()
-    #insert_menu()
-    #insert_menuitems()
+    insert_menu()
+    insert_menuitems()
     db.session.commit()

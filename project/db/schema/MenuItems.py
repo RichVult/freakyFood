@@ -7,10 +7,10 @@ class MenuItems(db.Model):
     MenuItemID = db.Column(db.Integer, primary_key=True, autoincrement=True)
     MenuID = db.Column(db.Integer, db.ForeignKey(
         'Menu.MenuID'), nullable=False)
-    MIName = db.Column(db.String(120), nullable=False)
-    MIDesc = db.Column(db.String(255), nullable=False)
-    MICal = db.Column(db.Integer, nullable=False)
-    MIPrice = db.Column(db.Float, nullable=False)
+    MenuItemName = db.Column(db.String(120), nullable=False)
+    MenuItemDesc = db.Column(db.String(255), nullable=False)
+    MenuItemCal = db.Column(db.Integer, nullable=False)
+    MenuItemPrice = db.Column(db.Float, nullable=False)
 
     # Define relationship
     menu = db.relationship('Menu', back_populates='menu_items')

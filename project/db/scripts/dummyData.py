@@ -1,4 +1,5 @@
 from sqlalchemy import insert, select, and_
+from sqlalchemy.dialects.postgresql import insert as postgres_insert
 
 # Function to populate user types with the 3 acceptable user types if they dont already exist in the db
 def insert_user_types():
@@ -18,6 +19,7 @@ def insert_user_types():
             print(f"DUMMY DATA: Inserted User type: {user_type}")
         else:
             print(f"DUMMY DATA: User type '{user_type}' already exists. Skipping.")
+    db.session.commit()
 
 def insert_user():
     from db.schema.Users import Users
@@ -152,58 +154,44 @@ def insert_orderitems():
         else:
             print(f"DUMMY DATA: OrderItem '{orderitem}' already exists. Skipping.")
 
-def insert_menuitems():
-    from db.schema.MenuItems import MenuItems
-    from db.schema.Menu import Menu 
-    from db.server import db
-    menuitems=[
-        ["10", "14", "Dessert", "Cookie", "10000", "20.00"],
-        ["6", "3", "Lunch", "Chicken", "500", "10.00"],
-        ["7", "5", "Dinner", "Pasta", "30000", "16.00"],
-    ]
-    for menuitem in menuitems:
-        # Check if the user type already exists
-        existing_menuitem= db.session.execute(select(MenuItems).where(MenuItems.MenuItemID==menuitem[0])).scalar_one_or_none()
-        existing_menu= db.session.execute(select(Menu).where(Menu.MenuID==menuitem[1])).scalar_one_or_none()
-    
-        if existing_menuitem is None:
-            # Create a new UserTypes instance and add it to the session
-            db.session.execute(insert(MenuItems).values(
-                MenuItemID=menuitem[0],
-                MenuID=existing_menu.MenuID,
-                MIName=menuitem[2],
-                MIDesc=menuitem[3],
-                MICal=menuitem[4],
-                MIPrice=menuitem[5]
-            ))
-            db.session.commit()
-            print(f"DUMMY DATA: Inserted Menuitem: {menuitem}")
-        else:
-            print(f"DUMMY DATA: Menuitem '{menuitem}' already exists. Skipping.")
-
 def insert_menu():
     from db.schema.Menu import Menu
     from db.schema.Store import Store
     from db.server import db
     menus=[
-        ["14", "45"],
-        ["3", "33",],
-        ["5", "22"],
+        ["Wendys"],
+        ["Chipotle"],
+        ["McDonalds"],
     ]
     for menu in menus:
         # Check if the user type already exists
-        existing_menu= db.session.execute(select(Menu).where(Menu.MenuID==menu[0])).scalar_one_or_none()
-        existing_store = db.session.execute(select(Store).where(Store.StoreID==menu[1])).scalar_one_or_none()
-    
+        existing_store = db.session.execute(select(Store).where(Store.StoreName==menu[0])).scalar_one_or_none()
+        existing_menu = db.session.execute(select(Menu).where(Menu.StoreID==existing_store.StoreID )).scalar_one_or_none()
+   
         if existing_menu is None:
             # Create a new UserTypes instance and add it to the session
             db.session.execute(insert(Menu).values(
-                MenuID=menu[0],
                 StoreID=existing_store.StoreID
             ))
             db.session.commit()
             print(f"DUMMY DATA: Menu: {menus}")
         else:
             print(f"DUMMY DATA: Menu '{menus}' already exists. Skipping.")
+
+def insert_menuitems():
+    from db.schema.MenuItems import MenuItems
+    from db.schema.Menu import Menu
+    from db.schema.Store import Store
+    from db.server import db
+    store1 = select(Menu.MenuID).join(Store).where(Store.StoreName == "Wendys")
+    store2 = select(Menu.MenuID).join(Store).where(Store.StoreName == "McDonalds")
+    menu_items=[
+        { "MenuItemName":"Dessert", "MenuItemDesc" : "Cookie", "MenuItemCal" : 10000, "MenuItemPrice": 20.00, 
+         "MenuID": db.session.scalar(store1)},
+        { "MenuItemName":"Lunch", "MenuItemDesc" : "Chicken", "MenuItemCal" : 500, "MenuItemPrice": 10.00,"MenuID": db.session.scalar(store2)},
+        { "MenuItemName":"Dinner", "MenuItemDesc" : "Pasta", "MenuItemCal" : 30000, "MenuItemPrice": 16.00,"MenuID": db.session.scalar(store1)},
+    ]
+    insert_menu_items = postgres_insert(MenuItems).values(menu_items)
+    db.session.execute(insert_menu_items)
 # Commit the changes to the database
     db.session.commit()
