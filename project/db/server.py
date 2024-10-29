@@ -1,11 +1,19 @@
 """server.py: connect to Postgres database and create tables"""
-import os
 
+import os
 from dotenv import load_dotenv
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
+
+# import our schemas
 from db.scripts.dummyData import insert_user_types
+from db.scripts.dummyData import insert_user
+from db.scripts.dummyData import insert_store
+from db.scripts.dummyData import insert_orders
+from db.scripts.dummyData import insert_orderitems
+from db.scripts.dummyData import insert_menuitems 
+from db.scripts.dummyData import insert_menu
 
 # import environment variables from .env
 load_dotenv()
@@ -46,12 +54,16 @@ with app.app_context():
         print(f" * ERROR: {error}")
     
     # create all database tables
+    db.drop_all() # remove when persisting data
     db.create_all()
+    
 
     # load dummy data
     insert_user_types()
-
-    #insert_users()
-
+    insert_user()
+    insert_store()
+    insert_orders()
+    insert_orderitems()
+    insert_menu()
+    insert_menuitems()
     db.session.commit()
-

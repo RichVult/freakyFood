@@ -14,6 +14,7 @@ class Users(db.Model):
     # Define relationship
     user_type = db.relationship('UserTypes', back_populates='Users')
     stores = db.relationship('Store', back_populates='user')
+    order_items = db.relationship('OrderItems', back_populates='user')
 
     # Constructor
     def __init__(self, newUserTypeID, newEmail, newPassword, newFirstName, newLastName, newAddress, newCardNumber):
@@ -37,6 +38,3 @@ class Users(db.Model):
             Address : {self.Address}
             CardNumber : {self.CardNumber}
         """
-    
-    def __repr__(self):
-        return self.__repr__()
