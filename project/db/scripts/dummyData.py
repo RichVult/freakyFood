@@ -1,7 +1,7 @@
 from sqlalchemy import insert, select, and_
 from sqlalchemy.dialects.postgresql import insert as postgres_insert
 
-# Function to populate user types with the 3 acceptable user types if they dont already exist in the db
+# Method to Insert User Types Mock Data
 def insert_user_types():
     from db.schema.UserTypes import UserTypes
     from db.server import db
@@ -21,6 +21,7 @@ def insert_user_types():
             print(f"DUMMY DATA: User type '{user_type}' already exists. Skipping.")
     db.session.commit()
 
+# Method to Insert User Mock Data
 def insert_user():
     from db.schema.Users import Users
     from db.schema.UserTypes import UserTypes
@@ -51,9 +52,11 @@ def insert_user():
                 Address=None, 
                 CardNumber=None))
             db.session.commit()
-            print(f"DUMMY DATA: Inserted User : {user}")
+            print(f"DUMMY DATA: Inserted User: {user}")
         else:
             print(f"DUMMY DATA: User already Exists : {user}")
+
+# Method to Insert Store Mock Data
 def insert_store():
     from db.schema.Store import Store
     from db.schema.Users import Users
@@ -80,6 +83,7 @@ def insert_store():
         else:
             print(f"DUMMY DATA: Store already exists: {store}")
 
+# Method to Insert Orders Mock Data
 def insert_orders():
     from db.schema.Orders import Orders
     from db.schema.Users import Users
@@ -116,6 +120,7 @@ def insert_orders():
         else:
             print(f"DUMMY DATA: Order '{order}' already exists. Skipping.")
 
+# Method to Insert Order Items Mock Data
 def insert_orderitems():
     from db.schema.OrderItems import OrderItems
     from db.schema.Orders import Orders
@@ -154,6 +159,7 @@ def insert_orderitems():
         else:
             print(f"DUMMY DATA: OrderItem '{orderitem}' already exists. Skipping.")
 
+# Method to Insert Menu Mock Data
 def insert_menu():
     from db.schema.Menu import Menu
     from db.schema.Store import Store
@@ -174,10 +180,12 @@ def insert_menu():
                 StoreID=existing_store.StoreID
             ))
             db.session.commit()
-            print(f"DUMMY DATA: Menu: {menus}")
+            print(f"DUMMY DATA: Inserted Menu: {menus}")
         else:
             print(f"DUMMY DATA: Menu '{menus}' already exists. Skipping.")
 
+
+# Method to Insert Menu Items Mock Data
 def insert_menuitems():
     from db.schema.MenuItems import MenuItems
     from db.schema.Menu import Menu

@@ -9,7 +9,7 @@ class OrderItems(db.Model):
     UserID = db.Column(db.Integer, db.ForeignKey('Users.UserID'), nullable=False)
     OrderItemName = db.Column(db.String)
     ItemQuantity = db.Column(db.Integer)
-
+    
     # Define Relationship
     order = db.relationship('Orders', back_populates='order_items')
     user = db.relationship('Users', back_populates='order_items')
