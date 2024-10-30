@@ -26,11 +26,12 @@ def insert_user():
     from db.schema.Users import Users
     from db.schema.UserTypes import UserTypes
     from db.server import db
+    import bcrypt
     users=[
-        ["Driver", "CFdefence@gmail.com", "Password", "Christian", "Farrell"],
-        ["Customer", "socks@gmail.com", "4444", "Alex", "Borelli"],
-        ["StoreOwner", "dude@gmail.com", "777", "Guy", "Meyer"],
-        ["Customer", "test@gmail.com", "222", "test", "man"],
+        ["Driver", "CFdefence@gmail.com", "SuperPassword123.", "Christian", "Farrell"],
+        ["Customer", "socks@gmail.com", "SuperPassword11!", "Alex", "Borelli"],
+        ["StoreOwner", "dude@gmail.com", "ByteNibbleBit12.", "Guy", "Meyer"],
+        ["Customer", "test@gmail.com", "HelpMEE!!.", "test", "man"],
         ]
     
     for user in users:
@@ -42,11 +43,14 @@ def insert_user():
 
         # if existing user is none that the user DNE
         if existing_user is None:
+            # Hash the password using bcrypt
+            hashed_password = bcrypt.hashpw(user[2].encode(), bcrypt.gensalt()).decode('utf-8')
+
             # create the user
             db.session.execute(insert(Users).values(
                 UserTypeID=existing_user_type.UserTypeID, 
                 Email=user[1],
-                Password=user[2], 
+                Password=hashed_password, 
                 FirstName=user[3], 
                 LastName=user[4],
                 Address=None, 

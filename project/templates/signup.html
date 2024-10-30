@@ -25,16 +25,21 @@
         <div style="text-align: center; max-width: 200px;">
             <form method="post">
                 <label for="FirstName">First Name:</label><br>
-                <input type="text" id="FirstName" name="FirstName" minlength="2" required><br>
+                <input type="text" id="FirstName" name="FirstName" minlength="2" required pattern="[A-Za-z]+">
 
                 <label for="LastName">Last Name:</label><br>
-                <input type="text" id="LastName" name="LastName" minlength="2" required><br>
+                <input type="text" id="LastName" name="LastName" minlength="2" required pattern="[A-Za-z]+">
 
                 <label for="Email">Email Address:</label><br>
-                <input type="text" id="Email" name="Email" required><br>
+                <input type="email" id="Email" name="Email" required pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$">
 
                 <label for="Password">Password:</label><br>
-                <input type="password" id="password" name="Password" required>
+                <!-- requiring at least 8 characters, with uppercase, lowercase, number, and special character -->
+                <input type="password" id="Password" name="Password" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}">
+
+                <label for="PasswordTwo">Re-enter Password:</label><br>
+                <!-- requiring at least 8 characters, with uppercase, lowercase, number, and special character -->
+                <input type="password" id="PasswordTwo" name="PasswordTwo" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}">
 
                 <label for="UserType">How Do You Use FreakyFood? </label><br><br>
 
@@ -44,8 +49,7 @@
                 <label for="Customer">Customer</label><br>
                 <input type="radio" name="UserType" value="Customer" required>
 
-
-                <label>Store Owner </label><br>
+                <labe for="StoreOwner">Store Owner</label><br>
                 <input type="radio" name="UserType" value="StoreOwner" required>
 
                 <br>

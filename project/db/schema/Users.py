@@ -5,7 +5,7 @@ class Users(db.Model):
     UserID = db.Column(db.Integer, primary_key=True, autoincrement=True)
     UserTypeID = db.Column(db.Integer, db.ForeignKey('UserTypes.UserTypeID'), nullable=False) 
     Email = db.Column(db.String(120), nullable=False) 
-    Password = db.Column(db.String(100), nullable=False)
+    Password = db.Column(db.String(256), nullable=False)
     FirstName = db.Column(db.String(50), nullable=False)
     LastName = db.Column(db.String(50), nullable=False)
     Address = db.Column(db.String(250), nullable=True)
