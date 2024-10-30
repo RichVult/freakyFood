@@ -1,0 +1,152 @@
+/* Basic styling for layout and centering */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #fff;
+    color: #343a40;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+
+.fixed-header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: #007bff;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    font-size: 1.5em;
+    z-index: 1000;
+}
+
+/* Stops bar at top from hidding any text */
+body {
+    padding-top: 60px;
+}
+   
+    .fixed-header {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        background-color: #007bff;
+        color: white;
+        text-align: center;
+        padding: 20px; /* Increase padding to make the header larger */
+        font-size: 2em; /* Increase font size for larger text */
+        z-index: 1000;
+    }
+
+  
+    body {
+        padding-top: 80px; /* Adjust this to match the new header size */
+    }
+
+
+
+h1 {
+    color: #2c3e50;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    padding: 65px;
+
+}
+
+#intro {
+    font-size: 1.2rem;
+    max-width: 600px;
+    margin-bottom: 2rem;
+    color: #555;
+    line-height: 1.5;
+}
+
+/* Space between the headings and buttons */
+#intro + #index {
+    margin-top: 2rem;
+}
+
+#index {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+button {
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 1px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+footer {
+    margin-top: 2rem;
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+/*space between buttons and text below*/
+
+h4:nth-of-type(3) {
+    padding-top: 50px;
+}
+#index + h1 {
+    margin-top: 50px !important;
+}
+
+
+
+/* Styling for each adore item with left and right border */
+.adore-item {
+    text-align: center;
+    max-width: 300px;
+    border-left: 100px solid #95c7fc; /* Left border */
+    border-right: 100px solid #95c7fc; /* Right border */
+    padding: 50px; /* Optional padding for spacing within the border */
+}
+/* I tired creating all the images and text level with each other but it
+ became way too hard but I kept the margins still so in the future we can use them */
+.content-row {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Space between the image and the text */
+}
+
+.content-row img {
+    width: 80px; /* Adjust width as needed */
+    height: auto;
+}
+/* Add colored left and right margins */
+body::before,
+body::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    width: 150px; /* Adjust width for desired margin size */
+    height: 100%;
+    z-index: -1; /* Behind all content */
+}
+
+body::before {
+    left: 0;
+    background-color: #95c7fc; /* Left margin color */
+}
+
+body::after {
+    right: 0;
+    background-color: #95c7fc; /* Right margin color */
+}
+
+
