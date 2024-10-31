@@ -25,6 +25,3 @@ class Store(db.Model):
             UserID : {self.UserID}
             StoreName : {self.StoreName}
         """
-
-    def __repr__(self):
-        return self.__repr__()

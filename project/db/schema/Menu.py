@@ -23,6 +23,3 @@ class Menu(db.Model):
             StoreID : {self.StoreID}
             MenuID : {self.MenuID}
         """
-
-    def __repr__(self):
-        return self.__repr__()
