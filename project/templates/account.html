@@ -15,10 +15,18 @@
 
 <head>
     <title>Account - FreakyFood</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/account.css">
 </head>
 
 <body>
+    <div class="fixed-header">
+        <img class="logo" src="/static/images/FFLogo.png" alt="Freaky Food Logo">
+        <div id="index">
+            <a href="/home"><button type="button">Home</button></a>
+            <a href="/logout"><button type="button">Sign out</button></a>
+            <a href="/404"><button type="button">Help</button></a>
+        </div>
+    </div>
     <h1>Your Account Information</h1>
 
     <div>
@@ -48,18 +56,18 @@
         </table>
     </div>
 
-    <!-- Return to home page -->
-    <br>
-    <a href="/home">
-        <button type="button" id="home">Home</button>
-    </a>
-    <a href="/reset">
-        <button type="button" id="reset">Reset Password</button>
-    </a>
-    <a href="/logout">
-        <button type="button" id="logout">Sign Out</button>
-    </a>
-
+    <div class = "reset-buttons">
+        <a href="/reset"><button type="button">Reset Password</button></a>
+    </div>
 </body>
+
+<footer class="footer">
+    <p style="margin-left: 15px;">&copy; 2024 Freaky Food. All rights reserved.</p>
+    <ul class="footer-links">
+        <li><a href="/404">Privacy Policy</a></li>
+        <li><a href="/404">Terms of Service</a></li>
+        <li><a href="/404">Contact Us</a></li>
+    </ul>
+</footer>
 
 </html>

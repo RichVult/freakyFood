@@ -78,7 +78,7 @@ body {
     padding: 50px 20px;
     background-color: #fafafa;
     text-align: center;
-    margin-bottom: 195px;
+    margin-bottom: 140px;
 }
 
 .featured-restaurants h2 {
@@ -103,7 +103,6 @@ body {
     transform: scale(1.1);
 }
 
-
 .footer {
     background-color: #333;
     color: #fff;
@@ -122,17 +121,46 @@ body {
     margin-top: 10px;
     display: flex;
     flex-direction: row;
+    margin-right: 38px;
 }
 
 .footer-links a {
     color: #ffccbc;
+    .footer {
+        background-color: #333;
+        color: #fff;
+        padding: 20px;
+        text-align: center;
+        font-size: 14px;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .footer-links {
+        list-style: none;
+        justify-content: center;
+        align-items: center;
+        gap: 15px;
+        margin-top: 10px;
+        display: flex;
+        flex-direction: row;
+        margin-right: 38px;
+    }
+    
+    .footer-links a {
+        color: #ffccbc;
+        text-decoration: none;
+    }
+    
+    .footer-links a:hover {
+        color: #fff;
+    }
     text-decoration: none;
 }
 
 .footer-links a:hover {
     color: #fff;
 }
-
 
 .logo {
     height: 100px;
