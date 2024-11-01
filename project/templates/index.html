@@ -15,17 +15,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Freaky Food - Welcome</title>
-    <link rel="stylesheet" href="/static/index.css"> <!-- Link to the external CSS file -->
-
+    <link rel="stylesheet" href="/static/index.css"> 
 </head>
 
-
 <body>
-    <div class="fixed-header">Welcome to Freaky Food!</div>
-    
-    <h1>Get food delivery and more!</h1>
-
-    <div id="index">
+    <div class="fixed-header">
+        <img class="logo" src="/static/images/FFLogo.png" alt="Freaky Food Logo">
+        <p id="header-title">Welcome to Freaky Food!</p>
+        <div id="index">
         <a href="/signup">
             <button type="button">Sign Up!</button>
         </a>
@@ -33,25 +30,63 @@
         <a href="/login">
             <button type="button">Log In!</button>
         </a>
-
-        <a href="/account">
-            <button type="button">Account Information</button>
-        </a>
+        </div>
     </div>
     
+    <h1>Get food delivery and more!</h1>
+
+    <div id="hero">
+        <img id="heroimg"src="/static/images/deliveryguy.png">
+        <div class="background-container">
+            <div id="formcontainer">
+                <form method="post" style="text-align: left;">
+                    <label for="FirstName" class="field_name">First Name:</label><br>
+                    <input type="text" class="field" id="FirstName" name="FirstName" minlength="2" pattern="[A-Za-z]+" required><br>
+
+                    <label for="LastName" class="field_name">Last Name:</label><br>
+                    <input type="text" class="field" id="LastName" name="LastName" minlength="2"pattern="[A-Za-z]+" required><br>
+
+                    <label for="Email" class="field_name">Email Address:</label><br>
+                    <input type="text" class="field" id="Email" name="Email" pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" required><br>
+
+                    <label for="Password" class="field_name">Password:</label><br>
+                    <input type="password" class="field" id="password" name="Password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}" required><br>
+
+                    <label for="PasswordTwo" class="field_name">Re-enter Password:</label><br>
+                    <input type="password" class="field" id="PasswordTwo" name="PasswordTwo" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}" required>
+
+                    <p id="submit-hero">How Do You Use FreakyFood?</p>
+                    <div id="radioelements">
+                        <label><input type="radio" name="UserType" value="Driver" required> Driver</label><br>
+                        <label><input type="radio" name="UserType" value="Customer" required> Customer</label><br>
+                        <label><input type="radio" name="UserType" value="StoreOwner" required> Store Owner</label><br><br>
+                    </div>
+
+                    <input type="submit" value="Sign Up" class="submit">
+
+                </form>
+            </div>
+        </div>
+    </div>
+
     <h1>Why you will adore Freaky Food!</h1>
-    <h3>We LOVE to have fun</h3>
-    <img src="/static/images/Cartoon1.png" alt="Food and Drink Cartoon" width="300">
-    <h4>We love to support all of our customers needs!</h4>
-
-    <h3>We deliver anywhere...</h3>
-    <img src="/static/images/Cartoon2.png" alt="Girl Driving Car Cartoon" width="300">
-    <h4>Sit back and don't worry about a thing</h4>
-
-    <h3>We have great prices!</h3>
-    <img src="/static/images/Cartoon4.png" alt="Money Bag Cartoon" width="200">
-    <h4>Save money and get great deals</h4>
-
+    <div class="tricontainer">
+        <div class="trihero">
+            <img class="triheroimage" src="/static/images/Cartoon1.png" alt="Food and Drink Cartoon" width="300" height="250">
+            <h3>We LOVE to have fun</h3>
+            <h4>We love to support all of our customers needs!</h4>
+        </div>
+        <div class="trihero">
+            <img class="triheroimage" src="/static/images/Cartoon2.png" alt="Girl Driving Car Cartoon" width="300" height="250">
+            <h3>We deliver anywhere...</h3>
+            <h4>Sit back and don't worry about a thing</h4>
+        </div>
+        <div class="trihero">
+            <img class="triheroimage"src="/static/images/Cartoon4.png" alt="Money Bag Cartoon" width="300" height="250">
+            <h3>We have great prices!</h3>
+            <h4>Save money and get great deals</h4>
+        </div>
+    </div>
     <footer>&copy; 2024 Freaky Food. All rights reserved.</footer>
 </body>
 
