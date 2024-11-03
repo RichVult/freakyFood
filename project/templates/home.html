@@ -1,15 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Freaky Food</title>
-    <link rel="stylesheet" href="/static/home.css">
-    <!--
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='home.css') }}">
--->
-</head>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Freaky Food</title>
+        <link rel="stylesheet" href="/static/home.css">
+    </head>
 
+<<<<<<< HEAD
 <body>
     
     <header>
@@ -30,13 +28,25 @@
         <br>
         <br>
     </header>
+=======
+    <body>
+        <div class="fixed-header">
+            <img class="logo" src="/static/images/FFLogo.png" alt="Freaky Food Logo">
+            <div id="index">
+                <a href="/404"><button type="button">Restaurants</button></a>
+                <a href="/404"><button type="button">Deals</button></a>
+                <a href="/404"><button type="button">Help</button></a>
+                <a href="/account"><button type="button">My Account</button></a>
+            </div>
+        </div>
+>>>>>>> 664a125114a1988339accd5bf14a293b8513d936
 
     <section class="hero">
         <h1>Welcome to Freaky Food</h1>
         <p>Your favorite meals, delivered fast and fresh!</p>
         <div class="search-bar">
             <form action="https://www.google.com/search" method="get">
-                <input type="text" name="q" placeholder="Search Freaky Food" />
+                <input type="text" name="q" placeholder="What are you craving?" />
                 
                 <button type="submit">Search</button>
             </form>
@@ -46,19 +56,19 @@
     <section class="featured-restaurants">
         <h2>Popular Restaurants</h2>
         <div class="restaurant-logos">
-            <img src="{{ url_for('static', filename='images/BK_Logo.png') }}" class="logo" alt="Burger King">
-            <img src="{{ url_for('static', filename='images/WingStop_logo.png') }}" class="logo" alt="Wing Stop">
-            <img src="{{ url_for('static', filename='images/Chipotle_logo.png') }}" class="logo" alt="Chipotle">
-            <img src="{{ url_for('static', filename='images/OliveGarden_Logo.png') }}" class="logo" alt="Olive Garden">
+            <a href="/404"><img src="/static/images/BK_Logo.png" alt="Burger King"></a>
+            <a href="/404"><img src="/static/images/WingStop_logo.png" style="width: 220px;" alt="Wing Stop"></a>
+            <a href="/404"><img src="/static/images/Chipotle_logo.png" alt="Chipotle"></a>
+            <a href="/404"><img src="/static/images/OliveGarden_Logo.png" alt="Olive Garden"></a>
         </div>
     </section>
 
     <footer class="footer">
-        <p>&copy; 2024 Freaky Food. All rights reserved.</p>
+        <p style="margin-left: 15px;">&copy; 2024 Freaky Food. All rights reserved.</p>
         <ul class="footer-links">
-            <li><a href="/privacy">Privacy Policy</a></li>
-            <li><a href="/terms">Terms of Service</a></li>
-            <li><a href="/contact">Contact Us</a></li>
+            <li><a href="/404">Privacy Policy</a></li>
+            <li><a href="/404">Terms of Service</a></li>
+            <li><a href="/404">Contact Us</a></li>
         </ul>
     </footer>
 </body>
