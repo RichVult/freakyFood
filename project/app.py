@@ -162,7 +162,7 @@ def login():
         user_query = select(Users).where(Users.Email == entered_email)
         user = db.session.execute(user_query).scalar_one_or_none()
 
-         # Check if the user exists and the password matches
+        # Check if the user exists and the password matches
         if user and bcrypt.checkpw(entered_pass.encode(), user.Password.encode()):
 
             # set our session user id -> this allows for us to keep track of the current user throughout pages
