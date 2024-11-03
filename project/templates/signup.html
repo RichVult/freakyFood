@@ -10,59 +10,62 @@
 
 -->
 
+<!--
+
+    THIS IS OUR SIGNUP PAGE
+
+    This page posts information to our databse
+
+    IMPORTANT PLEASE READ \/\/\/\/
+
+    Still need data verification, filtration, regex, etc
+
+-->
+
 <!DOCTYPE html>
 <html>
 
 <head>
+    
     <title>Sign Up - FreakyFood</title>
-    <link rel="stylesheet" href="/static/style.css">
+    
 </head>
 
-<body>
-    <h1>Sign Up</h1>
-    <div style=" display: flex; justify-content: center; align-items: center;">
-        <!-- Create a sign up form here -->
-        <div style="text-align: center; max-width: 200px;">
-            <form method="post">
-                <label for="FirstName">First Name:</label><br>
-                <input type="text" id="FirstName" name="FirstName" minlength="2" required pattern="[A-Za-z]+">
+<body style="font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f4f4f4;">
+    <div style="max-width: 400px; width: 100%; background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); text-align: center;">
+        <img src="/static/images/FFLogo.png" alt=" logo" width-="100">
+        <h1 style="font-size: 2em; color: #333; margin-bottom: 20px;">Sign Up</h1>
+        
+        <form method="post" style="text-align: left;">
+            <label for="FirstName" style="font-size: 1.1em; color: #555;">First Name:</label><br>
+            <input type="text" id="FirstName" name="FirstName" minlength="2" required pattern="[A-Za-z]+" required style="font-size: 1em; width: 100%; padding: 8px; margin: 10px 0 20px; border: 1px solid #ccc; border-radius: 4px;"><br>
 
-                <label for="LastName">Last Name:</label><br>
-                <input type="text" id="LastName" name="LastName" minlength="2" required pattern="[A-Za-z]+">
+            <label for="LastName" style="font-size: 1.1em; color: #555;">Last Name:</label><br>
+            <input type="text" id="LastName" name="LastName" minlength="2" required pattern="[A-Za-z]+" required style="font-size: 1em; width: 100%; padding: 8px; margin: 10px 0 20px; border: 1px solid #ccc; border-radius: 4px;"><br>
 
-                <label for="Email">Email Address:</label><br>
-                <input type="email" id="Email" name="Email" required pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$">
+            <label for="Email" style="font-size: 1.1em; color: #555;">Email Address:</label><br>
+            <input type="text" id="Email" name="Email" required pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" required style="font-size: 1em; width: 100%; padding: 8px; margin: 10px 0 20px; border: 1px solid #ccc; border-radius: 4px;"><br>
 
-                <label for="Password">Password:</label><br>
-                <!-- requiring at least 8 characters, with uppercase, lowercase, number, and special character -->
-                <input type="password" id="Password" name="Password" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}">
-
-                <label for="PasswordTwo">Re-enter Password:</label><br>
-                <!-- requiring at least 8 characters, with uppercase, lowercase, number, and special character -->
+            <label for="Password" style="font-size: 1.1em; color: #555;">Password:</label><br>
+            <input type="password" id="password" name="Password" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}" required style="font-size: 1em; width: 100%; padding: 8px; margin: 10px 0 20px; border: 1px solid #ccc; border-radius: 4px;"><br>
+            <label for="PasswordTwo">Re-enter Password:</label><br>
+            <!-- requiring at least 8 characters, with uppercase, lowercase, number, and special character -->
                 <input type="password" id="PasswordTwo" name="PasswordTwo" required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}">
+            <p style="font-size: 1.1em; color: #555; margin: 15px 0 5px;">How Do You Use FreakyFood?</p>
+            <label><input type="radio" name="UserType" value="Driver" required> Driver</label><br>
+            <label><input type="radio" name="UserType" value="Customer" required> Customer</label><br>
+            <label><input type="radio" name="UserType" value="StoreOwner" required> Store Owner</label><br><br>
 
-                <label for="UserType">How Do You Use FreakyFood? </label><br><br>
+            <input type="submit" value="Sign Up" style="font-size: 1.2em; padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">
+        </form>
 
-                <label for="Driver">Driver</label><br>
-                <input type="radio" name="UserType" value="Driver" required>
-
-                <label for="Customer">Customer</label><br>
-                <input type="radio" name="UserType" value="Customer" required>
-
-                <labe for="StoreOwner">Store Owner</label><br>
-                <input type="radio" name="UserType" value="StoreOwner" required>
-
-                <br>
-                <input type="submit">
-            </form>
-        </div>
+        <a href="/" style="display: inline-block; margin-top: 20px; font-size: 1em; text-decoration: none;">
+            <button type="button" style="padding: 8px 16px; font-size: 1em; color: #333; background-color: #e0e0e0; border: none; border-radius: 4px; cursor: pointer;">Back</button>
+        </a>
+     
     </div>
-
-    <br>
-    <a href="/">
-        <button type="button" id="home">Home</button>
-    </a>
 </body>
 
 </html>
+
 <!--FirstName", "LastName", "Email", "PhoneNumber", "Password"-->

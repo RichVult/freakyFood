@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Freaky Food</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
-    
+    <link rel="stylesheet" href="/static/home.css">
+    <!--
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='home.css') }}">
+-->
 </head>
 
 <body>
@@ -29,27 +31,36 @@
         <br>
     </header>
 
-    <div class="search-bar">
-        <form action="https://www.google.com/search" method="get">
-            <input type="text" name="q" placeholder="Search Freaky Food" />
-            <button type="submit">Search</button>
-        </form>
-    </div>
+    <section class="hero">
+        <h1>Welcome to Freaky Food</h1>
+        <p>Your favorite meals, delivered fast and fresh!</p>
+        <div class="search-bar">
+            <form action="https://www.google.com/search" method="get">
+                <input type="text" name="q" placeholder="Search Freaky Food" />
+                
+                <button type="submit">Search</button>
+            </form>
+        </div>
+    </section>
 
+    <section class="featured-restaurants">
+        <h2>Popular Restaurants</h2>
+        <div class="restaurant-logos">
+            <img src="{{ url_for('static', filename='images/BK_Logo.png') }}" class="logo" alt="Burger King">
+            <img src="{{ url_for('static', filename='images/WingStop_logo.png') }}" class="logo" alt="Wing Stop">
+            <img src="{{ url_for('static', filename='images/Chipotle_logo.png') }}" class="logo" alt="Chipotle">
+            <img src="{{ url_for('static', filename='images/OliveGarden_Logo.png') }}" class="logo" alt="Olive Garden">
+        </div>
+    </section>
 
-
-    <!--<div class="content">
-        <img src="BK_Logo.png" class="logo" alt="Burger King">
-        <img src="WingStop_logo.png" class="logo" alt="Wing Stop">
-        <img src="Chipotle_logo.png" class="logo" alt="Chipotle">
-        <img src="OliveGarden_Logo.png" class="logo" alt="Olive Garden">
-    </div> -->
-
-    <footer>
-        <br>
-        <br>
-        <br>
+    <footer class="footer">
+        <p>&copy; 2024 Freaky Food. All rights reserved.</p>
+        <ul class="footer-links">
+            <li><a href="/privacy">Privacy Policy</a></li>
+            <li><a href="/terms">Terms of Service</a></li>
+            <li><a href="/contact">Contact Us</a></li>
+        </ul>
     </footer>
-
 </body>
 </html>
+
