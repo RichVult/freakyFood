@@ -58,21 +58,23 @@
 
     <!-- Return to home page -->
     <br>
-    <a href="/home">
-        <button type="button" id="home">Home</button>
-    </a>
+    <div class="reset-buttons">
+    <a href="/home"><button type="button" id="home">Home</button></a>
+    </div>
     <div class = "reset-buttons">
         <a href="/reset"><button type="button">Reset Password</button></a>
     </div>
-    <a href="{{ url_for('logout') }}">
-        <button type="button" id="logout">Sign Out</button>
-    </a>
+    <div class="reset-buttons">
+        <a href="/logout"><button type="button" id="logout">Sign Out</button></a>
+    </div>
 
-    <form action="{{ url_for('account') }}" method="POST" style="display:inline;">
+    <form action="/account" method="POST" style="display:inline;">
         <input type="hidden" name="action" value="delete">
-        <button type="submit" onclick="return confirm('Are you sure you want to delete your account?')">Delete Account</button>
+        <div class="reset-buttons">
+            <button type="submit" onclick="return confirm('Are you sure you want to delete your account?')">Delete Account</button>
+        </div>
     </form>
-
+    <div id="seperator"> </div>
 </body>
 
 <footer class="footer">

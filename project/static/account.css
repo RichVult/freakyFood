@@ -103,10 +103,13 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: 150px;
-    margin-bottom: 497px;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
+#seperator {
+    margin-bottom: 410px;
+}
 .reset-buttons button {
     width: 200px;
     height: 50px;
