@@ -107,12 +107,23 @@ def login():
             return render_template('login.html', error="Invalid email or password.")
     return render_template('login.html')
 
-@app.route('/account')
+@app.route('/account', methods=['GET', 'POST'])
 def account():
+    if request.method == 'POST':
+        if request.form.get('action') == 'delete':
+            user_id = session['user_id']
+            # Delete the user from the database
+            db.session.execute(delete(Users).where(Users.UserID == user_id))
+            db.session.commit()
+
+            # Remove the user from the session and redirect to the home page
+            session.pop('user_id', None)
+            return redirect(url_for('index'))
+    
     # Redirect to login if not logged in
     if 'user_id' not in session:
         return redirect(url_for('login'))
-
+    
     # Fetch user details from the database using the user ID
     user_id = session['user_id']
     user = db.session.execute(select(Users).where(Users.UserID == user_id)).scalar_one_or_none()
