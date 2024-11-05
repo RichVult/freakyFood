@@ -11,33 +11,24 @@
 <!DOCTYPE html>
 <html>
 
-<head>
-    <title>Login - FreakyFood</title>
-    <link rel="stylesheet" href="/static/style.css">
-</head>
+    <head>
+        <title>Login - FreakyFood</title>
+        <link rel="stylesheet" type="text/css" href="/static/login.css">
+    </head>
 
-<body>
-
-    <h1>Log In</h1>
-
-    <div style=" display: flex; justify-content: center; align-items: center;">
-        <!-- Create a log in form here -->
-        <div style="text-align: center; max-width: 200px;">
-            <form method="POST">
-                <label for="Email">Email</label><br>
-                <input type="text" id="Email" name="Email" required><br>
-                <label for="Password">Password:</label><br>
-                <input type="password" id="password" name="Password" required>
+    <body>
+        <div id="container">
+            <img src="/static/images/FFLogo.png" alt=" logo" width-="100">
+            <h1>Login</h1>
+            <form method="POST"style="text-align: left;">
+                <label for="Email" class="field_name">Email</label><br>
+                <input type="text" class="field" id="Email" name="Email" required><br>
+                <label for="Password" class="field_name">Password:</label><br>
+                <input type="password"class="field" id="password" name="Password" required>
                 <br>
-                <input type="submit">
+                <input type="submit" value="Log in" class="submit">
             </form>
+            <a href="/"><button type="button">Back</button></a>    
         </div>
-    </div>
-
-    <br>
-    <a href="/">
-        <button type="button" id="home">Home</button>
-    </a>
-</body>
-
+    </body>
 </html>
