@@ -210,12 +210,16 @@ def insert_menuitems():
         { "MenuItemName":"Chicken Burito", "MenuItemDesc" : "Chicken", "MenuItemCal" : 1350, "MenuItemPrice": 14.00,"MenuID": db.session.scalar(store2)},
         { "MenuItemName":"Steak Taco", "MenuItemDesc" : "Steak", "MenuItemCal" : 1500, "MenuItemPrice": 16.00,"MenuID": db.session.scalar(store2)},
 
-                #McDonalds
+        #McDonalds
         { "MenuItemName":"Big Mac", "MenuItemDesc" : "Burger", "MenuItemCal" : 590, "MenuItemPrice": 8.00, "MenuID": db.session.scalar(store3)},
-        { "MenuItemName":"Fries", "MenuItemDesc" : "Potato", "MenuItemCal" : 320, "MenuItemPrice": 5.00,"MenuID": db.session.scalar(store3)},
+        { "MenuItemName":"Fries", "MenuItemDesc" : "Potato", "MenuItemCal" : 320, "MenuItemPrice": 5.20,"MenuID": db.session.scalar(store3)},
         { "MenuItemName":"Oreo McFlurry", "MenuItemDesc" : "Ice Cream and Oreo", "MenuItemCal" : 570, "MenuItemPrice": 5.00,"MenuID": db.session.scalar(store3)},
     ]
     insert_menu_items = postgres_insert(MenuItems).values(menu_items)
     db.session.execute(insert_menu_items)
-# Commit the changes to the database
+    # Commit the changes to the database
     db.session.commit()
+
+    # Confirm the success of the insert
+    for item in menu_items:
+        print(f"Inserted Menu Item: {item['MenuItemName']} at ${item['MenuItemPrice']:.2f} for MenuID {item['MenuID']}")
