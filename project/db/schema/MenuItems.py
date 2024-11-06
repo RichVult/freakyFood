@@ -26,8 +26,8 @@ class MenuItems(db.Model):
         return f"""
         MenuItemID : {self.MenuItemID}
         MenuID : {self.MenuID}
-        MIName : {self.MIName}
-        MIDesc : {self.MIDesc}
-        MICal : {self.MICal}
-        MIPrice : {self.MIPrice}
+        MIName : {self.MenuItemName}
+        MIDesc : {self.MenuItemDesc}
+        MICal : {self.MenuItemCal}
+        MIPrice : {self.MenuItemPrice}
     """

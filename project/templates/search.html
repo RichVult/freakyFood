@@ -1,0 +1,57 @@
+<!--
+
+    This is the DYNAMIC search page to display all restaurants
+
+    This page will be rendered with a passed search query
+
+    This page must dynamically display all searched restaurants which match the query
+
+    Will also continue a search bar to change the current query
+
+    Upon clicking on a restaurant will redirect to restaurants pages
+
+    MAYBE redirect to order status if order in progress to prevent multiple orders?
+
+-->
+
+<!DOCTYPE html>
+
+<html lang="en">
+    <header>
+        <title>Search - FreakyFood</title>
+        <link rel="stylesheet" href="/static/search.css">
+    </header>
+
+    <body>
+        <!-- Redirect With New Query Back to Search -->
+        <div class="search-bar">
+            <form action="/search" method="get">
+                <input type="text" id="query" name="query" placeholder="What are you craving?" />
+                <button type="submit">Search</button>
+            </form>
+        </div>
+
+        <h2>Stores:</h2>
+        {% if stores %}
+            {% for store in stores %}
+            <ul>
+                <li><strong>StoreID:</strong> {{ store.StoreID }}</li>
+                <li><strong>UserID:</strong> {{ store.UserID }}</li>
+                <li><strong>Store Name:</strong> {{ store.StoreName }}</li>
+                <form action="/restaurant" method="get">
+                    <input type="hidden" name="restaurant" value="{{ store.StoreName }}">
+                    <button type="submit" style="border: none; background: none;">
+                        <img src="{{ url_for('static', filename='images/' + store.StoreImage) }}" alt="Store Image" style="width: 200px; height: 200px;"/>
+                    </button>
+                </form>
+            </ul>
+            {% endfor %}
+        {% else %}
+            <p>No stores found.</p>
+        {% endif %}
+    </body>
+
+    <footer>
+
+    </footer>
+</html>

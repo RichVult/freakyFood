@@ -54,8 +54,10 @@ with app.app_context():
         print(f" * ERROR: {error}")
     
     # create all database tables
-    db.drop_all() # remove when persisting data
+    db.drop_all()
+    print("DB: DROPPED ALL TABLES")
     db.create_all()
+    print("DB: CREATED ALL TABLES")
     
 
     # load dummy data

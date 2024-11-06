@@ -1,0 +1,62 @@
+<!--
+
+    This is the DYNAMIC page for all resterunats
+
+    This page will be rendered with a Store Name passed through by app.py
+
+    WILL RENDER THE MENU OF THE RESTERAUNT
+
+    You must make a DYNAMIC styling for this page and change the CONTENT by using jinja with the Store's Information
+
+    Order will be built on this page and passed back and forth between checkout and resteraunt
+
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ curr_restaurant.StoreName }} - FreakyFood</title>
+    <link rel="stylesheet" href="/static/restaurant.css">
+</head>
+<body>
+    <div class="restaurant-header">
+        <h1>{{ curr_restaurant.StoreName }}</h1>
+        <img src="{{ url_for('static', filename='images/' + curr_restaurant.StoreImage) }}" alt="Store Image" style="width: 300px; height: 300px;"/>
+    </div>
+
+    <div class="menu-items">
+        <h2>Menu</h2>
+        <ul>
+            {% for item in menu_items %}
+                <li>
+                    <strong>{{ item.MenuItemName }}</strong><br>
+                    <span>{{ item.MenuItemDesc }}</span><br>
+                    <span>Calories: {{ item.MenuItemCal }}</span><br>
+                    <span>Price: ${{ item.MenuItemPrice }}</span><br>
+                    
+                    <!-- Form to add item to cart POSTS TO ITSELF-->
+                    <form action="{{ url_for('restaurant', restaurant=curr_restaurant.StoreName) }}" method="post">
+                        <input type="hidden" name="item_id" value="{{ item.MenuItemID }}">
+                    
+                        <!-- Quantity Selector -->
+                        <label for="quantity_{{ item.MenuItemID }}">Quantity:</label>
+                        <input type="number" id="quantity_{{ item.MenuItemID }}" name="quantity" value="1" min="1" max="10" style="width: 50px;">
+                        
+                        <button type="submit">Add to Cart</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    {% if potential_order %}
+    <div class="potential-order">
+        <h3>Your Potential Order</h3>
+        <p>Order ID: {{ potential_order.OrderID }}</p>
+        <p>Order Status: {{ potential_order.OrderStatus }}</p>
+    </div>
+    {% endif %}
+</body>
+</html>

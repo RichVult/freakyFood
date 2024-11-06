@@ -10,6 +10,7 @@ class Users(db.Model):
     LastName = db.Column(db.String(50), nullable=False)
     Address = db.Column(db.String(250), nullable=True)
     CardNumber = db.Column(db.String(16), nullable=True)
+    ProfileImage = db.Column(db.String(100), nullable=False, default='default_profile.png')
 
     # Define relationship
     user_type = db.relationship('UserTypes', back_populates='Users')
@@ -17,7 +18,7 @@ class Users(db.Model):
     order_items = db.relationship('OrderItems', back_populates='user')
 
     # Constructor
-    def __init__(self, newUserTypeID, newEmail, newPassword, newFirstName, newLastName, newAddress, newCardNumber):
+    def __init__(self, newUserTypeID, newEmail, newPassword, newFirstName, newLastName, newAddress, newCardNumber, newProfileImage):
         self.UserTypeID = newUserTypeID 
         self.Email = newEmail
         self.Password = newPassword
@@ -25,6 +26,7 @@ class Users(db.Model):
         self.LastName = newLastName
         self.Address = newAddress
         self.CardNumber = newCardNumber
+        self.ProfileImage = newProfileImage
 
     # Debug
     def __repr__(self):
@@ -37,4 +39,5 @@ class Users(db.Model):
             LastName : {self.LastName}
             Address : {self.Address}
             CardNumber : {self.CardNumber}
+            ProfileImage : {self.ProfileImage}
         """
