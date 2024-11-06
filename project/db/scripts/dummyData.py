@@ -196,12 +196,24 @@ def insert_menuitems():
     from db.schema.Store import Store
     from db.server import db
     store1 = select(Menu.MenuID).join(Store).where(Store.StoreName == "Wendys")
-    store2 = select(Menu.MenuID).join(Store).where(Store.StoreName == "McDonalds")
+    store2 = select(Menu.MenuID).join(Store).where(Store.StoreName == "Chipotle")
+    store3 = select(Menu.MenuID).join(Store).where(Store.StoreName == "McDonalds")
     menu_items=[
-        { "MenuItemName":"Dessert", "MenuItemDesc" : "Cookie", "MenuItemCal" : 10000, "MenuItemPrice": 20.00, 
-         "MenuID": db.session.scalar(store1)},
-        { "MenuItemName":"Lunch", "MenuItemDesc" : "Chicken", "MenuItemCal" : 500, "MenuItemPrice": 10.00,"MenuID": db.session.scalar(store2)},
-        { "MenuItemName":"Dinner", "MenuItemDesc" : "Pasta", "MenuItemCal" : 30000, "MenuItemPrice": 16.00,"MenuID": db.session.scalar(store1)},
+
+        #Wendys
+        { "MenuItemName":"Baconator", "MenuItemDesc" : "Burger", "MenuItemCal" : 590, "MenuItemPrice": 8.00, "MenuID": db.session.scalar(store1)},
+        { "MenuItemName":"Fries", "MenuItemDesc" : "Potato", "MenuItemCal" : 320, "MenuItemPrice": 5.00,"MenuID": db.session.scalar(store1)},
+        { "MenuItemName":"Frosty", "MenuItemDesc" : "Ice Cream and Oreo", "MenuItemCal" : 570, "MenuItemPrice": 5.00,"MenuID": db.session.scalar(store1)},
+
+        #Chipotle
+        { "MenuItemName":"Cheese Quesedilla", "MenuItemDesc" : "Cheese", "MenuItemCal" : 120, "MenuItemPrice": 10.00, "MenuID": db.session.scalar(store2)},
+        { "MenuItemName":"Chicken Burito", "MenuItemDesc" : "Chicken", "MenuItemCal" : 1350, "MenuItemPrice": 14.00,"MenuID": db.session.scalar(store2)},
+        { "MenuItemName":"Steak Taco", "MenuItemDesc" : "Steak", "MenuItemCal" : 1500, "MenuItemPrice": 16.00,"MenuID": db.session.scalar(store2)},
+
+                #McDonalds
+        { "MenuItemName":"Big Mac", "MenuItemDesc" : "Burger", "MenuItemCal" : 590, "MenuItemPrice": 8.00, "MenuID": db.session.scalar(store3)},
+        { "MenuItemName":"Fries", "MenuItemDesc" : "Potato", "MenuItemCal" : 320, "MenuItemPrice": 5.00,"MenuID": db.session.scalar(store3)},
+        { "MenuItemName":"Oreo McFlurry", "MenuItemDesc" : "Ice Cream and Oreo", "MenuItemCal" : 570, "MenuItemPrice": 5.00,"MenuID": db.session.scalar(store3)},
     ]
     insert_menu_items = postgres_insert(MenuItems).values(menu_items)
     db.session.execute(insert_menu_items)
