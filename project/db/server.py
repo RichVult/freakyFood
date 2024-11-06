@@ -2,7 +2,7 @@
 
 import os
 from dotenv import load_dotenv
-from flask import Flask
+from flask import Flask, session
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
 
@@ -58,7 +58,6 @@ with app.app_context():
     print("DB: DROPPED ALL TABLES")
     db.create_all()
     print("DB: CREATED ALL TABLES")
-    
 
     # load dummy data
     insert_user_types()

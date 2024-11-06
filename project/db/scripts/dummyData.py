@@ -158,7 +158,7 @@ def insert_orderitems():
                 OrderID=existing_order.OrderID,
                 ItemQuantity=orderitem[2],
                 OrderItemName=orderitem[1],
-                UserID = existing_user.UserID,
+                UserID = existing_user.UserID
             ))
             db.session.commit()
             print(f"DUMMY DATA: Inserted Orderitem: {orderitem}")
