@@ -361,16 +361,54 @@ def restaurant():
 
 @app.route('/status')
 def status():
-    # ! add redirection to login if not logged in -> hold potential current order ID
-    return render_template('status.html')
+    # add redirection to login if not logged in -> hold potential current order ID
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    # add the user id to the order if it is not already set in the database
+    is_user_null = db.session.execute(select(Orders).where(Orders.OrderID == session.get('potential_order_id'), Orders.UserID == None)).scalar_one_or_none()
+    if is_user_null:
+        is_user_null.UserID = session.get('user_id')
+        db.session.commit()
+
+    # convert session potential order into order
+    session['order_id'] = session.get('potential_order_id')
+    session.pop('potential_order_id', None)
+
+    # update order status in db
+    db.session.execute(update(Orders).where(Orders.OrderID == session.get('order_id')).values(OrderStatus="Created"))
+
+    # get current order from session
+    current_order = db.session.execute(select(Orders).where(Orders.OrderID == session.get('order_id'))).scalar_one_or_none()
+
+    # get resteraunt from current order
+    curr_restaurant = db.session.execute(select(Store).where(Store.StoreID == current_order.StoreID)).scalar_one_or_none()
+
+    return render_template('status.html', current_order=current_order, curr_restaurant=curr_restaurant)
 
 @app.route('/checkout')
 def checkout():
-    # ! add redirection to order status if order exists
+    # redirection to order status if order exists
+    if 'order_id' in session:
+        return redirect(url_for('status'))
 
-    # ! add redirection if missing account info
+    # must have potential order to access checkout
+    if 'potential_order_id' not in session:
+        return redirect(url_for('home'))
 
-    return render_template('checkout.html')
+    # get potential order id from session
+    potential_order_id = session.get('potential_order_id')
+        
+    # Look up the order in the database based on potential_order_id
+    potential_order = db.session.execute(select(Orders).where(Orders.OrderID == potential_order_id)).scalar_one_or_none()
+
+    # find all potential order items
+    potential_items = db.session.execute(select(OrderItems).where(OrderItems.OrderID == potential_order.OrderID)).scalars().all()
+    
+    # get current restaurant from potential order
+    curr_restaurant = db.session.execute(select(Store).where(Store.StoreID == potential_order.StoreID)).scalar_one_or_none()
+
+    return render_template('checkout.html', potential_items=potential_items, potential_order=potential_order, curr_restaurant=curr_restaurant)
 
 # Function to wipe session variables on program start -> Forces user cookie dump
 @app.before_request

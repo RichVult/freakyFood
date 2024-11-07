@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="/static/restaurant.css">
 </head>
 <body>
+    <a href='/'><img class="logo" src="/static/images/FFLogo.png" alt="Freaky Food Logo"></a>
     <div class="restaurant-header">
         <h1>{{ curr_restaurant.StoreName }}</h1>
         <img src="{{ url_for('static', filename='images/' + curr_restaurant.StoreImage) }}" alt="Store Image" style="width: 300px; height: 300px;"/>
@@ -52,7 +53,7 @@
     </div>
 
     {% if potential_items %}
-    <div class="order-items">
+    <class="order-items">
         <h2>Your Order</h2>
         <ul>
             {% for item in potential_items %}
@@ -61,7 +62,7 @@
                     <span>Quantity: {{ item.ItemQuantity }}</span><br>
                     <span>Price: ${{ item.ItemPrice }}</span><br>
                     
-                    <!-- Form to remove the item from the order need to use trick to get around no DELETE-->
+                    <!-- Form to remove the item from the order -->
                     <form action="{{ url_for('restaurant', restaurant=curr_restaurant.StoreName) }}" method="post">
                         <input type="hidden" name="order_item_id" value="{{ item.OrderItemID }}">
                         <button type="submit">Remove from Order</button>
@@ -70,6 +71,7 @@
             {% endfor %}
         </ul>
         <hr>
+        <a href='/checkout'><button>Checkout</button></a>
     </div>
     {% else %}
     <p>No items in your order yet.</p>
