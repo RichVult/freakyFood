@@ -392,7 +392,7 @@ def status():
 
 
 # ! add POST request from checkout to delete an order and implement logic here next
-@app.route('/checkout')
+@app.route('/checkout', methods=['GET', 'POST'])
 def checkout():
     # redirection to order status if order exists
     if 'order_id' in session:
@@ -400,6 +400,19 @@ def checkout():
 
     # must have potential order to access checkout
     if 'potential_order_id' not in session:
+        return redirect(url_for('home'))
+
+    # check if were deleting an order
+    if request.method == 'POST':
+        # delete order items from db
+        db.session.execute(delete(OrderItems).where(OrderItems.OrderID == session.get('potential_order_id')))
+        # delete order from db
+        db.session.execute(delete(Orders).where(Orders.OrderID == session.get('potential_order_id')))
+        db.session.commit()
+
+        # delete potential order from session
+        session.pop('potential_order_id', None)
+
         return redirect(url_for('home'))
 
     # get potential order id from session
