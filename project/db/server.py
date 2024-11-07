@@ -23,10 +23,9 @@ db_owner: str = os.getenv('db_owner')
 db_pass: str = os.getenv('db_pass')
 db_uri: str = f"postgresql://{db_owner}:{db_pass}@localhost/{db_name}"
 
-# create the flask application & connect to db
-app = Flask(__name__, 
-            template_folder = os.path.join(os.getcwd(), 'templates'), 
-            static_folder=os.path.join(os.getcwd(), 'static'))
+# Adjust the path to be absolute from the project root
+app = Flask(__name__, template_folder=os.path.join(os.getcwd(), 'project/templates'), static_folder=os.path.join(os.getcwd(), 'project/static'))
+
 app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
 db = SQLAlchemy(app)
 

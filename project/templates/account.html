@@ -1,89 +1,57 @@
-<!--
-
-    THIS IS OUR ACCOUNT INFORMATION PAGE
-
-    This page should ONLY be accessable when LOGGED IN 
-
-    This page should ONLY show information associated with the LOGGED IN USER
-
-    This page will provide functions/redirects to update information
-
--->
-
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-    <title>Account - FreakyFood</title>
-    <link rel="stylesheet" href="/static/account.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ curr_restaurant.StoreName }} - FreakyFood</title>
+    <link rel="stylesheet" href="/static/restaurant.css">
 </head>
-
 <body>
-    <div class="fixed-header">
-        <img class="logo" src="/static/images/FFLogo.png" alt="Freaky Food Logo">
-        <div id="index">
-            <a href="/home"><button type="button">Home</button></a>
-            <a href="/logout"><button type="button">Sign out</button></a>
-            <a href="/404"><button type="button">Help</button></a>
-        </div>
-    </div>
-    <h1>Your Account Information</h1>
-
-    <div>
-        <table>
-            <!-- Column Names -->
-            <tr>
-                <th>User ID</th>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Email</th>
-                <th>Phone Number</th>
-                <th>Address</th>
-                <th>Card Number</th>
-                <th>Password</th>
-            </tr>
-            <!-- display user information -->
-            <tr>
-                <td>{{ user.UserID }}</td>
-                <td>{{ user.FirstName }}</td>
-                <td>{{ user.LastName }}</td>
-                <td>{{ user.Email }}</td>
-                <td>{{ user.PhoneNumber }}</td>
-                <td>{{ user.Address }}</td>
-                <td>{{ user.CardNumber}}</td>
-                <td>{{ user.Password }}</td>
-            </tr>
-        </table>
+    <div class="restaurant-header">
+        <h1>{{ curr_restaurant.StoreName }}</h1>
+        <img src="{{ url_for('static', filename='images/' + curr_restaurant.StoreImage) }}" alt="Store Image" style="width: 300px; height: 300px;"/>
     </div>
 
-    <!-- Return to home page -->
-    <br>
-    <div class="reset-buttons">
-    <a href="/home"><button type="button" id="home">Home</button></a>
-    </div>
-    <div class = "reset-buttons">
-        <a href="/reset"><button type="button">Reset Password</button></a>
-    </div>
-    <div class="reset-buttons">
-        <a href="/logout"><button type="button" id="logout">Sign Out</button></a>
+    <div class="menu-items">
+        <h2>Menu</h2>
+        <ul>
+            {% for item in menu_items %}
+                <li>
+                    <strong>{{ item.MenuItemName }}</strong><br>
+                    <span>{{ item.MenuItemDesc }}</span><br>
+                    <span>Calories: {{ item.MenuItemCal }}</span><br>
+                    <span>Price: ${{ item.MenuItemPrice }}</span><br>
+                    
+                    <!-- Form to add item to cart POSTS TO ITSELF-->
+                    <form action="{{ url_for('restaurant', restaurant=curr_restaurant.StoreName) }}" method="post">
+                        <input type="hidden" name="item_id" value="{{ item.MenuItemID }}">
+                    
+                        <!-- Quantity Selector -->
+                        <label for="quantity_{{ item.MenuItemID }}">Quantity:</label>
+                        <input type="number" id="quantity_{{ item.MenuItemID }}" name="quantity" value="1" min="1" max="10" style="width: 50px;">
+                        
+                        <button type="submit">Add to Cart</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
     </div>
 
-    <form action="/account" method="POST" style="display:inline;">
-        <input type="hidden" name="action" value="delete">
-        <div class="reset-buttons">
-            <button type="submit" onclick="return confirm('Are you sure you want to delete your account?')">Delete Account</button>
-        </div>
-    </form>
-    <div id="seperator"> </div>
+    {% if potential_items %}
+    <div class="potential-order">
+        <h3>Your Potential Order</h3>
+        <ul>
+            {% for item in potential_items %}
+                <li>
+                    <strong>{{ item.OrderItemName }}</strong><br>
+                    <span>Quantity: {{ item.ItemQuantity }}</span><br>
+                    <span>Price: ${{ item.ItemPrice }}</span><br>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% else %}
+    <p>No items in your potential order yet.</p>
+    {% endif %}
 </body>
-
-<footer class="footer">
-    <p style="margin-left: 15px;">&copy; 2024 Freaky Food. All rights reserved.</p>
-    <ul class="footer-links">
-        <li><a href="/404">Privacy Policy</a></li>
-        <li><a href="/404">Terms of Service</a></li>
-        <li><a href="/404">Contact Us</a></li>
-    </ul>
-</footer>
-
 </html>

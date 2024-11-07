@@ -51,12 +51,28 @@
         </ul>
     </div>
 
-    {% if potential_order %}
-    <div class="potential-order">
-        <h3>Your Potential Order</h3>
-        <p>Order ID: {{ potential_order.OrderID }}</p>
-        <p>Order Status: {{ potential_order.OrderStatus }}</p>
+    {% if potential_items %}
+    <div class="order-items">
+        <h2>Your Order</h2>
+        <ul>
+            {% for item in potential_items %}
+                <li>
+                    <strong>{{ item.OrderItemName }}</strong><br>
+                    <span>Quantity: {{ item.ItemQuantity }}</span><br>
+                    <span>Price: ${{ item.ItemPrice }}</span><br>
+                    
+                    <!-- Form to remove the item from the order need to use trick to get around no DELETE-->
+                    <form action="{{ url_for('restaurant', restaurant=curr_restaurant.StoreName) }}" method="post">
+                        <input type="hidden" name="order_item_id" value="{{ item.OrderItemID }}">
+                        <button type="submit">Remove from Order</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+        <hr>
     </div>
+    {% else %}
+    <p>No items in your order yet.</p>
     {% endif %}
 </body>
 </html>

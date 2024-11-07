@@ -20,7 +20,6 @@ app.secret_key = os.getenv('SECRET_KEY', 'your_default_secret_key_here')
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    checkSession()
 
     if request.method == 'GET':
         # if logged in redirect to account info
@@ -94,7 +93,6 @@ def index():
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
-    checkSession()
     if request.method == 'POST':
         # Define allowed user types
         allowed_user_types = ['Driver', 'Customer', 'StoreOwner']
@@ -164,7 +162,6 @@ def signup():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    checkSession()
     # ! ADD if session contains a potential order ID and we become logged in redirect back to order page to complete order
     if request.method == 'POST':
         # from request.form extract password and Email
@@ -187,7 +184,6 @@ def login():
 
 @app.route('/account', methods=['GET', 'POST'])
 def account():
-    checkSession()
     if request.method == 'POST':
         if request.form.get('action') == 'delete':
             user_id = session.get('user_id')
@@ -210,14 +206,12 @@ def account():
 
 @app.route('/logout')
 def logout():
-    checkSession()
     # Remove the user ID from the session
     session.pop('user_id', None)
     return redirect(url_for('index'))
 
 @app.route('/reset', methods=['GET', 'POST'])
 def reset():
-    checkSession()
     # Redirect to login if not logged in
     if 'user_id' not in session:
         return redirect(url_for('login'))
@@ -248,7 +242,6 @@ def reset():
 
 @app.route('/home')
 def home():
-    checkSession()
     # Redirect to login if not logged in
     if 'user_id' not in session:
         return redirect(url_for('login'))
@@ -257,12 +250,10 @@ def home():
 
 @app.route('/404')
 def invalid_page():
-    checkSession()
     return render_template('404.html')
 
 @app.route('/search')
 def search():
-    checkSession()
     # redirection to order status if order exists
     if 'order_id' in session:
         return redirect(url_for('status'))
@@ -281,7 +272,22 @@ def search():
 
 @app.route('/restaurant', methods=['GET', 'POST', 'DELETE'])
 def restaurant():
-    checkSession()
+    print(request)
+    if request.form.get('order_item_id')  is not None:
+        order_item_id = request.form.get('order_item_id') # We are removing an item from a potential order
+        
+        db.session.execute(delete(OrderItems).where(OrderItems.OrderItemID == order_item_id))
+        db.session.commit()
+
+        # redirect back with new items
+        restaurant_name = request.args.get('restaurant')
+        curr_restaurant = Store.query.filter_by(StoreName=restaurant_name).first()
+        menu = Menu.query.get(curr_restaurant.StoreID) # Look up menu associated with current restaurant
+        menu_items = MenuItems.query.filter(MenuItems.MenuID == menu.MenuID).all() # Look up all menu items associated with the current menu
+        potential_order_id = session.get('potential_order_id') # get from session
+        potential_items = db.session.execute(select(OrderItems).where(OrderItems.OrderID == potential_order_id)).scalars().all() # find all potential order items
+
+        return render_template('restaurant.html', curr_restaurant=curr_restaurant, potential_items=potential_items, menu_items=menu_items) 
     # Get the 'restaurant' parameter from the URL query string
     restaurant_name = request.args.get('restaurant')
 
@@ -314,21 +320,16 @@ def restaurant():
             # Store the new order ID in the session
             session['potential_order_id'] = result.inserted_primary_key[0] 
 
-            # add the added item to the potential order
-            db.session.execute(insert(OrderItems).values(
-                OrderID=session.get('potential_order_id'),
-                ItemQuantity=requested_quantity,
-                OrderItemName=requested_item.MenuItemName,
-                UserID=session.get('user_id') if 'user_id' in session else None,
-                ItemPrice = int(requested_quantity) * float(requested_item.MenuItemPrice)
-            ))
-            db.session.commit()
-
-    elif request.method =='DELETE':
-        # We are removing an item from a potential order
-        print(request.form)
-
-    # GET Always occurs to display updated order and information
+        # add the added item to the potential order
+        db.session.execute(insert(OrderItems).values(
+            OrderID=session.get('potential_order_id'),
+            ItemQuantity=requested_quantity,
+            OrderItemName=requested_item.MenuItemName,
+            UserID=session.get('user_id') if 'user_id' in session else None,
+            ItemPrice = int(requested_quantity) * float(requested_item.MenuItemPrice)
+        ))
+        db.session.commit()
+        
 
     # redirection to order status if order exists
     if 'order_id' in session:
@@ -338,15 +339,17 @@ def restaurant():
     if 'potential_order_id' in session:
         # get from session
         potential_order_id = session.get('potential_order_id')
-        print(potential_order_id)
         
         # Look up the order in the database based on potential_order_id
         potential_order = db.session.execute(select(Orders).where(Orders.OrderID == potential_order_id)).scalar_one_or_none()
 
-        # find all order items associated with potential order and pass that to template
-        potential_items = db.session.execute(select(OrderItems).where(OrderItems.OrderID == potential_order_id)).scalars().all()
-        print(potential_items)
+        # find all potential order items
+        potential_items = db.session.execute(select(OrderItems).where(OrderItems.OrderID == potential_order.OrderID)).scalars().all()
         
+        # if we fine none set to none
+        if not potential_items:
+            potential_items = None
+
         # if potential order not from this restaurant redirect to checkout
         if potential_order.StoreID != curr_restaurant.StoreID:
             return redirect(url_for('checkout'))
@@ -358,26 +361,29 @@ def restaurant():
 
 @app.route('/status')
 def status():
-    checkSession()
     # ! add redirection to login if not logged in -> hold potential current order ID
     return render_template('status.html')
 
 @app.route('/checkout')
 def checkout():
-    checkSession()
     # ! add redirection to order status if order exists
 
     # ! add redirection if missing account info
 
     return render_template('checkout.html')
 
-# Function to ensure on program start session is always cleared
-def checkSession():
-    if 'session_cleared' not in session:
-        # Clear session data if not already cleared
+# Function to wipe session variables on program start -> Forces user cookie dump
+@app.before_request
+def clear_session():
+    # Check if this is the first request
+    if not hasattr(app, 'has_run_before'):
+        # Clear the session on the first request
         session.clear()
-        session['session_cleared'] = True  # Mark that the session has been cleared
+        # Mark that the first request has been processed
+        app.has_run_before = True
+    # No need to remove the handler since it's running only once
+    pass
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False)
 
