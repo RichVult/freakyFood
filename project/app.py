@@ -272,6 +272,10 @@ def search():
 
 @app.route('/restaurant', methods=['GET', 'POST', 'DELETE'])
 def restaurant():
+    # redirect if existing order
+    if 'order_id' in session:
+        return redirect(url_for('status'))
+
     # DELETE REQUEST
     if request.form.get('order_item_id')  is not None:
         order_item_id = request.form.get('order_item_id') # We are removing an item from a potential order
@@ -376,8 +380,9 @@ def status():
         db.session.commit()
 
     # convert session potential order into order
-    session['order_id'] = session.get('potential_order_id')
-    session.pop('potential_order_id', None)
+    if session.get('potential_order_id'):
+        session['order_id'] = session.get('potential_order_id')
+        session.pop('potential_order_id', None)
 
     # update order status in db
     db.session.execute(update(Orders).where(Orders.OrderID == session.get('order_id')).values(OrderStatus="Created"))
