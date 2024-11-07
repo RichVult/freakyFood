@@ -390,6 +390,8 @@ def status():
 
     return render_template('status.html', current_order=current_order, curr_restaurant=curr_restaurant)
 
+
+# ! add POST request from checkout to delete an order and implement logic here next
 @app.route('/checkout')
 def checkout():
     # redirection to order status if order exists
