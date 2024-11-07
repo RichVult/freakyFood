@@ -382,7 +382,7 @@ def status():
     # update order status in db
     db.session.execute(update(Orders).where(Orders.OrderID == session.get('order_id')).values(OrderStatus="Created"))
 
-    # get current order from session
+    # ! ISSUE HERE CAUSED BY REDIRECTION get current order from session
     current_order = db.session.execute(select(Orders).where(Orders.OrderID == session.get('order_id'))).scalar_one_or_none()
 
     # get resteraunt from current order
