@@ -24,7 +24,7 @@ def index():
     if request.method == 'GET':
         # if logged in redirect to account info
         if 'user_id' in session:
-            return redirect(url_for('account'))
+            return redirect(url_for('home'))
         return render_template('index.html')
     else:
         # Define allowed user types
@@ -272,7 +272,7 @@ def search():
 
 @app.route('/restaurant', methods=['GET', 'POST', 'DELETE'])
 def restaurant():
-    print(request)
+    # DELETE REQUEST
     if request.form.get('order_item_id')  is not None:
         order_item_id = request.form.get('order_item_id') # We are removing an item from a potential order
         
@@ -290,6 +290,10 @@ def restaurant():
         return render_template('restaurant.html', curr_restaurant=curr_restaurant, potential_items=potential_items, menu_items=menu_items) 
     # Get the 'restaurant' parameter from the URL query string
     restaurant_name = request.args.get('restaurant')
+
+    # if restaurant page is accessed without a parameter well redirect to avoid erroring
+    if not restaurant_name:
+        return redirect(url_for('index'))
 
     # Look up the current restaurant
     curr_restaurant = Store.query.filter_by(StoreName=restaurant_name).first()
