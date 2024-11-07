@@ -94,7 +94,7 @@ def index():
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
-        # Define allowed user types
+        # Define allowed user typess
         allowed_user_types = ['Driver', 'Customer', 'StoreOwner']
 
         # Get values from form and remove whitespace
