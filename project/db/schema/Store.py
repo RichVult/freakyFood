@@ -7,6 +7,7 @@ class Store(db.Model):
     StoreID = db.Column(db.Integer, primary_key=True, autoincrement=True)
     UserID = db.Column(db.Integer, db.ForeignKey('Users.UserID'), nullable=False)
     StoreName = db.Column(db.String(100), nullable=False)
+    StoreImage = db.Column(db.String(100), nullable=True)
 
 
     # Define Relationship
@@ -15,8 +16,9 @@ class Store(db.Model):
     orders = db.relationship('Orders', back_populates='store')
 
     # Construction
-    def __init__(self, newStorename):
+    def __init__(self, newStorename, newStoreImage):
         self.StoreName = newStorename
+        self.StoreImage = newStoreImage
 
     # Debug
     def __repr__(self):
@@ -24,4 +26,5 @@ class Store(db.Model):
             StoreID : {self.StoreID}
             UserID : {self.UserID}
             StoreName : {self.StoreName}
+            StoreImage : {self.StoreImage}
         """

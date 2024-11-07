@@ -2,7 +2,7 @@
 
 import os
 from dotenv import load_dotenv
-from flask import Flask
+from flask import Flask, session
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
 
@@ -23,10 +23,9 @@ db_owner: str = os.getenv('db_owner')
 db_pass: str = os.getenv('db_pass')
 db_uri: str = f"postgresql://{db_owner}:{db_pass}@localhost/{db_name}"
 
-# create the flask application & connect to db
-app = Flask(__name__, 
-            template_folder = os.path.join(os.getcwd(), 'templates'), 
-            static_folder=os.path.join(os.getcwd(), 'static'))
+# Adjust the path to be absolute from the project root
+app = Flask(__name__, template_folder=os.path.join(os.getcwd(), 'project/templates'), static_folder=os.path.join(os.getcwd(), 'project/static'))
+
 app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
 db = SQLAlchemy(app)
 
@@ -54,9 +53,10 @@ with app.app_context():
         print(f" * ERROR: {error}")
     
     # create all database tables
-    db.drop_all() # remove when persisting data
+    db.drop_all()
+    print("DB: DROPPED ALL TABLES")
     db.create_all()
-    
+    print("DB: CREATED ALL TABLES")
 
     # load dummy data
     insert_user_types()

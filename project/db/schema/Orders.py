@@ -6,8 +6,8 @@ class Orders(db.Model):
 
     # Define Columns
     OrderID = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    UserID = db.Column(db.Integer, db.ForeignKey('Users.UserID'), nullable=False)
-    DriverID = db.Column(db.Integer, db.ForeignKey('Users.UserID'), nullable=False)
+    UserID = db.Column(db.Integer, db.ForeignKey('Users.UserID'), nullable=True)
+    DriverID = db.Column(db.Integer, db.ForeignKey('Users.UserID'), nullable=True)
     StoreID = db.Column(db.Integer, db.ForeignKey('Store.StoreID'), nullable=False)
     OrderStatus = db.Column(db.String(100), nullable=False)
     OrderDate = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)

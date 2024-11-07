@@ -28,10 +28,10 @@ def insert_user():
     from db.server import db
     import bcrypt
     users=[
-        ["Driver", "CFdefence@gmail.com", "SuperPassword123.", "Christian", "Farrell"],
-        ["Customer", "socks@gmail.com", "SuperPassword11!", "Alex", "Borelli"],
-        ["StoreOwner", "dude@gmail.com", "ByteNibbleBit12.", "Guy", "Meyer"],
-        ["Customer", "test@gmail.com", "HelpMEE!!.", "test", "man"],
+        ["Driver", "CFdefence@gmail.com", "SuperPassword123.", "Christian", "Farrell", "default_profile.png"],
+        ["Customer", "socks@gmail.com", "SuperPassword11!", "Alex", "Borelli", "default_profile.png"],
+        ["StoreOwner", "dude@gmail.com", "ByteNibbleBit12.", "Guy", "Meyer", "default_profile.png"],
+        ["Customer", "test@gmail.com", "HelpMEE!!.", "test", "man", "default_profile.png"],
         ]
     
     for user in users:
@@ -54,7 +54,8 @@ def insert_user():
                 FirstName=user[3], 
                 LastName=user[4],
                 Address=None, 
-                CardNumber=None))
+                CardNumber=None),
+            ),
             db.session.commit()
             print(f"DUMMY DATA: Inserted User: {user}")
         else:
@@ -66,9 +67,9 @@ def insert_store():
     from db.schema.Users import Users
     from db.server import db
     stores=[
-        ["Christian", "Wendys"],
-        ["Alex", "Chipotle"],
-        ["Guy", "McDonalds"]
+        ["Christian", "Wendys", "wendys.png"],
+        ["Alex", "Chipotle", "Chipotle_logo.png"],
+        ["Guy", "McDonalds", "mcdonalds.png"]
     ]
     for store in stores:
         # Check if the store already exists--> Store Name
@@ -80,7 +81,8 @@ def insert_store():
             # Create a new store
             db.session.execute(insert(Store).values(
                 UserID=existing_user.UserID,
-                StoreName=store[1]
+                StoreName=store[1],
+                StoreImage=store[2]
                 ))
             db.session.commit()
             print(f"DUMMY DATA: Inserted Store: {store}")
@@ -156,7 +158,7 @@ def insert_orderitems():
                 OrderID=existing_order.OrderID,
                 ItemQuantity=orderitem[2],
                 OrderItemName=orderitem[1],
-                UserID = existing_user.UserID,
+                UserID = existing_user.UserID
             ))
             db.session.commit()
             print(f"DUMMY DATA: Inserted Orderitem: {orderitem}")
@@ -222,4 +224,4 @@ def insert_menuitems():
 
     # Confirm the success of the insert
     for item in menu_items:
-        print(f"Inserted Menu Item: {item['MenuItemName']} at ${item['MenuItemPrice']:.2f} for MenuID {item['MenuID']}")
+        print(f"DUMMY DATA: Inserted Menu Item: {item['MenuItemName']} at ${item['MenuItemPrice']:.2f} for MenuID {item['MenuID']}")
