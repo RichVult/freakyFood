@@ -67,8 +67,8 @@ def insert_store():
     from db.schema.Users import Users
     from db.server import db
     stores=[
-        ["Christian", "Wendys", "wendys.png"],
-        ["Alex", "Chipotle", "Chipotle_logo.png"],
+        ["Guy", "Wendys", "wendys.png"],
+        ["Guy", "Chipotle", "Chipotle_logo.png"],
         ["Guy", "McDonalds", "mcdonalds.png"]
     ]
     for store in stores:
