@@ -164,7 +164,6 @@ def signup():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    # ! ADD if session contains a potential order ID and we become logged in redirect back to order page to complete order
     if request.method == 'POST':
         # from request.form extract password and Email
         entered_pass = request.form["Password"]
@@ -179,6 +178,10 @@ def login():
 
             # set our session user id -> this allows for us to keep track of the current user throughout pages
             session['user_id'] = user.UserID 
+
+            # look up if this user has an existing potential order in db
+
+            # look up if
             return redirect(url_for('home'))  
         else:
             return render_template('login.html', error="Invalid email or password.")
@@ -189,12 +192,18 @@ def account():
     if request.method == 'POST':
         if request.form.get('action') == 'delete':
             user_id = session.get('user_id')
-            # Delete the user from the database
+            # Delete the user and users stores and orders from the database
+            db.session.execute(delete(OrderItems).where(OrderItems.UserID == user_id))
+            db.session.execute(delete(Orders).where(Orders.UserID == user_id))
             db.session.execute(delete(Users).where(Users.UserID == user_id))
             db.session.commit()
 
-            # Remove the user from the session and redirect to the home page
+            #! Currently will error out if driver or store owner tries to do this should implement seperate logic for those
+
+            # Remove the session cookies from the session and redirect to the home page
             session.pop('user_id', None)
+            session.pop('potential_order_id', None)
+            session.pop('order_id', None)
             return redirect(url_for('index'))
     
     # Redirect to login if not logged in
@@ -208,8 +217,10 @@ def account():
 
 @app.route('/logout')
 def logout():
-    # Remove the user ID from the session
+    # Drop any user specific session informaion
     session.pop('user_id', None)
+    session.pop('potential_order_id', None)
+    session.pop('order_id', None)
     return redirect(url_for('index'))
 
 @app.route('/reset', methods=['GET', 'POST'])
@@ -253,6 +264,10 @@ def home():
 @app.route('/404')
 def invalid_page():
     return render_template('404.html')
+
+@app.route('/orderDriver')
+def orderDriver():
+    return render_template('orderDriver.html')
 
 @app.route('/search')
 def search():
