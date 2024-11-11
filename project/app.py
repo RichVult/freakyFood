@@ -1,3 +1,5 @@
+#Use "python project/app.py" to run commands
+
 from flask import Flask, render_template, request, redirect, url_for, session
 from db.server import app, db
 from sqlalchemy import *
