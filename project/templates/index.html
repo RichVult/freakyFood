@@ -1,11 +1,9 @@
 <!--
-
     THIS IS OUR PRE-LOGIN PAGE NOT OUR HOMEPAGE
 
-    This page should only be accessable WHEN LOGGED OUT
+    This page should only be accessible WHEN LOGGED OUT
 
     Attempting to reach this page while LOGGED IN should NOT Work
-
 -->
 
 <!DOCTYPE html>
@@ -22,37 +20,44 @@
     <div class="fixed-header">
         <img class="logo" src="/static/images/FFLogo.png" alt="Freaky Food Logo">
         <div id="index">
-        <a href="/signup">
-            <button type="button">Sign Up!</button>
-        </a>
-
-        <a href="/login">
-            <button type="button">Log In!</button>
-        </a>
+            <a href="/signup">
+                <button type="button">Sign Up!</button>
+            </a>
+            <a href="/login">
+                <button type="button">Log In!</button>
+            </a>
         </div>
     </div>
     <h1 id="header-title">Welcome to Freaky Food!</h1>
     <h1>Where Healthy Meets Delicious</h1>
 
     <div id="hero">
-        <img id="heroimg"src="/static/images/deliveryguy.png">
+        <img id="heroimg" src="/static/images/deliveryguy.png" alt="Delivery Guy">
         <div class="background-container">
             <div id="formcontainer">
                 <form method="post" style="text-align: left;">
                     <label for="FirstName" class="field_name">First Name:</label><br>
-                    <input type="text" class="field" id="FirstName" name="FirstName" minlength="2" pattern="[A-Za-z]+" required><br>
+                    <input type="text" class="field" id="FirstName" name="FirstName" minlength="2" 
+                           pattern="[A-Za-z]+" title="First Name should contain only letters." required><br>
 
                     <label for="LastName" class="field_name">Last Name:</label><br>
-                    <input type="text" class="field" id="LastName" name="LastName" minlength="2"pattern="[A-Za-z]+" required><br>
+                    <input type="text" class="field" id="LastName" name="LastName" minlength="2"
+                           pattern="[A-Za-z]+" title="Last Name should contain only letters." required><br>
 
                     <label for="Email" class="field_name">Email Address:</label><br>
-                    <input type="text" class="field" id="Email" name="Email" pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" required><br>
+                    <input type="text" class="field" id="Email" name="Email" 
+                           pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" 
+                           title="Enter a valid email in the format example@example.com." required><br>
 
                     <label for="Password" class="field_name">Password:</label><br>
-                    <input type="password" class="field" id="password" name="Password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}" required><br>
+                    <input type="password" class="field" id="password" name="Password" 
+                           pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}" 
+                           title="Password must be at least 8 characters long, including one number, one uppercase letter, one lowercase letter, and one special character." required><br>
 
                     <label for="PasswordTwo" class="field_name">Re-enter Password:</label><br>
-                    <input type="password" class="field" id="PasswordTwo" name="PasswordTwo" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}" required>
+                    <input type="password" class="field" id="PasswordTwo" name="PasswordTwo" 
+                           pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}" 
+                           title="Please re-enter the password following the same format as above." required>
 
                     <p id="submit-hero">How Do You Use FreakyFood?</p>
                     <div id="radioelements">
@@ -62,7 +67,6 @@
                     </div>
 
                     <input type="submit" value="Sign Up" class="submit">
-
                 </form>
             </div>
         </div>
@@ -71,7 +75,7 @@
     <!-- Redirect to Search -->
     <div class="search-bar">
         <form action="/search" method="get">
-            <input type="text" name="query" placeholder="What are you craving?" />
+            <input type="text" name="query" placeholder="What are you craving?" title="Enter a food item or cuisine to search for." />
             <button type="submit">Search</button>
         </form>
     </div>
@@ -81,7 +85,7 @@
         <div class="trihero">
             <img class="triheroimage" src="/static/images/Cartoon1.png" alt="Food and Drink Cartoon" width="300" height="250">
             <h3>We LOVE to have fun</h3>
-            <h4>We love to support all of our customers needs!</h4>
+            <h4>We love to support all of our customers' needs!</h4>
         </div>
         <div class="trihero">
             <img class="triheroimage" src="/static/images/Cartoon2.png" alt="Girl Driving Car Cartoon" width="300" height="250">
@@ -89,13 +93,20 @@
             <h4>Sit back and don't worry about a thing</h4>
         </div>
         <div class="trihero">
-            <img class="triheroimage"src="/static/images/Cartoon4.png" alt="Money Bag Cartoon" width="300" height="250">
+            <img class="triheroimage" src="/static/images/Cartoon4.png" alt="Money Bag Cartoon" width="300" height="250">
             <h3>We have great prices!</h3>
             <h4>Save money and get great deals</h4>
         </div>
     </div>
     <!-- Change in future to one used in home-->
     <footer>&copy; 2024 Freaky Food. All rights reserved.</footer>
+
+    <!-- Display alert if there is an error -->
+    {% if error %}
+    <script>
+        alert("{{ error }}");
+    </script>
+    {% endif %}
 </body>
 
 </html>

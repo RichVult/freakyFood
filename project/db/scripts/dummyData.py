@@ -53,7 +53,11 @@ def insert_user():
                 Password=hashed_password, 
                 FirstName=user[3], 
                 LastName=user[4],
-                Address=None, 
+                PhoneNumber=None,
+                State=None,
+                Street=None,
+                City=None,
+                ZipCode=None,
                 CardNumber=None),
             ),
             db.session.commit()

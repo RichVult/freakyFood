@@ -23,6 +23,7 @@
     </header>
 
     <body>
+        <a href='/'><img class="logo" src="/static/images/FFLogo.png" alt="Freaky Food Logo"></a>
         <!-- Redirect With New Query Back to Search -->
         <div class="search-bar">
             <form action="/search" method="get">
@@ -35,9 +36,7 @@
         {% if stores %}
             {% for store in stores %}
             <ul>
-                <li><strong>StoreID:</strong> {{ store.StoreID }}</li>
-                <li><strong>UserID:</strong> {{ store.UserID }}</li>
-                <li><strong>Store Name:</strong> {{ store.StoreName }}</li>
+                <li><strong>{{ store.StoreName }}</strong></li>
                 <form action="/restaurant" method="get">
                     <input type="hidden" name="restaurant" value="{{ store.StoreName }}">
                     <button type="submit" style="border: none; background: none;">

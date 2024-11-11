@@ -46,28 +46,28 @@ def index():
         name_pattern = r"^[A-Za-z]+$"
 
         if not re.match(email_pattern, new_email):
-            return "Invalid email format.", 400
+            return render_template('index.html', error="Invalid email format.")
 
         if not re.match(password_pattern, new_password):
-            return "Password must be at least 8 characters long, contain an uppercase letter, a lowercase letter, a number, and a special character.", 400
+            return render_template('index.html', error= "Password must be at least 8 characters long, contain an uppercase letter, a lowercase letter, a number, and a special character.")
 
         if not re.match(name_pattern, new_first_name):
-            return "First name can only contain letters.", 400
+            return render_template('index.html', error="First name can only contain letters.")
 
         if not re.match(name_pattern, new_last_name):
-            return "Last name can only contain letters.", 400
+            return render_template('index.html', error="Last name can only contain letters.")
 
         # Check if email exists 
         if db.session.execute(select(Users).where(Users.Email == new_email)).scalar_one_or_none():
-            return "Email already associated to another user.", 400
+            return render_template('index.html', error="Email already associated with another user")
 
         # Check if the user type is valid
         if new_user_type not in allowed_user_types:
-            return "Invalid user type. Please select from Driver, Customer, or Store Owner.", 400
+            return render_template('index.html', error="Invalid user type. Please select from Driver, Customer, or Store Owner.")
 
         # Check if passwords match
         if new_password != new_password_two:
-            return "Passwords do not match.", 400
+            return render_template('index.html', error="Passwords Do Not Match")
         
         # Grab usertype ID of user type selected
         user_type_id = db.session.execute(select(UserTypes.UserTypeID).where(UserTypes.TypeName == new_user_type)).scalar_one()
@@ -82,7 +82,11 @@ def index():
             Password=hashed_password,
             FirstName=new_first_name,
             LastName=new_last_name,
-            Address=None,
+            PhoneNumber=None,
+            State=None,
+            Street=None,
+            City=None,
+            ZipCode=None,
             CardNumber=None
         )
 
@@ -113,28 +117,28 @@ def signup():
         name_pattern = r"^[A-Za-z]+$"
 
         if not re.match(email_pattern, new_email):
-            return "Invalid email format.", 400
+            return render_template('signup.html', error="Invalid email format.")
 
         if not re.match(password_pattern, new_password):
-            return "Password must be at least 8 characters long, contain an uppercase letter, a lowercase letter, a number, and a special character.", 400
+            return render_template('signup.html', error= "Password must be at least 8 characters long, contain an uppercase letter, a lowercase letter, a number, and a special character.")
 
         if not re.match(name_pattern, new_first_name):
-            return "First name can only contain letters.", 400
+            return render_template('signup.html', error="First name can only contain letters.")
 
         if not re.match(name_pattern, new_last_name):
-            return "Last name can only contain letters.", 400
+            return render_template('signup.html', error="Last name can only contain letters.")
 
         # Check if email exists 
         if db.session.execute(select(Users).where(Users.Email == new_email)).scalar_one_or_none():
-            return "Email already associated to another user.", 400
+            return render_template('signup.html', error="Email already associated with another user")
 
         # Check if the user type is valid
         if new_user_type not in allowed_user_types:
-            return "Invalid user type. Please select from Driver, Customer, or Store Owner.", 400
+            return render_template('signup.html', error="Invalid user type. Please select from Driver, Customer, or Store Owner.")
 
         # Check if passwords match
         if new_password != new_password_two:
-            return "Passwords do not match.", 400
+            return render_template('signup.html', error="Passwords Do Not Match")
         
         # Grab usertype ID of user type selected
         user_type_id = db.session.execute(select(UserTypes.UserTypeID).where(UserTypes.TypeName == new_user_type)).scalar_one()
@@ -149,9 +153,12 @@ def signup():
             Password=hashed_password,
             FirstName=new_first_name,
             LastName=new_last_name,
-            Address=None,
-            CardNumber=None,
-            ProfileImage="default_profile.png"
+            PhoneNumber=None,
+            State=None,
+            Street=None,
+            City=None,
+            ZipCode=None,
+            CardNumber=None
         )
         # Execute Query and Commit to DB
         db.session.execute(create_user)
@@ -263,9 +270,10 @@ def home():
 def invalid_page():
     return render_template('404.html')
 
-@app.route('/orderDriver')
+# ! Needs backend logic
+@app.route('/driver')
 def orderDriver():
-    return render_template('orderDriver.html')
+    return render_template('driver.html')
 
 @app.route('/search')
 def search():
