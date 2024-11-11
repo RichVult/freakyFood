@@ -263,6 +263,10 @@ def home():
 def invalid_page():
     return render_template('404.html')
 
+@app.route('/orderDriver')
+def orderDriver():
+    return render_template('orderDriver.html')
+
 @app.route('/search')
 def search():
     # redirection to order status if order exists
