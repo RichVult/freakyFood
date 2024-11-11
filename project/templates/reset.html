@@ -48,6 +48,11 @@
             </button>
         </a>
     </footer>
-
+    <!-- Display alert if there is an error -->
+    {% if error %}
+    <script>
+        alert("{{ error }}");
+    </script>
+    {% endif %}
 </body>
 </html>
