@@ -6,7 +6,7 @@ from flask import Flask, session
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
 
-# import our schemas
+# import our queries
 from db.scripts.dummyData import insert_user_types
 from db.scripts.dummyData import insert_user
 from db.scripts.dummyData import insert_store
