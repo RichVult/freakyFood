@@ -33,6 +33,6 @@ class Orders(db.Model):
             UserID : {self.UserID}
             DriverID : {self.DriverID}
             StoreID : {self.StoreID}
-            OrderStatusID : {self.OrderStatusID}
+            OrderStatus : {self.OrderStatus}
             OrderDate : {self.OrderDate}
         """

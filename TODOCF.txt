@@ -1,0 +1,5 @@
+1. driver "order completion"
+2. store "order completion"
+3. Login should not be accessable from logged in
+4. check for user information completion before allowing order to be made -> relies on marcus
+5. deleting accounts for differing user types

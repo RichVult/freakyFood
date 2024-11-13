@@ -119,10 +119,17 @@ def invalid_page():
 # ! Needs backend logic
 @app.route('/driver')
 def driver():
+    # if no one is logged in dont allow access
+    if 'user_id' not in session:
+        return redirect(url_for('index'))
+
     # Redirect if wrong user type
     if checkUserType("Driver"): return checkUserType("Driver")
 
-    return render_template('driver.html')
+    # find all available orders
+    orders = findAvailableOrders()
+    
+    return render_template('driver.html', orders=orders)
 
 # ! Needs frontend and backend logic
 @app.route('/storeOwner')
@@ -194,14 +201,16 @@ def status():
         db.session.commit()
 
     # convert session potential order into order
+    # this will execute only on first visit to status
     if session.get('potential_order_id'):
         session['order_id'] = session.get('potential_order_id')
         session.pop('potential_order_id', None)
 
-    # update order status in db
-    db.session.execute(update(Orders).where(Orders.OrderID == session.get('order_id')).values(OrderStatus="Created"))
+        # update order status in db
+        db.session.execute(update(Orders).where(Orders.OrderID == session.get('order_id')).values(OrderStatus="Created"))
+        db.session.commit()
 
-    # ! ISSUE HERE CAUSED BY REDIRECTION get current order from session
+    # get current order from session
     current_order = db.session.execute(select(Orders).where(Orders.OrderID == session.get('order_id'))).scalar_one_or_none()
 
     # get resteraunt from current order
@@ -238,14 +247,18 @@ def clear_session():
     pass
 
 if __name__ == "__main__":
+    # Parse arguments passed with python execution
     parser = argparse.ArgumentParser(description="Run the Flask app with optional database reset.")
-    parser.add_argument('--init-db', action='store_true', help="Reset the database (drop and create tables).")
+    parser.add_argument('--reset-db', action='store_true', help="Reset the database (drop and create tables).")
     args = parser.parse_args()
 
-    if args.init_db:
+    # if we find the reset db flag has been passed we will execute reset
+    if args.reset_db:
         with app.app_context():
             reset_database()
-        
+    
+    # Find a free port from 5000-5004
+    # dont need any more for our use cases at the moment
     free_port = find_free_port(5000, 5004)
 
     if free_port:
