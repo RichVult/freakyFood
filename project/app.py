@@ -116,9 +116,12 @@ def home():
 def invalid_page():
     return render_template('404.html')
 
-# ! Needs backend logic
-@app.route('/driver')
+@app.route('/driver', methods=['GET', 'POST'])
 def driver():
+    # if we have already accepted an order
+    if 'accepted_order_id' in session:
+        return redirect(url_for('driverStatus'))
+
     # if no one is logged in dont allow access
     if 'user_id' not in session:
         return redirect(url_for('index'))
@@ -126,16 +129,53 @@ def driver():
     # Redirect if wrong user type
     if checkUserType("Driver"): return checkUserType("Driver")
 
+    # if we accept an order
+    if request.method == 'POST':
+        # add accepted order to session
+        session['accepted_order_id'] = request.form.get('orderID')
+
+        # update accepted order's order status
+        db.session.execute(update(Orders).where(Orders.OrderID == session.get('accepted_order_id')).values(OrderStatus="Accepted"))
+        db.session.commit()
+
+        return redirect(url_for('driverStatus'))
+
     # find all available orders
-    orders = findAvailableOrders()
+    orders = findAvailableOrders("Created")
     
     return render_template('driver.html', orders=orders)
+
+# ! Needs frontend and backend logic
+@app.route('/driverStatus')
+def driverStatus():
+    # ? Potential Implementation here for a chat room with the ordering user
+
+    # ! need method to mark order as picked up
+
+    # ! need method to mark order as delivered
+    print("TODO!")
 
 # ! Needs frontend and backend logic
 @app.route('/storeOwner')
 def storeOwner():
     # Redirect if wrong user type
     if checkUserType("StoreOwner"): return checkUserType("StoreOwner")
+
+    # find all available orders
+    accepted_orders = findAvailableOrders("Accepted")
+
+    in_progress_orders = findAvailableOrders("In Progress")
+
+    ready_orders = findAvailableOrders("Ready")
+
+    # ! need method to turn accepted orders into in progress orders
+
+
+    # ! need method to turn in progress orders to ready orders
+
+
+    # ! need method to turn ready orders that are picked up into complete orders
+
 
     return render_template('storeOwner.html')
 

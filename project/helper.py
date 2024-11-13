@@ -257,9 +257,9 @@ def find_free_port(start_port, end_port):
                 return port
     return None
 
-def findAvailableOrders():
+def findAvailableOrders(orderStatus):
     # Fetch all orders in "Created" status
-    orders = db.session.execute(select(Orders).where(Orders.OrderStatus == "Created")).scalars().all()
+    orders = db.session.execute(select(Orders).where(Orders.OrderStatus == orderStatus)).scalars().all()
     
     # List to store orders and their associated stores
     available_orders = []
