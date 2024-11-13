@@ -51,14 +51,14 @@ with app.app_context():
         print(f"\n\n----------- Connection failed!")
         print(f" * Unable to connect to database: {os.getenv('db_name')}")
         print(f" * ERROR: {error}")
-    
-    # create all database tables
+
+# Function to handle argument to reset the database
+def reset_database():
     db.drop_all()
     print("DB: DROPPED ALL TABLES")
     db.create_all()
     print("DB: CREATED ALL TABLES")
-
-    # load dummy data
+    # Insert dummy data
     insert_user_types()
     insert_user()
     insert_store()
@@ -67,3 +67,4 @@ with app.app_context():
     insert_menu()
     insert_menuitems()
     db.session.commit()
+    print("Database reset complete.")

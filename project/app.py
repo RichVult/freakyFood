@@ -1,9 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for, session
-from db.server import app, db
+from db.server import app, db, reset_database
 from sqlalchemy import *
 
 import os
 import bcrypt
+import argparse
 import re
 
 from db.schema.Users import Users
@@ -15,7 +16,7 @@ from db.schema.OrderItems import OrderItems
 from db.schema.MenuItems import MenuItems
 from db.schema.UserTypes import UserTypes
 
-from helper import verifySignup, createUser, resetPassword, deleteOrderItem, addOrder, checkPotentialOrder, deleteOrder, checkoutInformation, deleteUser
+from helper import *
 
 # Import need a SECRET KEY -> Please Store one in your .env file really doesnt matter what it is set to mine is buttcheeks
 app.secret_key = os.getenv('SECRET_KEY', 'your_default_secret_key_here')
@@ -24,13 +25,12 @@ app.secret_key = os.getenv('SECRET_KEY', 'your_default_secret_key_here')
 def index():
     if request.method == 'GET':
         # if logged in redirect to account info
-        if 'user_id' in session:
-            return redirect(url_for('home'))
+        if 'user_id' in session: return redirect(url_for('home'))
+
         return render_template('index.html')
     else:
         # Backend Check if REGEX was matched -> return any errors found
-        result = verifySignup(request)
-        if result: return result
+        if verifySignup(request): return verifySignup(request)
         
         createUser(request) # Create the new user if no errors
 
@@ -40,8 +40,7 @@ def index():
 def signup():
     if request.method == 'POST':
         # Backend Check if REGEX was matched -> return any errors found
-        result = verifySignup(request)
-        if result: return result
+        if verifySignup(request): return verifySignup(request)
         
         createUser(request) # Create the new user if no errors
 
@@ -62,7 +61,6 @@ def login():
 
         # Check if the user exists and the password matches
         if user and bcrypt.checkpw(entered_pass.encode(), user.Password.encode()):
-
             # set our session user id -> this allows for us to keep track of the current user throughout pages
             session['user_id'] = user.UserID 
 
@@ -71,6 +69,7 @@ def login():
             return render_template('login.html', error="Invalid email or password.")
     return render_template('login.html')
 
+# ! needs logic for deleting store owner and drivers
 @app.route('/account', methods=['GET', 'POST'])
 def account():
     if request.method == 'POST':
@@ -78,8 +77,7 @@ def account():
             return deleteUser()
     
     # Redirect to login if not logged in
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
+    if 'user_id' not in session: return redirect(url_for('login'))
     
     # Fetch user details from the database using the user ID
     user_id = session.get('user_id')
@@ -97,19 +95,20 @@ def logout():
 @app.route('/reset', methods=['GET', 'POST'])
 def reset():
     # Redirect to login if not logged in
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
+    if 'user_id' not in session: return redirect(url_for('login'))
 
-    if request.method == 'POST':
-        return resetPassword(request)
+    # Reset the passwowrd on POST
+    if request.method == 'POST': return resetPassword(request)
 
     return render_template('reset.html')
 
 @app.route('/home')
 def home():
     # Redirect to login if not logged in
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
+    if 'user_id' not in session: return redirect(url_for('login'))
+
+    # Redirect if wrong user type
+    if checkUserType("Customer"): return checkUserType("Customer")
     
     return render_template('home.html')
 
@@ -119,14 +118,27 @@ def invalid_page():
 
 # ! Needs backend logic
 @app.route('/driver')
-def orderDriver():
+def driver():
+    # Redirect if wrong user type
+    if checkUserType("Driver"): return checkUserType("Driver")
+
     return render_template('driver.html')
+
+# ! Needs frontend and backend logic
+@app.route('/storeOwner')
+def storeOwner():
+    # Redirect if wrong user type
+    if checkUserType("StoreOwner"): return checkUserType("StoreOwner")
+
+    return render_template('storeOwner.html')
 
 @app.route('/search')
 def search():
+    # Redirect if wrong user type
+    if checkUserType("Customer"): return checkUserType("Customer")
+
     # redirection to order status if order exists
-    if 'order_id' in session:
-        return redirect(url_for('status'))
+    if 'order_id' in session: return redirect(url_for('status'))
 
     # Get the 'query' parameter from the URL
     query = request.args.get('query')
@@ -142,37 +154,38 @@ def search():
 
 @app.route('/restaurant', methods=['GET', 'POST'])
 def restaurant():
+    # Redirect if wrong user type
+    if checkUserType("Customer"): return checkUserType("Customer")
+
     # redirect if existing order
-    if 'order_id' in session:
-        return redirect(url_for('status'))
+    if 'order_id' in session: return redirect(url_for('status'))
 
     # Request for deleting an order item
-    if request.form.get('order_item_id') is not None:
-        return deleteOrderItem(request)
+    if request.form.get('order_item_id') is not None: return deleteOrderItem(request)
         
     # Get the 'restaurant' parameter from the URL query string
     restaurant_name = request.args.get('restaurant')
 
     # if restaurant page is accessed without a parameter well redirect to avoid erroring
-    if not restaurant_name:
-        return redirect(url_for('index'))
+    if not restaurant_name: return redirect(url_for('index'))
 
     curr_restaurant = Store.query.filter_by(StoreName=restaurant_name).first() # Look up the current restaurant
     menu = Menu.query.get(curr_restaurant.StoreID) # Look up menu associated with current restaurant
     menu_items = MenuItems.query.filter(MenuItems.MenuID == menu.MenuID).all() # Look up all menu items associated with the current menu
 
     # if were adding an item to our order
-    if request.method == 'POST':
-        addOrder(request, curr_restaurant)
+    if request.method == 'POST': addOrder(request, curr_restaurant)
 
     # return existing order or new order
     return checkPotentialOrder(curr_restaurant, menu_items)
 
 @app.route('/status')
 def status():
+    # Redirect if wrong user type
+    if checkUserType("Customer"): return checkUserType("Customer")
+
     # add redirection to login if not logged in -> hold potential current order ID
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
+    if 'user_id' not in session: return redirect(url_for('login'))
 
     # add the user id to the order if it is not already set in the database
     is_user_null = db.session.execute(select(Orders).where(Orders.OrderID == session.get('potential_order_id'), Orders.UserID == None)).scalar_one_or_none()
@@ -198,17 +211,17 @@ def status():
 
 @app.route('/checkout', methods=['GET', 'POST'])
 def checkout():
+    # Redirect if wrong user type
+    if checkUserType("Customer"): return checkUserType("Customer")
+
     # redirection to order status if order exists
-    if 'order_id' in session:
-        return redirect(url_for('status'))
+    if 'order_id' in session: return redirect(url_for('status'))
 
     # must have potential order to access checkout
-    if 'potential_order_id' not in session:
-        return redirect(url_for('home'))
+    if 'potential_order_id' not in session: return redirect(url_for('home'))
 
     # check if were deleting an order
-    if request.method == 'POST':
-        return deleteOrder()
+    if request.method == 'POST': return deleteOrder()
 
     # return relevent order information
     return checkoutInformation()
@@ -225,4 +238,18 @@ def clear_session():
     pass
 
 if __name__ == "__main__":
-    app.run(debug=False)
+    parser = argparse.ArgumentParser(description="Run the Flask app with optional database reset.")
+    parser.add_argument('--init-db', action='store_true', help="Reset the database (drop and create tables).")
+    args = parser.parse_args()
+
+    if args.init_db:
+        with app.app_context():
+            reset_database()
+        
+    free_port = find_free_port(5000, 5004)
+
+    if free_port:
+        print(f"App Running on port: {free_port}")
+        app.run(debug=False, port=free_port)
+    else:
+        print(f"No free port found in range {start_port}-{end_port}")
