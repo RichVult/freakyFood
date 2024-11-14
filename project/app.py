@@ -142,7 +142,7 @@ def driver():
 
     # find all available orders
     orders = findAvailableOrders("Created")
-    print("Orders:", orders)  # Debugging line
+
     return render_template('driver.html', orders=orders)
 
 # ! Needs frontend and backend logic
@@ -166,15 +166,6 @@ def storeOwner():
     # Redirect if wrong user type
     if checkUserType("StoreOwner"): return checkUserType("StoreOwner")
 
-    # find all "Accpeted" Orders -> A driver has selected it
-    waiting_orders = findAvailableOrders("Accepted")
-
-    # find all "In Progress" Orders -> The Store has accepted it
-    in_progress_orders = findAvailableOrders("In Progress")
-
-    # find all "Ready" order -> Awaiting Pickup
-    ready_orders = findAvailableOrders("Ready")
-
     # determine how we are manipulating the orders
     # this will update order status' correctly depending on request information
     if request.method == 'POST':
@@ -191,6 +182,19 @@ def storeOwner():
                 order.OrderStatus = "In Progress"
             elif action == "complete" and order.OrderStatus == "In Progress":
                 order.OrderStatus = "Ready"
+
+    # find all "Accpeted" Orders -> A driver has selected it
+    waiting_orders = findAvailableOrders("Accepted")
+    if len(waiting_orders) == 0: waiting_orders = None
+
+    # find all "In Progress" Orders -> The Store has accepted it
+    in_progress_orders = findAvailableOrders("In Progress")
+    if len(in_progress_orders) == 0: in_progress_orders = None
+
+    # find all "Ready" order -> Awaiting Pickup
+    ready_orders = findAvailableOrders("Ready")
+    if len(ready_orders) == 0: ready_orders = None
+    
     return render_template('storeOwner.html', waiting_orders=waiting_orders, in_progress_orders=in_progress_orders, ready_orders=ready_orders)
 
 @app.route('/search')

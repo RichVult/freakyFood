@@ -18,20 +18,24 @@
         <div>
             {% if waiting_orders %}
                 {% for order, store, user, orderitems in waiting_orders %}
-                    <div>
-                        <p><strong>Order ID:</strong> {{ order.orderID }}</p>
-                        <p><strong>User:</strong> {{ user.firstName }} {{ user.lastName }}</p>
+                    <div style="background-color: cadetblue;">
+                        <p><strong>Order ID:</strong> {{ order.OrderID }}</p>
+                        <p><strong>User:</strong> {{ user.FirstName }} {{ user.LastName }}</p>
                         <p><strong>Order Items:</strong></p>
                         <ul>
                             {% for item in orderitems %}
-                                <li>{{ item.ItemName }} - Quantity: {{ item.Quantity }}</li>
+                                <li>
+                                    <strong>Item ID:</strong> {{ item.OrderItemID }} - 
+                                    <strong>Item Name:</strong> {{ item.OrderItemName }} - 
+                                    <strong>Quantity:</strong> {{ item.ItemQuantity }}
+                                </li>
                             {% endfor %}
                         </ul>
 
                         <!-- Accept Order Form -->
-                        <form action="/driver" method="POST">
+                        <form action="/storeOwner" method="POST">
                             <input type="hidden" name="action" value="accept">
-                            <input type="hidden" name="orderID" value="{{ order.orderID }}">
+                            <input type="hidden" name="orderID" value="{{ order.OrderID }}">
                             <button type="submit">Accept Order</button>
                         </form>
                     </div>
@@ -46,20 +50,24 @@
         <div>
             {% if in_progress_orders %}
                 {% for order, store, user, orderitems in in_progress_orders %}
-                    <div>
-                        <p><strong>Order ID:</strong> {{ order.orderID }}</p>
-                        <p><strong>User:</strong> {{ user.firstName }} {{ user.lastName }}</p>
+                    <div style="background-color: cadetblue;">
+                        <p><strong>Order ID:</strong> {{ order.OrderID }}</p>
+                        <p><strong>User:</strong> {{ user.FirstName }} {{ user.LastName }}</p>
                         <p><strong>Order Items:</strong></p>
                         <ul>
                             {% for item in orderitems %}
-                                <li>{{ item.ItemName }} - Quantity: {{ item.Quantity }}</li>
+                                <li>
+                                    <strong>Item ID:</strong> {{ item.OrderItemID }} - 
+                                    <strong>Item Name:</strong> {{ item.OrderItemName }} - 
+                                    <strong>Quantity:</strong> {{ item.ItemQuantity }}
+                                </li>
                             {% endfor %}
                         </ul>
 
                         <!-- Complete Order Form -->
-                        <form action="/driver" method="POST">
+                        <form action="/storeOwner" method="POST">
                             <input type="hidden" name="action" value="complete">
-                            <input type="hidden" name="orderID" value="{{ order.orderID }}">
+                            <input type="hidden" name="orderID" value="{{ order.OrderID }}">
                             <button type="submit">Complete Order</button>
                         </form>
                     </div>
@@ -74,13 +82,17 @@
         <div>
             {% if ready_orders %}
                 {% for order, store, user, orderitems in ready_orders %}
-                    <div>
-                        <p><strong>Order ID:</strong> {{ order.orderID }}</p>
-                        <p><strong>User:</strong> {{ user.firstName }} {{ user.lastName }}</p>
+                    <div style="background-color: cadetblue;">
+                        <p><strong>Order ID:</strong> {{ order.OrderID }}</p>
+                        <p><strong>User:</strong> {{ user.FirstName }} {{ user.LastName }}</p>
                         <p><strong>Order Items:</strong></p>
                         <ul>
                             {% for item in orderitems %}
-                                <li>{{ item.ItemName }} - Quantity: {{ item.Quantity }}</li>
+                                <li>
+                                    <strong>Item ID:</strong> {{ item.OrderItemID }} - 
+                                    <strong>Item Name:</strong> {{ item.OrderItemName }} - 
+                                    <strong>Quantity:</strong> {{ item.ItemQuantity }}
+                                </li>
                             {% endfor %}
                         </ul>
                     </div>
