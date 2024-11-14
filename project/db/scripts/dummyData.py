@@ -101,9 +101,8 @@ def insert_orders():
     from db.server import db
     orders=[
         [ "Alex", "McDonalds", "Christian", "Ready", "10/20/2005"],
-        [ "Guy", "Wendys", "Christian", "Not Ready", "12/31/2004"],
-        [ "test", "McDonalds", "Christian", "Ready", "9/12/2021"],
-
+        [ "Guy", "Wendys", "Christian", "In Progress", "12/31/2004"],
+        [ "test", "Wendys", "Christian", "Created", "10/12/2021"],
     ]
 
     for order in orders:

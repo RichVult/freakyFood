@@ -142,7 +142,7 @@ def driver():
 
     # find all available orders
     orders = findAvailableOrders("Created")
-    
+    print("Orders:", orders)  # Debugging line
     return render_template('driver.html', orders=orders)
 
 # ! Needs frontend and backend logic
@@ -153,31 +153,45 @@ def driverStatus():
     # ! need method to mark order as picked up
 
     # ! need method to mark order as delivered
-    print("TODO!")
+
+    # get variables for driver status
+    current_order = db.session.execute(select(Orders).where(Orders.OrderID == session.get('accepted_order_id'))).scalar_one_or_none()
+    curr_restaurant = db.session.execute(select(Store).where(Store.StoreID == current_order.StoreID)).scalar_one_or_none()
+
+    return render_template('driverStatus.html', current_order=current_order, curr_restaurant=curr_restaurant)
 
 # ! Needs frontend and backend logic
-@app.route('/storeOwner')
+@app.route('/storeOwner', methods=['GET', 'POST'])
 def storeOwner():
     # Redirect if wrong user type
     if checkUserType("StoreOwner"): return checkUserType("StoreOwner")
 
-    # find all available orders
-    accepted_orders = findAvailableOrders("Accepted")
+    # find all "Accpeted" Orders -> A driver has selected it
+    waiting_orders = findAvailableOrders("Accepted")
 
+    # find all "In Progress" Orders -> The Store has accepted it
     in_progress_orders = findAvailableOrders("In Progress")
 
+    # find all "Ready" order -> Awaiting Pickup
     ready_orders = findAvailableOrders("Ready")
 
-    # ! need method to turn accepted orders into in progress orders
+    # determine how we are manipulating the orders
+    # this will update order status' correctly depending on request information
+    if request.method == 'POST':
+        # Get order ID and desired action from the form data
+        order_id = request.form.get('orderID')
+        action = request.form.get('action')
+        
+        if order_id:
+            # Fetch the order by ID
+            order = db.session.execute(select(Orders).where(Orders.OrderID == order_id)).scalar_one_or_none()
 
-
-    # ! need method to turn in progress orders to ready orders
-
-
-    # ! need method to turn ready orders that are picked up into complete orders
-
-
-    return render_template('storeOwner.html')
+            # Check which action to perform and update the order status accordingly
+            if action == "accept" and order.OrderStatus == "Accepted":
+                order.OrderStatus = "In Progress"
+            elif action == "complete" and order.OrderStatus == "In Progress":
+                order.OrderStatus = "Ready"
+    return render_template('storeOwner.html', waiting_orders=waiting_orders, in_progress_orders=in_progress_orders, ready_orders=ready_orders)
 
 @app.route('/search')
 def search():

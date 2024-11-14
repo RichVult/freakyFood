@@ -267,9 +267,11 @@ def findAvailableOrders(orderStatus):
     # Loop through each order and find its store
     for order in orders:
         store = db.session.execute(select(Store).where(Store.StoreID == order.StoreID)).scalar_one_or_none()
-        
-        # Append the order and its associated store to the list
+        user = db.session.execute(select(Users).where(Users.UserID == order.UserID)).scalar_one_or_none()
+        order_items = db.session.execute(select(OrderItems).where(OrderItems.OrderID == order.OrderID)).scalars().all()
+
+        # Append the order and its information to the list
         if store:
-            available_orders.append((order, store))
+            available_orders.append((order, store, user, order_items))
     
     return available_orders
