@@ -50,6 +50,9 @@ def signup():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    # if logged in redirect to account info
+    if 'user_id' in session: return redirect(url_for('home'))
+
     if request.method == 'POST':
         # from request.form extract password and Email
         entered_pass = request.form["Password"]
@@ -119,12 +122,10 @@ def invalid_page():
 @app.route('/driver', methods=['GET', 'POST'])
 def driver():
     # if we have already accepted an order
-    if 'accepted_order_id' in session:
-        return redirect(url_for('driverStatus'))
+    if 'accepted_order_id' in session: return redirect(url_for('driverStatus'))
 
-    # if no one is logged in dont allow access
-    if 'user_id' not in session:
-        return redirect(url_for('index'))
+    # Redirect to login if not logged in
+    if 'user_id' not in session: return redirect(url_for('login'))
 
     # Redirect if wrong user type
     if checkUserType("Driver"): return checkUserType("Driver")
@@ -145,14 +146,41 @@ def driver():
 
     return render_template('driver.html', orders=orders)
 
-# ! Needs frontend and backend logic
-@app.route('/driverStatus')
+# For when a driver accepts an order
+@app.route('/driverStatus', methods=['GET', 'POST'])
 def driverStatus():
     # ? Potential Implementation here for a chat room with the ordering user
 
-    # ! need method to mark order as picked up
+    # if were not logged in redirect
+    if 'user_id' not in session: return redirect(url_for('login'))
 
-    # ! need method to mark order as delivered
+    # if we have already accepted an order
+    if 'accepted_order_id' not in session: return redirect(url_for('driverStatus'))
+
+    # Redirect if wrong user type
+    if checkUserType("Driver"): return checkUserType("Driver")
+
+    # Changing the order status 
+    if request.method == 'POST':
+        # Get order ID and desired action from the form data
+        order_id = request.form.get('order_id')
+        action = request.form.get('action')
+        
+        if order_id:
+            # Fetch the order by ID
+            order = db.session.execute(select(Orders).where(Orders.OrderID == order_id)).scalar_one_or_none()
+
+            # Check which action to perform and update the order status accordingly
+            if action == "Pickup" and order.OrderStatus == "Ready":
+                # update accepted order's order status
+                db.session.execute(update(Orders).where(Orders.OrderID == order.OrderID).values(OrderStatus="Pickup"))
+                db.session.commit()
+            elif action == "Deliver" and order.OrderStatus == "Pickup":
+                # update accepted order's order status
+                db.session.execute(update(Orders).where(Orders.OrderID == order.OrderID).values(OrderStatus="Delivered"))
+                db.session.commit()
+                session.pop('accepted_order_id', None)
+                return redirect(url_for('driver'))
 
     # get variables for driver status
     current_order = db.session.execute(select(Orders).where(Orders.OrderID == session.get('accepted_order_id'))).scalar_one_or_none()
@@ -160,9 +188,12 @@ def driverStatus():
 
     return render_template('driverStatus.html', current_order=current_order, curr_restaurant=curr_restaurant)
 
-# ! Needs frontend and backend logic
+# Store owner home page
 @app.route('/storeOwner', methods=['GET', 'POST'])
 def storeOwner():
+    # Redirect to login if not logged in
+    if 'user_id' not in session: return redirect(url_for('login'))
+
     # Redirect if wrong user type
     if checkUserType("StoreOwner"): return checkUserType("StoreOwner")
 
@@ -179,9 +210,13 @@ def storeOwner():
 
             # Check which action to perform and update the order status accordingly
             if action == "accept" and order.OrderStatus == "Accepted":
-                order.OrderStatus = "In Progress"
+                # update accepted order's order status
+                db.session.execute(update(Orders).where(Orders.OrderID == order.OrderID).values(OrderStatus="In Progress"))
+                db.session.commit()
             elif action == "complete" and order.OrderStatus == "In Progress":
-                order.OrderStatus = "Ready"
+                # update accepted order's order status
+                db.session.execute(update(Orders).where(Orders.OrderID == order.OrderID).values(OrderStatus="Ready"))
+                db.session.commit()
 
     # find all "Accpeted" Orders -> A driver has selected it
     waiting_orders = findAvailableOrders("Accepted")

@@ -28,5 +28,21 @@
     <h1> ORDER # {{current_order.OrderID}}</h1>
     <hr>
     <h1> ORDER STATUS: {{current_order.OrderStatus}}</h1>
+
+    {% if current_order.OrderStatus == 'Ready' %}
+    <form action="/driverStatus" method="POST">
+        <input type="hidden" name="action" value="Pickup">
+        <input type="hidden" name="order_id" value="{{ current_order.OrderID }}">
+        <button type="submit" class="mark-delivered-btn">Mark Pickup</button>
+    </form>
+    {% endif %}
+
+    {% if current_order.OrderStatus == 'Pickup' %}
+    <form action="/driverStatus" method="POST">
+        <input type="hidden" name="action" value="Deliver">
+        <input type="hidden" name="order_id" value="{{ current_order.OrderID }}">
+        <button type="submit" class="mark-delivered-btn">Mark Delivered</button>
+    </form>
+    {% endif %}
 </body>
 </html>
