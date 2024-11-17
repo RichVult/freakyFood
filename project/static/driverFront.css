@@ -1,0 +1,229 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #fff;
+    color: #343a40;
+    margin: 0;
+    padding: 0;
+    padding-top: 80px;
+}
+
+.navbar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.user-icon {
+    font-size: 24px;
+}
+
+.hero {
+    text-align: center;
+    color: #333;
+    padding: 80px 20px;
+}
+
+.hero h1 {
+    font-size: 3.5rem;
+    color: #007bff;
+    margin-bottom: 15px;
+    text-shadow: 2px 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.hero p {
+    font-size: 1.5rem;
+    color: black;
+    margin-bottom: 25px;
+}
+
+.search-bar {
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.search-bar input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 2px solid #007bff;
+    border-radius: 5px;
+}
+
+.search-bar button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    width: 150px;
+    height: 50px;
+    margin-left: 20px;
+}
+
+.search-bar button:hover {
+    background-color: #0056b3;
+}
+
+.featured-restaurants {
+    padding: 50px 20px;
+    background-color: #fafafa;
+    text-align: center;
+    margin-bottom: 140px;
+}
+
+.featured-restaurants h2 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.restaurant-logos {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
+
+.restaurant-logos img {
+    height: 100px;
+    width: 100px;
+    transition: transform 0.3s ease;
+}
+
+.restaurant-logos img:hover {
+    transform: scale(1.1);
+}
+
+.footer {
+    background-color: #333;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+    font-size: 14px;
+    align-items: center;
+    justify-content: center;
+}
+
+.footer-links {
+    list-style: none;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 10px;
+    display: flex;
+    flex-direction: row;
+    margin-right: 38px;
+}
+
+.footer-links a {
+    color: #ffccbc;
+    text-decoration: none;
+}
+
+.footer-links a:hover {
+    color: #fff;
+}
+
+.logo {
+    height: 100px;
+    width: 100px;
+}
+
+.fixed-header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: #007bff;
+    height: 70px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    font-size: 1.5em;
+    z-index: 1000;
+}
+
+button {
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 1px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+#index {
+    display: flex;
+    flex-direction: row;
+    gap: .7rem;
+    margin-right: 20px;
+}
+
+
+.delivery-stats {
+    padding: 10px;
+}
+
+.stat-item {
+    font-size: 14px;
+    text-align: left;
+    margin-bottom: 10px;
+}
+
+.stat-item h2 {
+    font-size: 14px;
+    margin: 0;
+}
+
+.stat-item p {
+    font-size: 12px;
+    margin: 0;
+}
+
+.available-orders-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    margin-top: 15px;
+}
+
+.available-orders {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    width: 80%;
+    max-width: 600px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #f9f9f9;
+    overflow-y: auto;
+    max-height: 300px;
+}
+
+.available-orders h3 {
+    font-size: 18px;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.order-item {
+    border-bottom: 1px solid #eee;
+    padding: 10px 0;
+}
+
+.order-item p {
+    font-size: 14px;
+    margin: 0;
+}
