@@ -122,6 +122,10 @@ def invalid_page():
 def orderDriver():
     return render_template('driver.html')
 
+@app.route('/orderDriver')
+def orderDriver():
+    return render_template('orderDriver.html')
+
 @app.route('/search')
 def search():
     # redirection to order status if order exists
