@@ -1,0 +1,48 @@
+<!--
+
+    This is the driver order status page, this is where a driver will see his current accepted order and its information
+
+    Should remain pretty simple and only serve as the "hold" and "completion" checker for the order
+
+    Upon accepting an order, it will then proceed to the store owner for completion
+
+    When this is done we will be able to see that reflected here, from there the driver will deliver the food and mark completion
+
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="10"> <!-- Refresh every 10 seconds -->
+    <title>Order Status - FreakyFood</title>
+    <link rel="stylesheet" href="/static/status.css">
+</head>
+<body>
+    <a href='/'><img class="logo" src="/static/images/FFLogo.png" alt="Freaky Food Logo"></a>
+    <div class="restaurant-header">
+        <h1>{{ curr_restaurant.StoreName }}</h1>
+        <img src="{{ url_for('static', filename='images/' + curr_restaurant.StoreImage) }}" alt="Store Image" style="width: 300px; height: 300px;"/>
+    </div>
+    <h1> ORDER # {{current_order.OrderID}}</h1>
+    <hr>
+    <h1> ORDER STATUS: {{current_order.OrderStatus}}</h1>
+
+    {% if current_order.OrderStatus == 'Ready' %}
+    <form action="/driverStatus" method="POST">
+        <input type="hidden" name="action" value="Pickup">
+        <input type="hidden" name="order_id" value="{{ current_order.OrderID }}">
+        <button type="submit" class="mark-delivered-btn">Mark Pickup</button>
+    </form>
+    {% endif %}
+
+    {% if current_order.OrderStatus == 'Pickup' %}
+    <form action="/driverStatus" method="POST">
+        <input type="hidden" name="action" value="Deliver">
+        <input type="hidden" name="order_id" value="{{ current_order.OrderID }}">
+        <button type="submit" class="mark-delivered-btn">Mark Delivered</button>
+    </form>
+    {% endif %}
+</body>
+</html>

@@ -2,6 +2,8 @@
 
 import os
 from dotenv import load_dotenv
+import random
+import string
 from flask import Flask, session
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
@@ -23,8 +25,15 @@ db_owner: str = os.getenv('db_owner')
 db_pass: str = os.getenv('db_pass')
 db_uri: str = f"postgresql://{db_owner}:{db_pass}@localhost/{db_name}"
 
+def generate_random_session_name():
+    return 'session_' + ''.join(random.choices(string.ascii_letters + string.digits, k=10))
+
 # Adjust the path to be absolute from the project root
 app = Flask(__name__, template_folder=os.path.join(os.getcwd(), 'project/templates'), static_folder=os.path.join(os.getcwd(), 'project/static'))
+
+# Set a unique session cookie name
+app.config.update(SESSION_COOKIE_NAME=generate_random_session_name())
+app.config['SECRET_KEY'] = os.urandom(24)  # Secure key for signing cookies (ensure it's random and kept secret)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
 db = SQLAlchemy(app)
@@ -51,14 +60,14 @@ with app.app_context():
         print(f"\n\n----------- Connection failed!")
         print(f" * Unable to connect to database: {os.getenv('db_name')}")
         print(f" * ERROR: {error}")
-    
-    # create all database tables
+
+# Function to handle argument to reset the database
+def reset_database():
     db.drop_all()
     print("DB: DROPPED ALL TABLES")
     db.create_all()
     print("DB: CREATED ALL TABLES")
-
-    # load dummy data
+    # Insert dummy data
     insert_user_types()
     insert_user()
     insert_store()
@@ -67,3 +76,4 @@ with app.app_context():
     insert_menu()
     insert_menuitems()
     db.session.commit()
+    print("Database reset complete.")

@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 
 import re
+import socket
 import bcrypt
 
 from db.server import app, db
@@ -223,3 +224,54 @@ def deleteUser():
     session.pop('potential_order_id', None)
     session.pop('order_id', None)
     return redirect(url_for('index'))
+
+# check to be done on every page
+# we redirect user types to correct page if in wrong page
+# ex: user will be redirected from storeOwner page or driver page
+def checkUserType(desiredType):
+    if session.get('user_id') is None:
+        return None
+    
+    # determine user type
+    user_type_id = db.session.execute(select(Users.UserTypeID).where(Users.UserID == session.get('user_id'))).scalar_one()
+    user_type = db.session.execute(select(UserTypes.TypeName).where(UserTypes.UserTypeID == user_type_id)).scalar_one_or_none()
+
+    # determine where were going
+    # will do an initial check to see if were in the right place
+    # if were not in the right place redirect us to that place
+    if user_type == desiredType:
+        return None
+    elif user_type == "Customer":
+        return redirect(url_for('home'))
+    elif user_type == "StoreOwner":
+        return redirect(url_for('storeOwner'))
+    elif user_type == "Driver":
+        return redirect(url_for('driver'))
+
+# Function to find an available port for flask instance to run on
+def find_free_port(start_port, end_port):
+    for port in range(start_port, end_port + 1):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            result = s.connect_ex(('127.0.0.1', port))
+            if result != 0:
+                return port
+    return None
+
+def findAvailableOrders(orderStatus):
+    # Fetch all orders in "Created" status
+    orders = db.session.execute(select(Orders).where(Orders.OrderStatus == orderStatus)).scalars().all()
+    
+    # List to store orders and their associated stores
+    available_orders = []
+
+    # Loop through each order and find its store
+    for order in orders:
+        store = db.session.execute(select(Store).where(Store.StoreID == order.StoreID)).scalar_one_or_none()
+        user = db.session.execute(select(Users).where(Users.UserID == order.UserID)).scalar_one_or_none()
+        order_items = db.session.execute(select(OrderItems).where(OrderItems.OrderID == order.OrderID)).scalars().all()
+
+        # Append the order and its information to the list
+        if store:
+            available_orders.append((order, store, user, order_items))
+    
+    return available_orders

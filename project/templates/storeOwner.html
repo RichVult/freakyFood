@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Store Owner - Freaky Food</title>
+</head>
+
+<body>
+    <header>
+        <img src="/static/images/FFLogo.png" alt="logo">
+        <a href="/account"><button type="button">My Account</button></a>
+    </header>
+
+    <main>
+        <h3>Available Orders</h3>
+        
+        <div>
+            {% if waiting_orders %}
+                {% for order, store, user, orderitems in waiting_orders %}
+                    <div style="background-color: cadetblue;">
+                        <p><strong>Order ID:</strong> {{ order.OrderID }}</p>
+                        <p><strong>User:</strong> {{ user.FirstName }} {{ user.LastName }}</p>
+                        <p><strong>Order Items:</strong></p>
+                        <ul>
+                            {% for item in orderitems %}
+                                <li>
+                                    <strong>Item ID:</strong> {{ item.OrderItemID }} - 
+                                    <strong>Item Name:</strong> {{ item.OrderItemName }} - 
+                                    <strong>Quantity:</strong> {{ item.ItemQuantity }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+
+                        <!-- Accept Order Form -->
+                        <form action="/storeOwner" method="POST">
+                            <input type="hidden" name="action" value="accept">
+                            <input type="hidden" name="orderID" value="{{ order.OrderID }}">
+                            <button type="submit">Accept Order</button>
+                        </form>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No orders available.</p>
+            {% endif %}
+        </div>
+
+        <h3>In Progress Orders</h3>
+
+        <div>
+            {% if in_progress_orders %}
+                {% for order, store, user, orderitems in in_progress_orders %}
+                    <div style="background-color: cadetblue;">
+                        <p><strong>Order ID:</strong> {{ order.OrderID }}</p>
+                        <p><strong>User:</strong> {{ user.FirstName }} {{ user.LastName }}</p>
+                        <p><strong>Order Items:</strong></p>
+                        <ul>
+                            {% for item in orderitems %}
+                                <li>
+                                    <strong>Item ID:</strong> {{ item.OrderItemID }} - 
+                                    <strong>Item Name:</strong> {{ item.OrderItemName }} - 
+                                    <strong>Quantity:</strong> {{ item.ItemQuantity }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+
+                        <!-- Complete Order Form -->
+                        <form action="/storeOwner" method="POST">
+                            <input type="hidden" name="action" value="complete">
+                            <input type="hidden" name="orderID" value="{{ order.OrderID }}">
+                            <button type="submit">Complete Order</button>
+                        </form>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No orders available.</p>
+            {% endif %}
+        </div>
+
+        <h3>Ready Orders</h3>
+
+        <div>
+            {% if ready_orders %}
+                {% for order, store, user, orderitems in ready_orders %}
+                    <div style="background-color: cadetblue;">
+                        <p><strong>Order ID:</strong> {{ order.OrderID }}</p>
+                        <p><strong>User:</strong> {{ user.FirstName }} {{ user.LastName }}</p>
+                        <p><strong>Order Items:</strong></p>
+                        <ul>
+                            {% for item in orderitems %}
+                                <li>
+                                    <strong>Item ID:</strong> {{ item.OrderItemID }} - 
+                                    <strong>Item Name:</strong> {{ item.OrderItemName }} - 
+                                    <strong>Quantity:</strong> {{ item.ItemQuantity }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No orders available.</p>
+            {% endif %}
+        </div>
+    </main>
+</body>
+</html>
