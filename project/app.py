@@ -77,7 +77,15 @@ def login():
 def account():
     if request.method == 'POST':
         if request.form.get('action') == 'delete':
-            return deleteUser()
+            # get the type of user which is being deleted
+            user_type = db.execute(select(UserTypes).where(UserTypes.UserTypeID == request.form.get('userID'))).scalar_one_or_none()
+            match user_type:
+                case "Driver":
+                    return deleteDriver()
+                case "Customer":
+                    return deleteUser()
+                case "StoreOwner":
+                    return deleteStoreOwner()
     
     # Redirect to login if not logged in
     if 'user_id' not in session: return redirect(url_for('login'))

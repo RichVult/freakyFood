@@ -209,7 +209,7 @@ def checkoutInformation():
 
     return render_template('checkout.html', potential_items=potential_items, potential_order=potential_order, curr_restaurant=curr_restaurant)
 
-#! Currently will error out if driver or store owner tries to do this should implement seperate logic for those
+# Function to delete a Customer and all its dependency tables
 def deleteUser():
     user_id = session.get('user_id')
     
@@ -224,6 +224,21 @@ def deleteUser():
     session.pop('potential_order_id', None)
     session.pop('order_id', None)
     return redirect(url_for('index'))
+
+# Function to delete a Driver and all its dependency tables
+def deleteDriver():
+    user_id = session.get('user_id')
+
+    # Delete the user and the users dependencies
+
+# Function to delete a Store Owner and all its dependency tables
+def deleteStoreOwner():
+    user_id = session.get('user_id')
+
+    # Delete the user and the users dependencies
+
+
+
 
 # check to be done on every page
 # we redirect user types to correct page if in wrong page
