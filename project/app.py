@@ -313,6 +313,10 @@ def status():
     # get current order from session
     current_order = db.session.execute(select(Orders).where(Orders.OrderID == session.get('order_id'))).scalar_one_or_none()
 
+    # Remove restrictions if order is completed
+    if current_order.OrderStatus == "Delivered":
+        session.pop('order_id', None)
+
     # get resteraunt from current order
     curr_restaurant = db.session.execute(select(Store).where(Store.StoreID == current_order.StoreID)).scalar_one_or_none()
 
