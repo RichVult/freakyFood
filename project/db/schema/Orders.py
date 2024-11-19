@@ -8,7 +8,7 @@ class Orders(db.Model):
     OrderID = db.Column(db.Integer, primary_key=True, autoincrement=True)
     UserID = db.Column(db.Integer, db.ForeignKey('Users.UserID'), nullable=True)
     DriverID = db.Column(db.Integer, db.ForeignKey('Users.UserID'), nullable=True)
-    StoreID = db.Column(db.Integer, db.ForeignKey('Store.StoreID'), nullable=False)
+    StoreID = db.Column(db.Integer, db.ForeignKey('Store.StoreID'), nullable=True)
     OrderStatus = db.Column(db.String(100), nullable=False)
     OrderDate = db.Column(db.DateTime, nullable=False, default=lambda: datetime.utcnow())
 
