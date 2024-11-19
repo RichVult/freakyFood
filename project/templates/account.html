@@ -89,6 +89,13 @@
         <li><a href="/404">Terms of Service</a></li>
         <li><a href="/404">Contact Us</a></li>
     </ul>
+
+    <!-- Display alert if there is an error -->
+    {% if error %}
+    <script>
+        alert("{{ error }}");
+    </script>
+    {% endif %}
 </footer>
 
 </html>

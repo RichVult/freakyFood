@@ -78,15 +78,14 @@ def account():
     if request.method == 'POST':
         if request.form.get('action') == 'delete':
             # get the type of user which is being deleted
-            user_type = db.execute(select(UserTypes).where(UserTypes.UserTypeID == request.form.get('userID'))).scalar_one_or_none()
-            match user_type:
+            user_type = db.session.execute(select(UserTypes).where(UserTypes.UserTypeID == request.form.get('userID'))).scalar_one_or_none()
+            match user_type.TypeName:
                 case "Driver":
                     return deleteDriver()
                 case "Customer":
                     return deleteUser()
                 case "StoreOwner":
                     return deleteStoreOwner()
-    
     # Redirect to login if not logged in
     if 'user_id' not in session: return redirect(url_for('login'))
     
@@ -162,8 +161,8 @@ def driverStatus():
     # if were not logged in redirect
     if 'user_id' not in session: return redirect(url_for('login'))
 
-    # if we have already accepted an order
-    if 'accepted_order_id' not in session: return redirect(url_for('driverStatus'))
+    # if we have not already accepted an order
+    if 'accepted_order_id' not in session: return redirect(url_for('driver'))
 
     # Redirect if wrong user type
     if checkUserType("Driver"): return checkUserType("Driver")
