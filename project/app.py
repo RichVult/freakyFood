@@ -77,8 +77,15 @@ def login():
 def account():
     if request.method == 'POST':
         if request.form.get('action') == 'delete':
-            return deleteUser()
-    
+            # get the type of user which is being deleted
+            user_type = db.session.execute(select(UserTypes).where(UserTypes.UserTypeID == request.form.get('userID'))).scalar_one_or_none()
+            match user_type.TypeName:
+                case "Driver":
+                    return deleteDriver()
+                case "Customer":
+                    return deleteUser()
+                case "StoreOwner":
+                    return deleteStoreOwner()
     # Redirect to login if not logged in
     if 'user_id' not in session: return redirect(url_for('login'))
     
@@ -154,8 +161,8 @@ def driverStatus():
     # if were not logged in redirect
     if 'user_id' not in session: return redirect(url_for('login'))
 
-    # if we have already accepted an order
-    if 'accepted_order_id' not in session: return redirect(url_for('driverStatus'))
+    # if we have not already accepted an order
+    if 'accepted_order_id' not in session: return redirect(url_for('driver'))
 
     # Redirect if wrong user type
     if checkUserType("Driver"): return checkUserType("Driver")
@@ -305,6 +312,10 @@ def status():
 
     # get current order from session
     current_order = db.session.execute(select(Orders).where(Orders.OrderID == session.get('order_id'))).scalar_one_or_none()
+
+    # Remove restrictions if order is completed
+    if current_order.OrderStatus == "Delivered":
+        session.pop('order_id', None)
 
     # get resteraunt from current order
     curr_restaurant = db.session.execute(select(Store).where(Store.StoreID == current_order.StoreID)).scalar_one_or_none()

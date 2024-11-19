@@ -209,11 +209,17 @@ def checkoutInformation():
 
     return render_template('checkout.html', potential_items=potential_items, potential_order=potential_order, curr_restaurant=curr_restaurant)
 
-#! Currently will error out if driver or store owner tries to do this should implement seperate logic for those
+# Function to delete a Customer and all its dependency tables
 def deleteUser():
+    # grad user information
     user_id = session.get('user_id')
+    found_user = db.session.execute(select(Users).where(Users.UserID == user_id)).scalar_one_or_none()
+
+    # prevent deletion while orders are in progress
+    if 'order_id' in session:
+        return render_template('account.html', user=found_user, error="You Must Complete All In Progress Orders Before Deleting Your Account")
     
-    # Delete the user and users stores and orders from the database
+    # Delete the user, orders, and associated order items
     db.session.execute(delete(OrderItems).where(OrderItems.UserID == user_id))
     db.session.execute(delete(Orders).where(Orders.UserID == user_id))
     db.session.execute(delete(Users).where(Users.UserID == user_id))
@@ -223,6 +229,53 @@ def deleteUser():
     session.pop('user_id', None)
     session.pop('potential_order_id', None)
     session.pop('order_id', None)
+    return redirect(url_for('index'))
+
+# Function to delete a Driver and all its dependency tables
+def deleteDriver():
+    # grab user information
+    user_id = session.get('user_id')
+    found_user = db.session.execute(select(Users).where(Users.UserID == user_id)).scalar_one_or_none()
+
+    # prevent deletion while orders are in progress
+    if 'accepted_order_id' in session:
+        return render_template('account.html', user=found_user, error="You Must Complete All In Progress Orders Before Deleting Your Account")
+
+    # Delete the user, remove from existing orders
+    db.session.execute(update(Orders).where(Orders.DriverID == user_id).values(DriverID = None))
+    db.session.execute(delete(Users).where(Users.UserID == user_id))
+    db.session.commit()
+
+    # Remove the session cookies from the session and redirect to the home page
+    session.pop('user_id', None)
+    session.pop('accepted_order_id', None)
+    return redirect(url_for('index'))
+
+# Function to delete a Store Owner and all its dependency tables
+def deleteStoreOwner():
+    # grab user information
+    user_id = session.get('user_id')
+    found_user = db.session.execute(select(Users).where(Users.UserID == user_id)).scalar_one_or_none()
+
+    # grab all users stores
+    user_stores = db.session.execute(select(Store).where(Store.UserID == user_id)).scalars().all()
+
+    # determine if any orders are existing that need to be take care of
+    for user_store in user_stores:
+        if db.session.execute(select(Orders).where(Orders.OrderStatus != "Delivered")).scalars().all(): 
+            return render_template('account.html', user=found_user, error="Your Stores Contain Incomplete Orders")
+
+    # for each store delete its menu and menu items
+    for user_store in user_stores:
+        user_menu = db.session.execute(select(Menu).where(Menu.StoreID == user_store.StoreID)).scalar_one_or_none()
+        db.session.execute(delete(MenuItems).where(MenuItems.MenuID == user_menu.MenuID))
+        db.session.execute(delete(Menu).where(Menu.MenuID == user_menu.MenuID))
+        db.session.execute(update(Orders).where(Orders.StoreID == user_store.StoreID).values(StoreID = None))
+        db.session.execute(delete(Store).where(Store.StoreID == user_store.StoreID))
+    db.session.execute(delete(Users).where(Users.UserID == user_id))
+    db.session.commit()
+
+    session.pop('user_id', None)
     return redirect(url_for('index'))
 
 # check to be done on every page
