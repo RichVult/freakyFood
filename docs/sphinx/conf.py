@@ -6,6 +6,12 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath('../../project'))
+print("PATH:", sys.path)  # Check if the path is correct
+
 project = 'FreakyFood'
 copyright = '%Y, David Galindo Delgado, Christian Farrell, Daniel Narewski, Marcus Regan, Tyler Herlihy, Richard Vultaggio, Max Debin'
 author = 'David Galindo Delgado, Christian Farrell, Daniel Narewski, Marcus Regan, Tyler Herlihy, Richard Vultaggio, Max Debin'
@@ -14,11 +20,14 @@ release = '0.0.1'
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = []
+extensions = [
+    'sphinx.ext.autodoc',        # Parses docstrings
+    'sphinx.ext.napoleon',       # For Google/NumPy-style docstrings
+    'sphinx.ext.viewcode',       # Links to source code
+]
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
-
 
 
 # -- Options for HTML output -------------------------------------------------

@@ -25,7 +25,7 @@ app.secret_key = os.getenv('SECRET_KEY', 'your_default_secret_key_here')
 @app.route('/', methods=['GET', 'POST'])
 def index():
     """
-        Handle the index page for both GET and POST requests.
+    Handle the index page for both GET and POST requests.
 
     For GET requests:
     - If the user is logged in, redirect to the home page.
@@ -37,9 +37,9 @@ def index():
     - If verification fails, return any errors found.
 
     Returns:
-        flask.Response: A rendered template, redirect response, or error message.
-            - GET: Rendered 'index.html' or redirect to 'home'.
-            - POST: Redirect to 'login' or error message from verifySignup.
+    flask.Response: A rendered template, redirect response, or error message.
+    - GET: Rendered 'index.html' or redirect to 'home'.
+    - POST: Redirect to 'login' or error message from verifySignup.
     """
     if request.method == 'GET':
         # if logged in redirect to account info
@@ -60,7 +60,7 @@ def index():
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     """
-        Handle user signup process.
+    Handle user signup process.
 
     This function manages both GET and POST requests for the signup page.
     For GET requests, it displays the signup form. For POST requests, it
@@ -72,10 +72,10 @@ def signup():
 
     Returns:
     flask.Response: A rendered template or redirect response.
-        - GET: Rendered 'signup.html' template.
-        - POST: 
-            - If signup verification fails: Error message from verifySignup.
-            - If signup is successful: Redirect to the login page.
+    - GET: Rendered 'signup.html' template.
+    - POST: 
+    - If signup verification fails: Error message from verifySignup.
+    - If signup is successful: Redirect to the login page.
     """
     if request.method == 'POST':
         # Backend Check if REGEX was matched -> return any errors found
@@ -92,7 +92,7 @@ def signup():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     """
-        Handle user login process.
+    Handle user login process.
 
     This function manages both GET and POST requests for the login page.
     For GET requests, it displays the login form. For POST requests, it
@@ -104,11 +104,12 @@ def login():
 
     Returns:
     flask.Response: A rendered template or redirect response.
-        - GET: Rendered 'login.html' template.
-        - POST: 
-            - If authentication succeeds: Redirect to the home page.
-            - If authentication fails: Rendered 'login.html' template with an error message.
-        - If already logged in: Redirect to the home page."""
+    - GET: Rendered 'login.html' template.
+    - POST: 
+    - If authentication succeeds: Redirect to the home page.
+    - If authentication fails: Rendered 'login.html' template with an error message.
+    - If already logged in: Redirect to the home page.
+    """
     # if logged in redirect to account info
     if 'user_id' in session:
         return redirect(url_for('home'))
@@ -138,7 +139,7 @@ def login():
 @app.route('/account', methods=['GET', 'POST'])
 def account():
     """
-        Handle user account page requests and actions.
+    Handle user account page requests and actions.
 
     This function manages both GET and POST requests for the account page.
     For GET requests, it displays the user's account information.
@@ -149,11 +150,12 @@ def account():
 
     Returns:
     flask.Response: A rendered template or redirect response.
-        - GET: Rendered 'account.html' template with user information.
-        - POST: 
-            - If delete action is requested: Result of deleteUser() function.
-            - Otherwise: Same as GET response.
-        - If not logged in: Redirect to the login page."""
+    - GET: Rendered 'account.html' template with user information.
+    - POST: 
+    - If delete action is requested: Result of deleteUser() function.
+    - Otherwise: Same as GET response.
+    - If not logged in: Redirect to the login page.
+    """
     if request.method == 'POST':
         if request.form.get('action') == 'delete':
             return deleteUser()
