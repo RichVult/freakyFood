@@ -371,7 +371,7 @@ def deleteAccount():
         case "StoreOwner":
             return deleteStoreOwner()
 
-def changeOrderStatus():
+def updateDriverOrderStatus():
     # Get order ID and desired action from the form data
     order_id = request.form.get('order_id')
     action = request.form.get('action')
@@ -391,3 +391,38 @@ def changeOrderStatus():
             db.session.commit()
             session.pop('accepted_order_id', None)
             return redirect(url_for('driver'))
+    return None
+
+def updateStoreOrderStatus():
+    # Get order ID and desired action from the form data
+    order_id = request.form.get('orderID')
+    action = request.form.get('action')
+    
+    if order_id:
+        # Fetch the order by ID
+        order = db.session.execute(select(Orders).where(Orders.OrderID == order_id)).scalar_one_or_none()
+
+        # Check which action to perform and update the order status accordingly
+        if action == "accept" and order.OrderStatus == "Accepted":
+            # update accepted order's order status
+            db.session.execute(update(Orders).where(Orders.OrderID == order.OrderID).values(OrderStatus="In Progress"))
+            db.session.commit()
+        elif action == "complete" and order.OrderStatus == "In Progress":
+            # update accepted order's order status
+            db.session.execute(update(Orders).where(Orders.OrderID == order.OrderID).values(OrderStatus="Ready"))
+            db.session.commit()
+
+def genStoreTemplate():
+    # find all "Accpeted" Orders -> A driver has selected it
+    waiting_orders = findAvailableOrders("Accepted")
+    if len(waiting_orders) == 0: waiting_orders = None
+
+    # find all "In Progress" Orders -> The Store has accepted it
+    in_progress_orders = findAvailableOrders("In Progress")
+    if len(in_progress_orders) == 0: in_progress_orders = None
+
+    # find all "Ready" order -> Awaiting Pickup
+    ready_orders = findAvailableOrders("Ready")
+    if len(ready_orders) == 0: ready_orders = None
+    
+    return render_template('storeOwner.html', waiting_orders=waiting_orders, in_progress_orders=in_progress_orders, ready_orders=ready_orders)

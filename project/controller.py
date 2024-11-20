@@ -104,7 +104,9 @@ def handleDriverStatus():
     if checkUserType("Driver"): return checkUserType("Driver")
 
     # Changing the order status 
-    if request.method == 'POST': return changeOrderStatus()
+    if request.method == 'POST':
+        result = updateDriverOrderStatus()
+        if result is not None: return result
 
     # get variables for driver status
     current_order = db.session.execute(select(Orders).where(Orders.OrderID == session.get('accepted_order_id'))).scalar_one_or_none()
@@ -119,40 +121,10 @@ def handleStoreOwner():
     # Redirect if wrong user type
     if checkUserType("StoreOwner"): return checkUserType("StoreOwner")
 
-    # determine how we are manipulating the orders
     # this will update order status' correctly depending on request information
-    if request.method == 'POST':
-        # Get order ID and desired action from the form data
-        order_id = request.form.get('orderID')
-        action = request.form.get('action')
-        
-        if order_id:
-            # Fetch the order by ID
-            order = db.session.execute(select(Orders).where(Orders.OrderID == order_id)).scalar_one_or_none()
+    if request.method == 'POST': updateStoreOrderStatus()
 
-            # Check which action to perform and update the order status accordingly
-            if action == "accept" and order.OrderStatus == "Accepted":
-                # update accepted order's order status
-                db.session.execute(update(Orders).where(Orders.OrderID == order.OrderID).values(OrderStatus="In Progress"))
-                db.session.commit()
-            elif action == "complete" and order.OrderStatus == "In Progress":
-                # update accepted order's order status
-                db.session.execute(update(Orders).where(Orders.OrderID == order.OrderID).values(OrderStatus="Ready"))
-                db.session.commit()
-
-    # find all "Accpeted" Orders -> A driver has selected it
-    waiting_orders = findAvailableOrders("Accepted")
-    if len(waiting_orders) == 0: waiting_orders = None
-
-    # find all "In Progress" Orders -> The Store has accepted it
-    in_progress_orders = findAvailableOrders("In Progress")
-    if len(in_progress_orders) == 0: in_progress_orders = None
-
-    # find all "Ready" order -> Awaiting Pickup
-    ready_orders = findAvailableOrders("Ready")
-    if len(ready_orders) == 0: ready_orders = None
-    
-    return render_template('storeOwner.html', waiting_orders=waiting_orders, in_progress_orders=in_progress_orders, ready_orders=ready_orders)
+    return genStoreTemplate()
 
 def handleSearch():
     # Redirect if wrong user type
@@ -206,6 +178,7 @@ def handleStatus():
     # add redirection to login if not logged in -> hold potential current order ID
     if 'user_id' not in session: return redirect(url_for('login'))
 
+
     # add the user id to the order if it is not already set in the database
     is_user_null = db.session.execute(select(Orders).where(Orders.OrderID == session.get('potential_order_id'), Orders.UserID == None)).scalar_one_or_none()
     if is_user_null:
@@ -221,6 +194,8 @@ def handleStatus():
         # update order status in db
         db.session.execute(update(Orders).where(Orders.OrderID == session.get('order_id')).values(OrderStatus="Created"))
         db.session.commit()
+
+    if 'order_id' not in session: return redirect(url_for('home'))
 
     # get current order from session
     current_order = db.session.execute(select(Orders).where(Orders.OrderID == session.get('order_id'))).scalar_one_or_none()
