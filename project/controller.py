@@ -38,6 +38,9 @@ def handleIndex():
         return createUser()
 
 def handleSignup():
+    # if logged in redirect to account info
+    if 'user_id' in session: return redirect(url_for('home'))
+    
     if request.method == 'POST':
         # Backend Check if REGEX was matched -> return any errors found
         if verifySignup(): return verifySignup()
@@ -108,11 +111,7 @@ def handleDriverStatus():
         result = updateDriverOrderStatus()
         if result is not None: return result
 
-    # get variables for driver status
-    current_order = db.session.execute(select(Orders).where(Orders.OrderID == session.get('accepted_order_id'))).scalar_one_or_none()
-    curr_restaurant = db.session.execute(select(Store).where(Store.StoreID == current_order.StoreID)).scalar_one_or_none()
-
-    return render_template('driverStatus.html', current_order=current_order, curr_restaurant=curr_restaurant)
+    return genDriverStatusTemplate()
 
 def handleStoreOwner():
     # Redirect to login if not logged in
@@ -133,17 +132,7 @@ def handleSearch():
     # redirection to order status if order exists
     if 'order_id' in session: return redirect(url_for('status'))
 
-    # Get the 'query' parameter from the URL
-    query = request.args.get('query')
-
-    if query:
-        # Query the database for stores matching the query
-        stores = Store.query.filter(Store.StoreName.ilike(f'%{query}%')).all()
-    else:
-        # pass all stores
-        stores = Store.query.all()
-
-    return render_template('search.html', stores=stores)
+    return genSearchTemplate()
 
 def handleRestaurant():
     # Redirect if wrong user type
@@ -172,40 +161,29 @@ def handleRestaurant():
     return checkPotentialOrder(curr_restaurant, menu_items)
 
 def handleStatus():
-    # Redirect if wrong user type
-    if checkUserType("Customer"): return checkUserType("Customer")
+    # redirect if no orders ready
+    if 'order_id' not in session and 'potential_order_id' not in session: return redirect(url_for('home'))
 
     # add redirection to login if not logged in -> hold potential current order ID
     if 'user_id' not in session: return redirect(url_for('login'))
 
+    # Redirect if wrong user type
+    if checkUserType("Customer"): return checkUserType("Customer")
 
     # add the user id to the order if it is not already set in the database
-    is_user_null = db.session.execute(select(Orders).where(Orders.OrderID == session.get('potential_order_id'), Orders.UserID == None)).scalar_one_or_none()
-    if is_user_null:
-        is_user_null.UserID = session.get('user_id')
-        db.session.commit()
+    commitUserOrder()
 
     # convert session potential order into order
-    # this will execute only on first visit to status
-    if session.get('potential_order_id'):
-        session['order_id'] = session.get('potential_order_id')
-        session.pop('potential_order_id', None)
-
-        # update order status in db
-        db.session.execute(update(Orders).where(Orders.OrderID == session.get('order_id')).values(OrderStatus="Created"))
-        db.session.commit()
-
-    if 'order_id' not in session: return redirect(url_for('home'))
+    convertOrder()
 
     # get current order from session
     current_order = db.session.execute(select(Orders).where(Orders.OrderID == session.get('order_id'))).scalar_one_or_none()
 
-    # Remove restrictions if order is completed
-    if current_order.OrderStatus == "Delivered":
-        session.pop('order_id', None)
-
     # get resteraunt from current order
     curr_restaurant = db.session.execute(select(Store).where(Store.StoreID == current_order.StoreID)).scalar_one_or_none()
+
+    # Remove restrictions if order is completed
+    if current_order.OrderStatus == "Delivered": session.pop('order_id', None)
 
     return render_template('status.html', current_order=current_order, curr_restaurant=curr_restaurant)
 
@@ -223,4 +201,4 @@ def handleCheckout():
     if request.method == 'POST': return deleteOrder()
 
     # return relevent order information
-    return checkoutInformation()
+    return genCheckoutTemplate()

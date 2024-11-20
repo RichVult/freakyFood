@@ -196,7 +196,7 @@ def deleteOrder():
 
     return redirect(url_for('home'))
 
-def checkoutInformation():
+def genCheckoutTemplate():
     # get potential order id from session
     potential_order_id = session.get('potential_order_id')
         
@@ -426,3 +426,39 @@ def genStoreTemplate():
     if len(ready_orders) == 0: ready_orders = None
     
     return render_template('storeOwner.html', waiting_orders=waiting_orders, in_progress_orders=in_progress_orders, ready_orders=ready_orders)
+
+def genSearchTemplate():
+    # Get the 'query' parameter from the URL
+    query = request.args.get('query')
+
+    if query:
+        # Query the database for stores matching the query
+        stores = Store.query.filter(Store.StoreName.ilike(f'%{query}%')).all()
+    else:
+        # pass all stores
+        stores = Store.query.all()
+
+    return render_template('search.html', stores=stores)
+
+def genDriverStatusTemplate():
+    # get variables for driver status
+    current_order = db.session.execute(select(Orders).where(Orders.OrderID == session.get('accepted_order_id'))).scalar_one_or_none()
+    curr_restaurant = db.session.execute(select(Store).where(Store.StoreID == current_order.StoreID)).scalar_one_or_none()
+
+    return render_template('driverStatus.html', current_order=current_order, curr_restaurant=curr_restaurant)
+
+def convertOrder():
+    if session.get('potential_order_id'):
+        session['order_id'] = session.get('potential_order_id')
+        session.pop('potential_order_id', None)
+
+        # update order status in db
+        db.session.execute(update(Orders).where(Orders.OrderID == session.get('order_id')).values(OrderStatus="Created"))
+        db.session.commit()
+
+def commitUserOrder():
+    # add the user id to the order if it is not already set in the database
+    is_user_null = db.session.execute(select(Orders).where(Orders.OrderID == session.get('potential_order_id'), Orders.UserID == None)).scalar_one_or_none()
+    if is_user_null:
+        is_user_null.UserID = session.get('user_id')
+        db.session.commit()
