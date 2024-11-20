@@ -36,6 +36,10 @@ app.config.update(SESSION_COOKIE_NAME=generate_random_session_name())
 app.config['SECRET_KEY'] = os.urandom(24)  # Secure key for signing cookies (ensure it's random and kept secret)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
+
+# Secret Key Needed for Session Control
+app.secret_key = os.getenv('SECRET_KEY', 'your_default_secret_key_here')
+
 db = SQLAlchemy(app)
 
 # import table to be created in postgres
