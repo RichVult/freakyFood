@@ -8,7 +8,9 @@
 
 import os
 import sys
+from pathlib import Path
 
+sys.path.insert(0, str(Path('..', 'src').resolve()))
 sys.path.insert(0, os.path.abspath('../../project'))
 print("PATH:", sys.path)  # Check if the path is correct
 
@@ -21,9 +23,10 @@ release = '0.0.1'
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    'sphinx.ext.autodoc',        # Parses docstrings
-    'sphinx.ext.napoleon',       # For Google/NumPy-style docstrings
     'sphinx.ext.viewcode',       # Links to source code
+    'sphinx.ext.napoleon',       # For Google/NumPy-style docstring
+    'sphinx.ext.autodoc',        # Parses docstrings
+    'sphinx_autodoc_typehints',
 ]
 
 templates_path = ['_templates']
@@ -33,7 +36,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'alabaster'
+html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
 
 

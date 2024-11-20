@@ -1,3 +1,38 @@
+"""
+app.py: Route controller for the web application.
+
+This file defines the routes and view functions for handling HTTP requests
+and rendering appropriate templates. It handles user authentication, session
+management, and interaction with the application's database models to manage
+users, stores, orders, and other related entities.
+
+Routes include:
+- '/' (index): Displays the homepage or handles user signup.
+- '/signup': Handles the user signup process.
+- '/login': Handles user login and authentication.
+- '/account': Displays and manages the user account information.
+- '/logout': Logs the user out and clears the session.
+- '/reset': Resets the user's password.
+- '/home': Displays the homepage for logged-in users.
+- '/404': Renders a "Page Not Found" error page.
+- '/driver': Allows drivers to accept orders.
+- '/driverStatus': Displays and manages the status of accepted orders for drivers.
+- '/storeOwner': Allows store owners to manage orders.
+- '/search': Allows users to search for stores by name.
+
+This file also handles user role checks and permission management to ensure
+that users only access routes relevant to their role (e.g., driver, store owner,
+customer).
+
+Imports:
+- Flask: For handling HTTP requests and rendering templates.
+- SQLAlchemy: For interacting with the database and models.
+- bcrypt: For password hashing and verification.
+- argparse: For command-line argument parsing (if needed).
+- Various database schema models for Users, Store, Menu, Orders, etc.
+- Helper functions for tasks like password reset, user verification, and order management.
+"""
+
 from flask import Flask, render_template, request, redirect, url_for, session
 from db.server import app, db, reset_database
 from sqlalchemy import *
@@ -5,7 +40,6 @@ from sqlalchemy import *
 import os
 import bcrypt
 import argparse
-import re
 
 from db.schema.Users import Users
 from db.schema.Store import Store
@@ -25,21 +59,25 @@ app.secret_key = os.getenv('SECRET_KEY', 'your_default_secret_key_here')
 @app.route('/', methods=['GET', 'POST'])
 def index():
     """
-    Handle the index page for both GET and POST requests.
+    Handles the main landing page of the application for both GET and POST requests.
 
-    For GET requests:
-    - If the user is logged in, redirect to the home page.
-    - Otherwise, render the index page.
+    If the user is logged in (i.e., a 'user_id' is present in the session), they are
+    redirected to their account page (home). If not, the function renders the index
+    page for new users to sign up or log in.
 
-    For POST requests:
-    - Verify the signup information.
-    - If verification passes, create a new user and redirect to the login page.
-    - If verification fails, return any errors found.
+    For POST requests, the function handles user signup by verifying the input data
+    using a helper function (`verifySignup`). If validation fails, it returns the
+    validation errors. If validation passes, it creates a new user and redirects the
+    user to the login page.
+
+    Methods:
+    - GET: Displays the signup page if the user is not logged in, or redirects to the account page if the user is logged in.
+    - POST: Handles user signup by verifying the provided data, creating a new user, and redirecting the user to the login page if the signup is successful.
 
     Returns:
-    flask.Response: A rendered template, redirect response, or error message.
-    - GET: Rendered 'index.html' or redirect to 'home'.
-    - POST: Redirect to 'login' or error message from verifySignup.
+    - A redirect to the home page if the user is logged in.
+    - A rendered 'index.html' template for new users to sign up.
+    - A redirect to the login page after a successful signup.
     """
     if request.method == 'GET':
         # if logged in redirect to account info
@@ -60,22 +98,24 @@ def index():
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     """
-    Handle user signup process.
+    Handles the user signup process for both GET and POST requests.
 
-    This function manages both GET and POST requests for the signup page.
-    For GET requests, it displays the signup form. For POST requests, it
-    processes the submitted form data, verifies the input, creates a new
-    user if the input is valid, and redirects to the login page.
+    If the request method is GET, the function renders the signup page where 
+    users can input their details to create a new account.
 
-    Parameters:
-    None
+    If the request method is POST, the function validates the user's input data 
+    using the `verifySignup` helper function. If validation fails, it returns 
+    any validation errors. If validation passes, a new user is created using 
+    the `createUser` function, and the user is redirected to the login page 
+    for authentication.
+
+    Methods:
+    - GET: Displays the signup page where a new user can register.
+    - POST: Validates the signup form data, creates the new user if valid, and redirects to the login page.
 
     Returns:
-    flask.Response: A rendered template or redirect response.
-    - GET: Rendered 'signup.html' template.
-    - POST: 
-    - If signup verification fails: Error message from verifySignup.
-    - If signup is successful: Redirect to the login page.
+    - A redirect to the login page after a successful signup.
+    - A rendered 'signup.html' template for displaying the signup form.
     """
     if request.method == 'POST':
         # Backend Check if REGEX was matched -> return any errors found
@@ -92,23 +132,25 @@ def signup():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     """
-    Handle user login process.
+    Handles the user login process for both GET and POST requests.
 
-    This function manages both GET and POST requests for the login page.
-    For GET requests, it displays the login form. For POST requests, it
-    processes the submitted form data, authenticates the user, and either
-    logs them in or displays an error message.
+    If the user is already logged in (i.e., a 'user_id' exists in the session), 
+    the function redirects the user to their account home page.
 
-    Parameters:
-    None
+    For POST requests, the function extracts the user's email and password 
+    from the login form, then queries the database to find the user associated 
+    with the provided email. If the user exists and the provided password 
+    matches the stored password, the function sets the session with the user's 
+    ID and redirects them to their account home page. If the credentials are 
+    incorrect, an error message is returned on the login page.
+
+    Methods:
+    - GET: Displays the login page for the user to input their credentials.
+    - POST: Verifies the user's email and password, sets the session if valid, or returns an error message if invalid.
 
     Returns:
-    flask.Response: A rendered template or redirect response.
-    - GET: Rendered 'login.html' template.
-    - POST: 
-    - If authentication succeeds: Redirect to the home page.
-    - If authentication fails: Rendered 'login.html' template with an error message.
-    - If already logged in: Redirect to the home page.
+    - A redirect to the user's home page if login is successful.
+    - A rendered 'login.html' template, with an error message if the login fails.
     """
     # if logged in redirect to account info
     if 'user_id' in session:
@@ -139,27 +181,32 @@ def login():
 @app.route('/account', methods=['GET', 'POST'])
 def account():
     """
-    Handle user account page requests and actions.
+    Handles the user's account page for both GET and POST requests.
 
-    This function manages both GET and POST requests for the account page.
-    For GET requests, it displays the user's account information.
-    For POST requests, it handles account deletion if requested.
+    For POST requests, the function checks if the form submission is a request to delete a user. 
+    If so, it identifies the type of user to be deleted (Driver, Customer, or StoreOwner) and calls 
+    the appropriate delete function based on the user type.
 
-    Parameters:
-    None
+    For GET requests, if the user is logged in (i.e., a 'user_id' exists in the session), 
+    the function fetches the user's details from the database and renders the 'account.html' page 
+    with the user's information.
+
+    If the user is not logged in, they are redirected to the login page.
+
+    Methods:
+    - GET: Fetches the user details from the database and renders the account page.
+    - POST: Deletes a user based on the selected action (Driver, Customer, or StoreOwner).
 
     Returns:
-    flask.Response: A rendered template or redirect response.
-    - GET: Rendered 'account.html' template with user information.
-    - POST: 
-    - If delete action is requested: Result of deleteUser() function.
-    - Otherwise: Same as GET response.
-    - If not logged in: Redirect to the login page.
+    - A redirect to the login page if the user is not logged in.
+    - A rendered 'account.html' template with the user's information if logged in.
+    - Calls the appropriate delete function if a user deletion is requested.
     """
     if request.method == 'POST':
         if request.form.get('action') == 'delete':
             # get the type of user which is being deleted
-            user_type = db.session.execute(select(UserTypes).where(UserTypes.UserTypeID == request.form.get('userID'))).scalar_one_or_none()
+            user_type = db.session.execute(select(UserTypes).where(
+                UserTypes.UserTypeID == request.form.get('userID'))).scalar_one_or_none()
             match user_type.TypeName:
                 case "Driver":
                     return deleteDriver()
@@ -180,6 +227,17 @@ def account():
 
 @app.route('/logout')
 def logout():
+    """
+    Logs the user out by clearing their session information.
+
+    This function removes the 'user_id', 'potential_order_id', and 'order_id' 
+    from the session, effectively logging the user out and clearing any order 
+    information associated with the session. After clearing the session, it 
+    redirects the user to the index page.
+
+    Returns:
+    - A redirect to the 'index' page after the session data is cleared.
+    """
     # Drop any user specific session informaion
     session.pop('user_id', None)
     session.pop('potential_order_id', None)
@@ -189,6 +247,19 @@ def logout():
 
 @app.route('/reset', methods=['GET', 'POST'])
 def reset():
+    """
+    Handles password reset requests.
+
+    If the user is not logged in, they are redirected to the login page.
+    If the request method is POST, the password is reset using the 
+    resetPassword function. If the request method is GET, the reset password 
+    page is rendered.
+
+    Returns:
+    - A redirect to the 'login' page if the user is not logged in.
+    - A result of the resetPassword function if the request is a POST.
+    - The 'reset.html' template if the request is a GET.
+    """
     # Redirect to login if not logged in
     if 'user_id' not in session:
         return redirect(url_for('login'))
@@ -202,6 +273,18 @@ def reset():
 
 @app.route('/home')
 def home():
+    """
+    Handles the home page request.
+
+    If the user is not logged in, they are redirected to the login page.
+    If the user's type is "Customer", they are redirected based on the 
+    checkUserType function.
+
+    Returns:
+    - A redirect to the 'login' page if the user is not logged in.
+    - A redirect based on the checkUserType function if the user is a "Customer".
+    - The 'home.html' template if the user is logged in and has the correct user type.
+    """
     # Redirect to login if not logged in
     if 'user_id' not in session:
         return redirect(url_for('login'))
@@ -215,11 +298,36 @@ def home():
 
 @app.route('/404')
 def invalid_page():
+    """
+    Renders the 404 error page.
+
+    This function is triggered when the user tries to access a non-existent 
+    or invalid page. It returns the '404.html' template to notify the user 
+    that the page was not found.
+
+    Returns:
+    - The '404.html' template.
+    """
     return render_template('404.html')
 
 
 @app.route('/driver', methods=['GET', 'POST'])
 def driver():
+    """
+    Handles the driver's order acceptance process.
+
+    This function manages the drivers interaction with available orders. If the driver
+    has already accepted an order, they are redirected to the driver status page. If the driver
+    is not logged in or has the wrong user type, they are redirected to the login page or appropriate user page.
+    On a POST request, if the driver accepts an order, it updates the order's status to "Accepted" 
+    and stores the order ID in the session.
+
+    If no order is accepted, the driver can view all available orders.
+
+    Returns:
+    - Redirects to the 'driverStatus' page if an order is accepted.
+    - Renders the 'driver.html' template with a list of available orders if no order is accepted.
+    """
     # if we have already accepted an order
     if 'accepted_order_id' in session:
         return redirect(url_for('driverStatus'))
@@ -254,6 +362,24 @@ def driver():
 
 @app.route('/driverStatus', methods=['GET', 'POST'])
 def driverStatus():
+    """
+    Manages the driver's current order status and actions.
+
+    This function handles the driver's view and interaction with their accepted order. If the driver
+    is not logged in or has not accepted an order, they are redirected to the login page or the driver
+    page. If the driver has accepted an order, they can update the order's status (e.g., mark it as "Pickup" 
+    or "Delivered") based on the current status of the order.
+
+    On a POST request:
+    - If the order is in the "Ready" status, the driver can update it to "Pickup."
+    - If the order is in the "Pickup" status, the driver can mark it as "Delivered" and then be redirected back to the driver page.
+
+    If no action is taken, the function displays the current order details and associated restaurant.
+
+    Returns:
+    - Redirects to the 'driver' page if the order is delivered.
+    - Renders the 'driverStatus.html' template with the current order details and restaurant if no action is taken.
+    """
     # ? Potential Implementation here for a chat room with the ordering user
 
     # if were not logged in redirect
@@ -261,7 +387,8 @@ def driverStatus():
         return redirect(url_for('login'))
 
     # if we have not already accepted an order
-    if 'accepted_order_id' not in session: return redirect(url_for('driver'))
+    if 'accepted_order_id' not in session:
+        return redirect(url_for('driver'))
 
     # Redirect if wrong user type
     if checkUserType("Driver"):
@@ -305,6 +432,25 @@ def driverStatus():
 
 @app.route('/storeOwner', methods=['GET', 'POST'])
 def storeOwner():
+    """
+    Manages the store owner's ability to accept, update, and complete orders.
+
+    This function allows the store owner to interact with orders in various stages. The store owner can:
+    - Accept an order and mark it as "In Progress."
+    - Complete an order and mark it as "Ready" for pickup.
+
+    If the store owner is not logged in or has the wrong user type, they are redirected to the login page or 
+    the appropriate user page. When a POST request is made, the function processes the order ID and the desired 
+    action to update the order status accordingly.
+
+    The function also retrieves and categorizes orders based on their current status:
+    - "Accepted": Orders that a driver has accepted but the store has not yet processed.
+    - "In Progress": Orders that are being processed by the store.
+    - "Ready": Orders that are completed and awaiting pickup by a driver.
+
+    Returns:
+    - Renders the 'storeOwner.html' template with categorized orders: waiting orders, in-progress orders, and ready orders.
+    """
     # Redirect to login if not logged in
     if 'user_id' not in session:
         return redirect(url_for('login'))
@@ -357,6 +503,21 @@ def storeOwner():
 
 @app.route('/search')
 def search():
+    """
+    Handles the search functionality for customers to find stores based on a query.
+
+    This function checks if the current user is a customer and redirects to the appropriate page if so. 
+    It also checks if an order ID exists in the session, in which case it redirects to the order status page. 
+
+    If a search query is provided through the URL's `query` parameter, the function queries the database 
+    for stores whose names match the search query (case-insensitive). If no query is provided, all stores 
+    are returned.
+
+    The results are passed to the 'search.html' template for rendering.
+
+    Returns:
+    - Renders the 'search.html' template with the stores that match the search query or all stores if no query is provided.
+    """
     # Redirect if wrong user type
     if checkUserType("Customer"):
         return checkUserType("Customer")
@@ -380,6 +541,21 @@ def search():
 
 @app.route('/restaurant', methods=['GET', 'POST'])
 def restaurant():
+    """
+    Handles the restaurant page where customers can view the menu and add items to their order.
+
+    This function first checks the user's type and redirects if the user is a customer, or if an order already exists in the session. 
+    If an order item ID is provided, the function deletes the specified order item.
+
+    It then retrieves the restaurant name from the URL query string and ensures that the restaurant is valid. If the restaurant name 
+    is not provided, the user is redirected to the homepage.
+
+    The function looks up the restaurant's details, menu, and associated menu items, and if the user is adding an item to their order, 
+    it calls the function to add the item. The function then returns the current or new order to the user.
+
+    Returns:
+    - Renders the restaurant's menu and items, either returning the existing order or a new order depending on user interaction.
+    """
     # Redirect if wrong user type
     if checkUserType("Customer"):
         return checkUserType("Customer")
@@ -416,6 +592,21 @@ def restaurant():
 
 @app.route('/status')
 def status():
+    """
+    Handles the order status page where customers can view the current status of their order.
+
+    This function first checks the user's type and redirects if the user is a customer. If the user is not logged in, they are redirected 
+    to the login page. It also checks if the order is already associated with the user and assigns the user ID to the order if not.
+
+    On the first visit to the status page, the potential order ID is converted into an actual order and the order status is updated to 
+    "Created" in the database. If the order status is "Delivered", the order ID is removed from the session, indicating the completion of 
+    the order.
+
+    The function retrieves the current order from the session and fetches the associated restaurant details to display to the user.
+
+    Returns:
+    - Renders the 'status.html' template displaying the current order status and associated restaurant details.
+    """
     # Redirect if wrong user type
     if checkUserType("Customer"):
         return checkUserType("Customer")
@@ -463,6 +654,19 @@ def status():
 
 @app.route('/checkout', methods=['GET', 'POST'])
 def checkout():
+    """
+    Handles the checkout process for users placing an order.
+
+    This function first checks if the user is the correct type (non-customer) and redirects them accordingly. If an order already exists 
+    in the session, the user is redirected to the status page. If there is no potential order in the session, the user is redirected 
+    to the home page.
+
+    If the request method is POST, it checks for an order deletion request and processes it accordingly. Otherwise, it proceeds to 
+    display the relevant checkout information.
+
+    Returns:
+    - Renders the checkout information if no deletion occurs, or processes an order deletion if a POST request is made.
+    """
     # Redirect if wrong user type
     if checkUserType("Customer"):
         return checkUserType("Customer")
@@ -487,6 +691,16 @@ def checkout():
 
 @app.before_request
 def clear_session():
+    """
+    Clears the session data on the first request to the application.
+
+    This function is executed before every request. On the first request, it clears the session data to ensure a clean session 
+    state for the user. It also sets a flag to indicate that the first request has been processed, preventing subsequent 
+    requests from clearing the session again.
+
+    Returns:
+    - None
+    """
     # Check if this is the first request
     if not hasattr(app, 'has_run_before'):
         # Clear the session on the first request

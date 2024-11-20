@@ -1,9 +1,9 @@
 .. FreakyFood documentation master file, created by
-   sphinx-quickstart on Tue Nov 19 09:47:02 2024.
+   David Galindo on Tue Nov 19 09:47:02 2024.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-FreakyFood documentation
+FreakyFood Documentation
 ========================
 
 Add your content using ``reStructuredText`` syntax. See the
