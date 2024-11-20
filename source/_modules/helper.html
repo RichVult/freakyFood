@@ -1,0 +1,477 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>helper &mdash; FreakyFood 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            FreakyFood
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../usage/quickstart.html">Quickstart Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../source/app.html">app module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../source/db.html">db package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../source/helper.html">helper module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../source/modules.html">project</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">FreakyFood</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">helper</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for helper</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">render_template</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">redirect</span><span class="p">,</span> <span class="n">url_for</span><span class="p">,</span> <span class="n">session</span>
+
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">socket</span>
+<span class="kn">import</span> <span class="nn">bcrypt</span>
+
+<span class="kn">from</span> <span class="nn">db.server</span> <span class="kn">import</span> <span class="n">app</span><span class="p">,</span> <span class="n">db</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="kn">from</span> <span class="nn">db.schema.Users</span> <span class="kn">import</span> <span class="n">Users</span>
+<span class="kn">from</span> <span class="nn">db.schema.UserTypes</span> <span class="kn">import</span> <span class="n">UserTypes</span>
+<span class="kn">from</span> <span class="nn">db.schema.Orders</span> <span class="kn">import</span> <span class="n">Orders</span>
+<span class="kn">from</span> <span class="nn">db.schema.OrderItems</span> <span class="kn">import</span> <span class="n">OrderItems</span>
+<span class="kn">from</span> <span class="nn">db.schema.Store</span> <span class="kn">import</span> <span class="n">Store</span>
+<span class="kn">from</span> <span class="nn">db.schema.Menu</span> <span class="kn">import</span> <span class="n">Menu</span>
+<span class="kn">from</span> <span class="nn">db.schema.MenuItems</span> <span class="kn">import</span> <span class="n">MenuItems</span>
+
+<div class="viewcode-block" id="verifySignup">
+<a class="viewcode-back" href="../source/helper.html#helper.verifySignup">[docs]</a>
+<span class="k">def</span> <span class="nf">verifySignup</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="c1"># Define allowed user types</span>
+    <span class="n">allowed_user_types</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Driver&#39;</span><span class="p">,</span> <span class="s1">&#39;Customer&#39;</span><span class="p">,</span> <span class="s1">&#39;StoreOwner&#39;</span><span class="p">]</span>
+
+    <span class="c1"># Get values from form and remove whitespace</span>
+    <span class="n">new_email</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s2">&quot;Email&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">new_password</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s2">&quot;Password&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">new_password_two</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s2">&quot;PasswordTwo&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">new_first_name</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s2">&quot;FirstName&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">new_last_name</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s2">&quot;LastName&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">new_user_type</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s2">&quot;UserType&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+    <span class="c1"># Backend Check if REGEX was matched</span>
+    <span class="n">email_pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$&quot;</span>
+    <span class="n">password_pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}$&quot;</span>
+    <span class="n">name_pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;^[A-Za-z]+$&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">email_pattern</span><span class="p">,</span> <span class="n">new_email</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;signup.html&#39;</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="s2">&quot;Invalid email format.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">password_pattern</span><span class="p">,</span> <span class="n">new_password</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;signup.html&#39;</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span> <span class="s2">&quot;Password must be at least 8 characters long, contain an uppercase letter, a lowercase letter, a number, and a special character.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">name_pattern</span><span class="p">,</span> <span class="n">new_first_name</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;signup.html&#39;</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="s2">&quot;First name can only contain letters.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">name_pattern</span><span class="p">,</span> <span class="n">new_last_name</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;signup.html&#39;</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="s2">&quot;Last name can only contain letters.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Check if email exists </span>
+    <span class="k">if</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">Users</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Users</span><span class="o">.</span><span class="n">Email</span> <span class="o">==</span> <span class="n">new_email</span><span class="p">))</span><span class="o">.</span><span class="n">scalar_one_or_none</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;signup.html&#39;</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="s2">&quot;Email already associated with another user&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Check if the user type is valid</span>
+    <span class="k">if</span> <span class="n">new_user_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">allowed_user_types</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;signup.html&#39;</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="s2">&quot;Invalid user type. Please select from Driver, Customer, or Store Owner.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Check if passwords match</span>
+    <span class="k">if</span> <span class="n">new_password</span> <span class="o">!=</span> <span class="n">new_password_two</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;signup.html&#39;</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="s2">&quot;Passwords Do Not Match&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="createUser">
+<a class="viewcode-back" href="../source/helper.html#helper.createUser">[docs]</a>
+<span class="k">def</span> <span class="nf">createUser</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="c1"># Get values from form and remove whitespace</span>
+    <span class="n">new_email</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s2">&quot;Email&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">new_password</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s2">&quot;Password&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">new_password_two</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s2">&quot;PasswordTwo&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">new_first_name</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s2">&quot;FirstName&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">new_last_name</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s2">&quot;LastName&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">new_user_type</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s2">&quot;UserType&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+    <span class="c1"># Grab usertype ID of user type selected</span>
+    <span class="n">user_type_id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">UserTypes</span><span class="o">.</span><span class="n">UserTypeID</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">UserTypes</span><span class="o">.</span><span class="n">TypeName</span> <span class="o">==</span> <span class="n">new_user_type</span><span class="p">))</span><span class="o">.</span><span class="n">scalar_one</span><span class="p">()</span>
+
+    <span class="c1"># Hash the password using bcrypt</span>
+    <span class="n">hashed_password</span> <span class="o">=</span> <span class="n">bcrypt</span><span class="o">.</span><span class="n">hashpw</span><span class="p">(</span><span class="n">new_password</span><span class="o">.</span><span class="n">encode</span><span class="p">(),</span> <span class="n">bcrypt</span><span class="o">.</span><span class="n">gensalt</span><span class="p">())</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Create a new user</span>
+    <span class="n">create_user</span> <span class="o">=</span> <span class="n">insert</span><span class="p">(</span><span class="n">Users</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">(</span>
+        <span class="n">UserTypeID</span><span class="o">=</span><span class="n">user_type_id</span><span class="p">,</span>
+        <span class="n">Email</span><span class="o">=</span><span class="n">new_email</span><span class="p">,</span>
+        <span class="n">Password</span><span class="o">=</span><span class="n">hashed_password</span><span class="p">,</span>
+        <span class="n">FirstName</span><span class="o">=</span><span class="n">new_first_name</span><span class="p">,</span>
+        <span class="n">LastName</span><span class="o">=</span><span class="n">new_last_name</span><span class="p">,</span>
+        <span class="n">PhoneNumber</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">State</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">Street</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">City</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">ZipCode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">CardNumber</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">)</span>
+    <span class="c1"># Execute Query and Commit to DB</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">create_user</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="resetPassword">
+<a class="viewcode-back" href="../source/helper.html#helper.resetPassword">[docs]</a>
+<span class="k">def</span> <span class="nf">resetPassword</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="c1">#checks current password and changes it to new password.</span>
+    <span class="n">user_id</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">)</span>
+    <span class="n">current_password</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s2">&quot;CurrentPassword&quot;</span><span class="p">]</span>
+    <span class="n">new_password</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s2">&quot;NewPassword&quot;</span><span class="p">]</span>
+
+    <span class="n">user</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">Users</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Users</span><span class="o">.</span><span class="n">UserID</span> <span class="o">==</span> <span class="n">user_id</span><span class="p">))</span><span class="o">.</span><span class="n">scalar_one_or_none</span><span class="p">()</span>
+
+    <span class="c1"># Verify the current password</span>
+    <span class="k">if</span> <span class="n">user</span> <span class="ow">and</span> <span class="n">bcrypt</span><span class="o">.</span><span class="n">checkpw</span><span class="p">(</span><span class="n">current_password</span><span class="o">.</span><span class="n">encode</span><span class="p">(),</span> <span class="n">user</span><span class="o">.</span><span class="n">Password</span><span class="o">.</span><span class="n">encode</span><span class="p">()):</span>
+        <span class="c1"># backend check for password matches regex</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}$&quot;</span><span class="p">,</span> <span class="n">new_password</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;reset.html&#39;</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="s2">&quot;Password must be at least 8 characters long, contain an uppercase letter, a lowercase letter, a number, and a special character.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Hash the new password and update it in the database</span>
+        <span class="n">hashed_new_password</span> <span class="o">=</span> <span class="n">bcrypt</span><span class="o">.</span><span class="n">hashpw</span><span class="p">(</span><span class="n">new_password</span><span class="o">.</span><span class="n">encode</span><span class="p">(),</span> <span class="n">bcrypt</span><span class="o">.</span><span class="n">gensalt</span><span class="p">())</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+        <span class="n">user</span><span class="o">.</span><span class="n">Password</span> <span class="o">=</span> <span class="n">hashed_new_password</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;account&#39;</span><span class="p">))</span> 
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;reset.html&#39;</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="s2">&quot;Current password is incorrect.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="deleteOrderItem">
+<a class="viewcode-back" href="../source/helper.html#helper.deleteOrderItem">[docs]</a>
+<span class="k">def</span> <span class="nf">deleteOrderItem</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="n">order_item_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;order_item_id&#39;</span><span class="p">)</span> <span class="c1"># We are removing an item from a potential order</span>
+    
+    <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">delete</span><span class="p">(</span><span class="n">OrderItems</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">OrderItems</span><span class="o">.</span><span class="n">OrderItemID</span> <span class="o">==</span> <span class="n">order_item_id</span><span class="p">))</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+    <span class="c1"># redirect back with new items</span>
+    <span class="n">restaurant_name</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;restaurant&#39;</span><span class="p">)</span>
+    <span class="n">curr_restaurant</span> <span class="o">=</span> <span class="n">Store</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">StoreName</span><span class="o">=</span><span class="n">restaurant_name</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+    <span class="n">menu</span> <span class="o">=</span> <span class="n">Menu</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">curr_restaurant</span><span class="o">.</span><span class="n">StoreID</span><span class="p">)</span> <span class="c1"># Look up menu associated with current restaurant</span>
+    <span class="n">menu_items</span> <span class="o">=</span> <span class="n">MenuItems</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">MenuItems</span><span class="o">.</span><span class="n">MenuID</span> <span class="o">==</span> <span class="n">menu</span><span class="o">.</span><span class="n">MenuID</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="c1"># Look up all menu items associated with the current menu</span>
+    <span class="n">potential_order_id</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;potential_order_id&#39;</span><span class="p">)</span> <span class="c1"># get from session</span>
+    <span class="n">potential_items</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">OrderItems</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">OrderItems</span><span class="o">.</span><span class="n">OrderID</span> <span class="o">==</span> <span class="n">potential_order_id</span><span class="p">))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="c1"># find all potential order items</span>
+
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;restaurant.html&#39;</span><span class="p">,</span> <span class="n">curr_restaurant</span><span class="o">=</span><span class="n">curr_restaurant</span><span class="p">,</span> <span class="n">potential_items</span><span class="o">=</span><span class="n">potential_items</span><span class="p">,</span> <span class="n">menu_items</span><span class="o">=</span><span class="n">menu_items</span><span class="p">)</span> </div>
+
+
+<div class="viewcode-block" id="addOrder">
+<a class="viewcode-back" href="../source/helper.html#helper.addOrder">[docs]</a>
+<span class="k">def</span> <span class="nf">addOrder</span><span class="p">(</span><span class="n">reqeust</span><span class="p">,</span> <span class="n">curr_restaurant</span><span class="p">):</span>
+    <span class="c1"># We are adding an item or creating a potential order</span>
+    <span class="n">requested_quantity</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s1">&#39;quantity&#39;</span><span class="p">]</span> <span class="c1"># get requested amount</span>
+    <span class="n">requested_item_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s1">&#39;item_id&#39;</span><span class="p">]</span> <span class="c1"># get requested item id</span>
+    <span class="n">requested_item</span> <span class="o">=</span> <span class="n">MenuItems</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span><span class="n">MenuItemID</span><span class="o">=</span><span class="n">requested_item_id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span> <span class="c1"># identify which item is requested</span>
+
+    <span class="c1"># if potential order doesnt exist we will create it and add to session</span>
+    <span class="k">if</span> <span class="s1">&#39;potential_order_id&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+        <span class="c1"># Execute the insert and commit to get the new order&#39;s ID</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">insert</span><span class="p">(</span><span class="n">Orders</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">(</span>
+            <span class="n">UserID</span><span class="o">=</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="s1">&#39;user_id&#39;</span> <span class="ow">in</span> <span class="n">session</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">DriverID</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">StoreID</span><span class="o">=</span><span class="n">curr_restaurant</span><span class="o">.</span><span class="n">StoreID</span><span class="p">,</span>
+            <span class="n">OrderStatus</span><span class="o">=</span><span class="s1">&#39;potential&#39;</span>
+        <span class="p">))</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+        <span class="c1"># Store the new order ID in the session</span>
+        <span class="n">session</span><span class="p">[</span><span class="s1">&#39;potential_order_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">inserted_primary_key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> 
+
+    <span class="c1"># add the added item to the potential order</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">insert</span><span class="p">(</span><span class="n">OrderItems</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">(</span>
+        <span class="n">OrderID</span><span class="o">=</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;potential_order_id&#39;</span><span class="p">),</span>
+        <span class="n">ItemQuantity</span><span class="o">=</span><span class="n">requested_quantity</span><span class="p">,</span>
+        <span class="n">OrderItemName</span><span class="o">=</span><span class="n">requested_item</span><span class="o">.</span><span class="n">MenuItemName</span><span class="p">,</span>
+        <span class="n">UserID</span><span class="o">=</span><span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="s1">&#39;user_id&#39;</span> <span class="ow">in</span> <span class="n">session</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">ItemPrice</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">requested_quantity</span><span class="p">)</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">requested_item</span><span class="o">.</span><span class="n">MenuItemPrice</span><span class="p">)</span>
+    <span class="p">))</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="checkPotentialOrder">
+<a class="viewcode-back" href="../source/helper.html#helper.checkPotentialOrder">[docs]</a>
+<span class="k">def</span> <span class="nf">checkPotentialOrder</span><span class="p">(</span><span class="n">curr_restaurant</span><span class="p">,</span> <span class="n">menu_items</span><span class="p">):</span>
+    <span class="c1"># Check potential order and redirect accordingly</span>
+    <span class="k">if</span> <span class="s1">&#39;potential_order_id&#39;</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+        <span class="c1"># get from session</span>
+        <span class="n">potential_order_id</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;potential_order_id&#39;</span><span class="p">)</span>
+        
+        <span class="c1"># Look up the order in the database based on potential_order_id</span>
+        <span class="n">potential_order</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">Orders</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Orders</span><span class="o">.</span><span class="n">OrderID</span> <span class="o">==</span> <span class="n">potential_order_id</span><span class="p">))</span><span class="o">.</span><span class="n">scalar_one_or_none</span><span class="p">()</span>
+
+        <span class="c1"># find all potential order items</span>
+        <span class="n">potential_items</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">OrderItems</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">OrderItems</span><span class="o">.</span><span class="n">OrderID</span> <span class="o">==</span> <span class="n">potential_order</span><span class="o">.</span><span class="n">OrderID</span><span class="p">))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+        
+        <span class="c1"># if we fine none set to none</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">potential_items</span><span class="p">:</span>
+            <span class="n">potential_items</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># if potential order not from this restaurant redirect to checkout</span>
+        <span class="k">if</span> <span class="n">potential_order</span><span class="o">.</span><span class="n">StoreID</span> <span class="o">!=</span> <span class="n">curr_restaurant</span><span class="o">.</span><span class="n">StoreID</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;checkout&#39;</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># render template with current potential order</span>
+            <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;restaurant.html&#39;</span><span class="p">,</span> <span class="n">curr_restaurant</span><span class="o">=</span><span class="n">curr_restaurant</span><span class="p">,</span> <span class="n">potential_items</span><span class="o">=</span><span class="n">potential_items</span><span class="p">,</span> <span class="n">menu_items</span><span class="o">=</span><span class="n">menu_items</span><span class="p">)</span> 
+
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;restaurant.html&#39;</span><span class="p">,</span> <span class="n">curr_restaurant</span><span class="o">=</span><span class="n">curr_restaurant</span><span class="p">,</span> <span class="n">potential_items</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">menu_items</span><span class="o">=</span><span class="n">menu_items</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="deleteOrder">
+<a class="viewcode-back" href="../source/helper.html#helper.deleteOrder">[docs]</a>
+<span class="k">def</span> <span class="nf">deleteOrder</span><span class="p">():</span>
+    <span class="c1"># delete order items from db</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">delete</span><span class="p">(</span><span class="n">OrderItems</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">OrderItems</span><span class="o">.</span><span class="n">OrderID</span> <span class="o">==</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;potential_order_id&#39;</span><span class="p">)))</span>
+    <span class="c1"># delete order from db</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">delete</span><span class="p">(</span><span class="n">Orders</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Orders</span><span class="o">.</span><span class="n">OrderID</span> <span class="o">==</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;potential_order_id&#39;</span><span class="p">)))</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+    <span class="c1"># delete potential order from session</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;potential_order_id&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;home&#39;</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="checkoutInformation">
+<a class="viewcode-back" href="../source/helper.html#helper.checkoutInformation">[docs]</a>
+<span class="k">def</span> <span class="nf">checkoutInformation</span><span class="p">():</span>
+    <span class="c1"># get potential order id from session</span>
+    <span class="n">potential_order_id</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;potential_order_id&#39;</span><span class="p">)</span>
+        
+    <span class="c1"># Look up the order in the database based on potential_order_id</span>
+    <span class="n">potential_order</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">Orders</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Orders</span><span class="o">.</span><span class="n">OrderID</span> <span class="o">==</span> <span class="n">potential_order_id</span><span class="p">))</span><span class="o">.</span><span class="n">scalar_one_or_none</span><span class="p">()</span>
+
+    <span class="c1"># find all potential order items</span>
+    <span class="n">potential_items</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">OrderItems</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">OrderItems</span><span class="o">.</span><span class="n">OrderID</span> <span class="o">==</span> <span class="n">potential_order</span><span class="o">.</span><span class="n">OrderID</span><span class="p">))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    
+    <span class="c1"># get current restaurant from potential order</span>
+    <span class="n">curr_restaurant</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">Store</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Store</span><span class="o">.</span><span class="n">StoreID</span> <span class="o">==</span> <span class="n">potential_order</span><span class="o">.</span><span class="n">StoreID</span><span class="p">))</span><span class="o">.</span><span class="n">scalar_one_or_none</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;checkout.html&#39;</span><span class="p">,</span> <span class="n">potential_items</span><span class="o">=</span><span class="n">potential_items</span><span class="p">,</span> <span class="n">potential_order</span><span class="o">=</span><span class="n">potential_order</span><span class="p">,</span> <span class="n">curr_restaurant</span><span class="o">=</span><span class="n">curr_restaurant</span><span class="p">)</span></div>
+
+
+<span class="c1"># Function to delete a Customer and all its dependency tables</span>
+<div class="viewcode-block" id="deleteUser">
+<a class="viewcode-back" href="../source/helper.html#helper.deleteUser">[docs]</a>
+<span class="k">def</span> <span class="nf">deleteUser</span><span class="p">():</span>
+    <span class="c1"># grad user information</span>
+    <span class="n">user_id</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">)</span>
+    <span class="n">found_user</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">Users</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Users</span><span class="o">.</span><span class="n">UserID</span> <span class="o">==</span> <span class="n">user_id</span><span class="p">))</span><span class="o">.</span><span class="n">scalar_one_or_none</span><span class="p">()</span>
+
+    <span class="c1"># prevent deletion while orders are in progress</span>
+    <span class="k">if</span> <span class="s1">&#39;order_id&#39;</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;account.html&#39;</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">found_user</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="s2">&quot;You Must Complete All In Progress Orders Before Deleting Your Account&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Delete the user, orders, and associated order items</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">delete</span><span class="p">(</span><span class="n">OrderItems</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">OrderItems</span><span class="o">.</span><span class="n">UserID</span> <span class="o">==</span> <span class="n">user_id</span><span class="p">))</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">delete</span><span class="p">(</span><span class="n">Orders</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Orders</span><span class="o">.</span><span class="n">UserID</span> <span class="o">==</span> <span class="n">user_id</span><span class="p">))</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">delete</span><span class="p">(</span><span class="n">Users</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Users</span><span class="o">.</span><span class="n">UserID</span> <span class="o">==</span> <span class="n">user_id</span><span class="p">))</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+    <span class="c1"># Remove the session cookies from the session and redirect to the home page</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;potential_order_id&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;order_id&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;index&#39;</span><span class="p">))</span></div>
+
+
+<span class="c1"># Function to delete a Driver and all its dependency tables</span>
+<div class="viewcode-block" id="deleteDriver">
+<a class="viewcode-back" href="../source/helper.html#helper.deleteDriver">[docs]</a>
+<span class="k">def</span> <span class="nf">deleteDriver</span><span class="p">():</span>
+    <span class="c1"># grab user information</span>
+    <span class="n">user_id</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">)</span>
+    <span class="n">found_user</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">Users</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Users</span><span class="o">.</span><span class="n">UserID</span> <span class="o">==</span> <span class="n">user_id</span><span class="p">))</span><span class="o">.</span><span class="n">scalar_one_or_none</span><span class="p">()</span>
+
+    <span class="c1"># prevent deletion while orders are in progress</span>
+    <span class="k">if</span> <span class="s1">&#39;accepted_order_id&#39;</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;account.html&#39;</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">found_user</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="s2">&quot;You Must Complete All In Progress Orders Before Deleting Your Account&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Delete the user, remove from existing orders</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">update</span><span class="p">(</span><span class="n">Orders</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Orders</span><span class="o">.</span><span class="n">DriverID</span> <span class="o">==</span> <span class="n">user_id</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="n">DriverID</span> <span class="o">=</span> <span class="kc">None</span><span class="p">))</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">delete</span><span class="p">(</span><span class="n">Users</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Users</span><span class="o">.</span><span class="n">UserID</span> <span class="o">==</span> <span class="n">user_id</span><span class="p">))</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+    <span class="c1"># Remove the session cookies from the session and redirect to the home page</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;accepted_order_id&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;index&#39;</span><span class="p">))</span></div>
+
+
+<span class="c1"># Function to delete a Store Owner and all its dependency tables</span>
+<div class="viewcode-block" id="deleteStoreOwner">
+<a class="viewcode-back" href="../source/helper.html#helper.deleteStoreOwner">[docs]</a>
+<span class="k">def</span> <span class="nf">deleteStoreOwner</span><span class="p">():</span>
+    <span class="c1"># grab user information</span>
+    <span class="n">user_id</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">)</span>
+    <span class="n">found_user</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">Users</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Users</span><span class="o">.</span><span class="n">UserID</span> <span class="o">==</span> <span class="n">user_id</span><span class="p">))</span><span class="o">.</span><span class="n">scalar_one_or_none</span><span class="p">()</span>
+
+    <span class="c1"># grab all users stores</span>
+    <span class="n">user_stores</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">Store</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Store</span><span class="o">.</span><span class="n">UserID</span> <span class="o">==</span> <span class="n">user_id</span><span class="p">))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+    <span class="c1"># determine if any orders are existing that need to be take care of</span>
+    <span class="k">for</span> <span class="n">user_store</span> <span class="ow">in</span> <span class="n">user_stores</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">Orders</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Orders</span><span class="o">.</span><span class="n">OrderStatus</span> <span class="o">!=</span> <span class="s2">&quot;Delivered&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">():</span> 
+            <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;account.html&#39;</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">found_user</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="s2">&quot;Your Stores Contain Incomplete Orders&quot;</span><span class="p">)</span>
+
+    <span class="c1"># for each store delete its menu and menu items</span>
+    <span class="k">for</span> <span class="n">user_store</span> <span class="ow">in</span> <span class="n">user_stores</span><span class="p">:</span>
+        <span class="n">user_menu</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">Menu</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Menu</span><span class="o">.</span><span class="n">StoreID</span> <span class="o">==</span> <span class="n">user_store</span><span class="o">.</span><span class="n">StoreID</span><span class="p">))</span><span class="o">.</span><span class="n">scalar_one_or_none</span><span class="p">()</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">delete</span><span class="p">(</span><span class="n">MenuItems</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">MenuItems</span><span class="o">.</span><span class="n">MenuID</span> <span class="o">==</span> <span class="n">user_menu</span><span class="o">.</span><span class="n">MenuID</span><span class="p">))</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">delete</span><span class="p">(</span><span class="n">Menu</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Menu</span><span class="o">.</span><span class="n">MenuID</span> <span class="o">==</span> <span class="n">user_menu</span><span class="o">.</span><span class="n">MenuID</span><span class="p">))</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">update</span><span class="p">(</span><span class="n">Orders</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Orders</span><span class="o">.</span><span class="n">StoreID</span> <span class="o">==</span> <span class="n">user_store</span><span class="o">.</span><span class="n">StoreID</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="n">StoreID</span> <span class="o">=</span> <span class="kc">None</span><span class="p">))</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">delete</span><span class="p">(</span><span class="n">Store</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Store</span><span class="o">.</span><span class="n">StoreID</span> <span class="o">==</span> <span class="n">user_store</span><span class="o">.</span><span class="n">StoreID</span><span class="p">))</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">delete</span><span class="p">(</span><span class="n">Users</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Users</span><span class="o">.</span><span class="n">UserID</span> <span class="o">==</span> <span class="n">user_id</span><span class="p">))</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+    <span class="n">session</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;index&#39;</span><span class="p">))</span></div>
+
+
+<span class="c1"># check to be done on every page</span>
+<span class="c1"># we redirect user types to correct page if in wrong page</span>
+<span class="c1"># ex: user will be redirected from storeOwner page or driver page</span>
+<div class="viewcode-block" id="checkUserType">
+<a class="viewcode-back" href="../source/helper.html#helper.checkUserType">[docs]</a>
+<span class="k">def</span> <span class="nf">checkUserType</span><span class="p">(</span><span class="n">desiredType</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    
+    <span class="c1"># determine user type</span>
+    <span class="n">user_type_id</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">Users</span><span class="o">.</span><span class="n">UserTypeID</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Users</span><span class="o">.</span><span class="n">UserID</span> <span class="o">==</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">)))</span><span class="o">.</span><span class="n">scalar_one</span><span class="p">()</span>
+    <span class="n">user_type</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">UserTypes</span><span class="o">.</span><span class="n">TypeName</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">UserTypes</span><span class="o">.</span><span class="n">UserTypeID</span> <span class="o">==</span> <span class="n">user_type_id</span><span class="p">))</span><span class="o">.</span><span class="n">scalar_one_or_none</span><span class="p">()</span>
+
+    <span class="c1"># determine where were going</span>
+    <span class="c1"># will do an initial check to see if were in the right place</span>
+    <span class="c1"># if were not in the right place redirect us to that place</span>
+    <span class="k">if</span> <span class="n">user_type</span> <span class="o">==</span> <span class="n">desiredType</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">elif</span> <span class="n">user_type</span> <span class="o">==</span> <span class="s2">&quot;Customer&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;home&#39;</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="n">user_type</span> <span class="o">==</span> <span class="s2">&quot;StoreOwner&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;storeOwner&#39;</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="n">user_type</span> <span class="o">==</span> <span class="s2">&quot;Driver&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;driver&#39;</span><span class="p">))</span></div>
+
+
+<span class="c1"># Function to find an available port for flask instance to run on</span>
+<div class="viewcode-block" id="find_free_port">
+<a class="viewcode-back" href="../source/helper.html#helper.find_free_port">[docs]</a>
+<span class="k">def</span> <span class="nf">find_free_port</span><span class="p">(</span><span class="n">start_port</span><span class="p">,</span> <span class="n">end_port</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">port</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start_port</span><span class="p">,</span> <span class="n">end_port</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span> <span class="k">as</span> <span class="n">s</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">connect_ex</span><span class="p">((</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">result</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">port</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="findAvailableOrders">
+<a class="viewcode-back" href="../source/helper.html#helper.findAvailableOrders">[docs]</a>
+<span class="k">def</span> <span class="nf">findAvailableOrders</span><span class="p">(</span><span class="n">orderStatus</span><span class="p">):</span>
+    <span class="c1"># Fetch all orders in &quot;Created&quot; status</span>
+    <span class="n">orders</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">Orders</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Orders</span><span class="o">.</span><span class="n">OrderStatus</span> <span class="o">==</span> <span class="n">orderStatus</span><span class="p">))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    
+    <span class="c1"># List to store orders and their associated stores</span>
+    <span class="n">available_orders</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># Loop through each order and find its store</span>
+    <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">orders</span><span class="p">:</span>
+        <span class="n">store</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">Store</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Store</span><span class="o">.</span><span class="n">StoreID</span> <span class="o">==</span> <span class="n">order</span><span class="o">.</span><span class="n">StoreID</span><span class="p">))</span><span class="o">.</span><span class="n">scalar_one_or_none</span><span class="p">()</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">Users</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Users</span><span class="o">.</span><span class="n">UserID</span> <span class="o">==</span> <span class="n">order</span><span class="o">.</span><span class="n">UserID</span><span class="p">))</span><span class="o">.</span><span class="n">scalar_one_or_none</span><span class="p">()</span>
+        <span class="n">order_items</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">OrderItems</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">OrderItems</span><span class="o">.</span><span class="n">OrderID</span> <span class="o">==</span> <span class="n">order</span><span class="o">.</span><span class="n">OrderID</span><span class="p">))</span><span class="o">.</span><span class="n">scalars</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+        <span class="c1"># Append the order and its information to the list</span>
+        <span class="k">if</span> <span class="n">store</span><span class="p">:</span>
+            <span class="n">available_orders</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">order</span><span class="p">,</span> <span class="n">store</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">order_items</span><span class="p">))</span>
+    
+    <span class="k">return</span> <span class="n">available_orders</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, FreakyFood.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

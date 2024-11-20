@@ -6,16 +6,22 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
+# conf.py
 import os
 import sys
 from pathlib import Path
 
+# Adjusting sys.path to include the correct paths
+sys.path.insert(0, os.path.abspath('../sphinx'))
 sys.path.insert(0, str(Path('..', 'src').resolve()))
 sys.path.insert(0, os.path.abspath('../../project'))
 print("PATH:", sys.path)  # Check if the path is correct
 
+# Set the correct path for the source directory
+source = os.path.abspath('../docs/sphinx')  # Pointing to the correct directory
+
 project = 'FreakyFood'
-copyright = '%Y, David Galindo Delgado, Christian Farrell, Daniel Narewski, Marcus Regan, Tyler Herlihy, Richard Vultaggio, Max Debin'
+copyright = '%Y, FreakyFood'
 author = 'David Galindo Delgado, Christian Farrell, Daniel Narewski, Marcus Regan, Tyler Herlihy, Richard Vultaggio, Max Debin'
 release = '0.0.1'
 

@@ -1,0 +1,887 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>app &mdash; FreakyFood 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=d45e8c67"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            FreakyFood
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../usage/quickstart.html">Quickstart Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../source/app.html">app module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../source/db.html">db package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../source/helper.html">helper module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../source/modules.html">project</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">FreakyFood</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">app</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for app</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">app.py: Route controller for the web application.</span>
+
+<span class="sd">This file defines the routes and view functions for handling HTTP requests</span>
+<span class="sd">and rendering appropriate templates. It handles user authentication, session</span>
+<span class="sd">management, and interaction with the application&#39;s database models to manage</span>
+<span class="sd">users, stores, orders, and other related entities.</span>
+
+<span class="sd">Routes include:</span>
+<span class="sd">- &#39;/&#39; (index): Displays the homepage or handles user signup.</span>
+<span class="sd">- &#39;/signup&#39;: Handles the user signup process.</span>
+<span class="sd">- &#39;/login&#39;: Handles user login and authentication.</span>
+<span class="sd">- &#39;/account&#39;: Displays and manages the user account information.</span>
+<span class="sd">- &#39;/logout&#39;: Logs the user out and clears the session.</span>
+<span class="sd">- &#39;/reset&#39;: Resets the user&#39;s password.</span>
+<span class="sd">- &#39;/home&#39;: Displays the homepage for logged-in users.</span>
+<span class="sd">- &#39;/404&#39;: Renders a &quot;Page Not Found&quot; error page.</span>
+<span class="sd">- &#39;/driver&#39;: Allows drivers to accept orders.</span>
+<span class="sd">- &#39;/driverStatus&#39;: Displays and manages the status of accepted orders for drivers.</span>
+<span class="sd">- &#39;/storeOwner&#39;: Allows store owners to manage orders.</span>
+<span class="sd">- &#39;/search&#39;: Allows users to search for stores by name.</span>
+
+<span class="sd">This file also handles user role checks and permission management to ensure</span>
+<span class="sd">that users only access routes relevant to their role (e.g., driver, store owner,</span>
+<span class="sd">customer).</span>
+
+<span class="sd">Imports:</span>
+<span class="sd">- Flask: For handling HTTP requests and rendering templates.</span>
+<span class="sd">- SQLAlchemy: For interacting with the database and models.</span>
+<span class="sd">- bcrypt: For password hashing and verification.</span>
+<span class="sd">- argparse: For command-line argument parsing (if needed).</span>
+<span class="sd">- Various database schema models for Users, Store, Menu, Orders, etc.</span>
+<span class="sd">- Helper functions for tasks like password reset, user verification, and order management.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">render_template</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">redirect</span><span class="p">,</span> <span class="n">url_for</span><span class="p">,</span> <span class="n">session</span>
+<span class="kn">from</span> <span class="nn">db.server</span> <span class="kn">import</span> <span class="n">app</span><span class="p">,</span> <span class="n">db</span><span class="p">,</span> <span class="n">reset_database</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">bcrypt</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+
+<span class="kn">from</span> <span class="nn">db.schema.Users</span> <span class="kn">import</span> <span class="n">Users</span>
+<span class="kn">from</span> <span class="nn">db.schema.Store</span> <span class="kn">import</span> <span class="n">Store</span>
+<span class="kn">from</span> <span class="nn">db.schema.Menu</span> <span class="kn">import</span> <span class="n">Menu</span>
+<span class="kn">from</span> <span class="nn">db.schema.Orders</span> <span class="kn">import</span> <span class="n">Orders</span>
+<span class="kn">from</span> <span class="nn">db.schema.OrderItems</span> <span class="kn">import</span> <span class="n">OrderItems</span>
+
+<span class="kn">from</span> <span class="nn">db.schema.MenuItems</span> <span class="kn">import</span> <span class="n">MenuItems</span>
+<span class="kn">from</span> <span class="nn">db.schema.UserTypes</span> <span class="kn">import</span> <span class="n">UserTypes</span>
+
+<span class="kn">from</span> <span class="nn">helper</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="c1"># Import need a SECRET KEY -&gt; Please Store one in your .env file really doesnt matter what it is set to mine is buttcheeks</span>
+<span class="n">app</span><span class="o">.</span><span class="n">secret_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;SECRET_KEY&#39;</span><span class="p">,</span> <span class="s1">&#39;your_default_secret_key_here&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="index">
+<a class="viewcode-back" href="../source/app.html#app.index">[docs]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">index</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Handles the main landing page of the application for both GET and POST requests.</span>
+
+<span class="sd">    If the user is logged in (i.e., a &#39;user_id&#39; is present in the session), they are</span>
+<span class="sd">    redirected to their account page (home). If not, the function renders the index</span>
+<span class="sd">    page for new users to sign up or log in.</span>
+
+<span class="sd">    For POST requests, the function handles user signup by verifying the input data</span>
+<span class="sd">    using a helper function (`verifySignup`). If validation fails, it returns the</span>
+<span class="sd">    validation errors. If validation passes, it creates a new user and redirects the</span>
+<span class="sd">    user to the login page.</span>
+
+<span class="sd">    Methods:</span>
+<span class="sd">    - GET: Displays the signup page if the user is not logged in, or redirects to the account page if the user is logged in.</span>
+<span class="sd">    - POST: Handles user signup by verifying the provided data, creating a new user, and redirecting the user to the login page if the signup is successful.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    - A redirect to the home page if the user is logged in.</span>
+<span class="sd">    - A rendered &#39;index.html&#39; template for new users to sign up.</span>
+<span class="sd">    - A redirect to the login page after a successful signup.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;GET&#39;</span><span class="p">:</span>
+        <span class="c1"># if logged in redirect to account info</span>
+        <span class="k">if</span> <span class="s1">&#39;user_id&#39;</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;home&#39;</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;index.html&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Backend Check if REGEX was matched -&gt; return any errors found</span>
+        <span class="k">if</span> <span class="n">verifySignup</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">verifySignup</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+        <span class="n">createUser</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>  <span class="c1"># Create the new user if no errors</span>
+
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="signup">
+<a class="viewcode-back" href="../source/app.html#app.signup">[docs]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/signup&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">signup</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Handles the user signup process for both GET and POST requests.</span>
+
+<span class="sd">    If the request method is GET, the function renders the signup page where </span>
+<span class="sd">    users can input their details to create a new account.</span>
+
+<span class="sd">    If the request method is POST, the function validates the user&#39;s input data </span>
+<span class="sd">    using the `verifySignup` helper function. If validation fails, it returns </span>
+<span class="sd">    any validation errors. If validation passes, a new user is created using </span>
+<span class="sd">    the `createUser` function, and the user is redirected to the login page </span>
+<span class="sd">    for authentication.</span>
+
+<span class="sd">    Methods:</span>
+<span class="sd">    - GET: Displays the signup page where a new user can register.</span>
+<span class="sd">    - POST: Validates the signup form data, creates the new user if valid, and redirects to the login page.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    - A redirect to the login page after a successful signup.</span>
+<span class="sd">    - A rendered &#39;signup.html&#39; template for displaying the signup form.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="c1"># Backend Check if REGEX was matched -&gt; return any errors found</span>
+        <span class="k">if</span> <span class="n">verifySignup</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">verifySignup</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+        <span class="n">createUser</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>  <span class="c1"># Create the new user if no errors</span>
+
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;signup.html&#39;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="login">
+<a class="viewcode-back" href="../source/app.html#app.login">[docs]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/login&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">login</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Handles the user login process for both GET and POST requests.</span>
+
+<span class="sd">    If the user is already logged in (i.e., a &#39;user_id&#39; exists in the session), </span>
+<span class="sd">    the function redirects the user to their account home page.</span>
+
+<span class="sd">    For POST requests, the function extracts the user&#39;s email and password </span>
+<span class="sd">    from the login form, then queries the database to find the user associated </span>
+<span class="sd">    with the provided email. If the user exists and the provided password </span>
+<span class="sd">    matches the stored password, the function sets the session with the user&#39;s </span>
+<span class="sd">    ID and redirects them to their account home page. If the credentials are </span>
+<span class="sd">    incorrect, an error message is returned on the login page.</span>
+
+<span class="sd">    Methods:</span>
+<span class="sd">    - GET: Displays the login page for the user to input their credentials.</span>
+<span class="sd">    - POST: Verifies the user&#39;s email and password, sets the session if valid, or returns an error message if invalid.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    - A redirect to the user&#39;s home page if login is successful.</span>
+<span class="sd">    - A rendered &#39;login.html&#39; template, with an error message if the login fails.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># if logged in redirect to account info</span>
+    <span class="k">if</span> <span class="s1">&#39;user_id&#39;</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;home&#39;</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="c1"># from request.form extract password and Email</span>
+        <span class="n">entered_pass</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s2">&quot;Password&quot;</span><span class="p">]</span>
+        <span class="n">entered_email</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s2">&quot;Email&quot;</span><span class="p">]</span>
+
+        <span class="c1"># find user associated with email</span>
+        <span class="n">user_query</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span><span class="n">Users</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Users</span><span class="o">.</span><span class="n">Email</span> <span class="o">==</span> <span class="n">entered_email</span><span class="p">)</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">user_query</span><span class="p">)</span><span class="o">.</span><span class="n">scalar_one_or_none</span><span class="p">()</span>
+
+        <span class="c1"># Check if the user exists and the password matches</span>
+        <span class="k">if</span> <span class="n">user</span> <span class="ow">and</span> <span class="n">bcrypt</span><span class="o">.</span><span class="n">checkpw</span><span class="p">(</span><span class="n">entered_pass</span><span class="o">.</span><span class="n">encode</span><span class="p">(),</span> <span class="n">user</span><span class="o">.</span><span class="n">Password</span><span class="o">.</span><span class="n">encode</span><span class="p">()):</span>
+            <span class="c1"># set our session user id -&gt; this allows for us to keep track of the current user throughout pages</span>
+            <span class="n">session</span><span class="p">[</span><span class="s1">&#39;user_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">user</span><span class="o">.</span><span class="n">UserID</span>
+
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;home&#39;</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;login.html&#39;</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="s2">&quot;Invalid email or password.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;login.html&#39;</span><span class="p">)</span></div>
+
+
+<span class="c1"># ! needs logic for deleting store owner and drivers</span>
+
+
+<div class="viewcode-block" id="account">
+<a class="viewcode-back" href="../source/app.html#app.account">[docs]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/account&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">account</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Handles the user&#39;s account page for both GET and POST requests.</span>
+
+<span class="sd">    For POST requests, the function checks if the form submission is a request to delete a user. </span>
+<span class="sd">    If so, it identifies the type of user to be deleted (Driver, Customer, or StoreOwner) and calls </span>
+<span class="sd">    the appropriate delete function based on the user type.</span>
+
+<span class="sd">    For GET requests, if the user is logged in (i.e., a &#39;user_id&#39; exists in the session), </span>
+<span class="sd">    the function fetches the user&#39;s details from the database and renders the &#39;account.html&#39; page </span>
+<span class="sd">    with the user&#39;s information.</span>
+
+<span class="sd">    If the user is not logged in, they are redirected to the login page.</span>
+
+<span class="sd">    Methods:</span>
+<span class="sd">    - GET: Fetches the user details from the database and renders the account page.</span>
+<span class="sd">    - POST: Deletes a user based on the selected action (Driver, Customer, or StoreOwner).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    - A redirect to the login page if the user is not logged in.</span>
+<span class="sd">    - A rendered &#39;account.html&#39; template with the user&#39;s information if logged in.</span>
+<span class="sd">    - Calls the appropriate delete function if a user deletion is requested.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;action&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;delete&#39;</span><span class="p">:</span>
+            <span class="c1"># get the type of user which is being deleted</span>
+            <span class="n">user_type</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">UserTypes</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                <span class="n">UserTypes</span><span class="o">.</span><span class="n">UserTypeID</span> <span class="o">==</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;userID&#39;</span><span class="p">)))</span><span class="o">.</span><span class="n">scalar_one_or_none</span><span class="p">()</span>
+            <span class="k">match</span> <span class="n">user_type</span><span class="o">.</span><span class="n">TypeName</span><span class="p">:</span>
+                <span class="k">case</span> <span class="s2">&quot;Driver&quot;</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">deleteDriver</span><span class="p">()</span>
+                <span class="k">case</span> <span class="s2">&quot;Customer&quot;</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">deleteUser</span><span class="p">()</span>
+                <span class="k">case</span> <span class="s2">&quot;StoreOwner&quot;</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">deleteStoreOwner</span><span class="p">()</span>
+    <span class="c1"># Redirect to login if not logged in</span>
+    <span class="k">if</span> <span class="s1">&#39;user_id&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">))</span>
+
+    <span class="c1"># Fetch user details from the database using the user ID</span>
+    <span class="n">user_id</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">)</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">Users</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+        <span class="n">Users</span><span class="o">.</span><span class="n">UserID</span> <span class="o">==</span> <span class="n">user_id</span><span class="p">))</span><span class="o">.</span><span class="n">scalar_one_or_none</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;account.html&#39;</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="logout">
+<a class="viewcode-back" href="../source/app.html#app.logout">[docs]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/logout&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">logout</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Logs the user out by clearing their session information.</span>
+
+<span class="sd">    This function removes the &#39;user_id&#39;, &#39;potential_order_id&#39;, and &#39;order_id&#39; </span>
+<span class="sd">    from the session, effectively logging the user out and clearing any order </span>
+<span class="sd">    information associated with the session. After clearing the session, it </span>
+<span class="sd">    redirects the user to the index page.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    - A redirect to the &#39;index&#39; page after the session data is cleared.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Drop any user specific session informaion</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;potential_order_id&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;order_id&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;index&#39;</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="reset">
+<a class="viewcode-back" href="../source/app.html#app.reset">[docs]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/reset&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">reset</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Handles password reset requests.</span>
+
+<span class="sd">    If the user is not logged in, they are redirected to the login page.</span>
+<span class="sd">    If the request method is POST, the password is reset using the </span>
+<span class="sd">    resetPassword function. If the request method is GET, the reset password </span>
+<span class="sd">    page is rendered.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    - A redirect to the &#39;login&#39; page if the user is not logged in.</span>
+<span class="sd">    - A result of the resetPassword function if the request is a POST.</span>
+<span class="sd">    - The &#39;reset.html&#39; template if the request is a GET.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Redirect to login if not logged in</span>
+    <span class="k">if</span> <span class="s1">&#39;user_id&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">))</span>
+
+    <span class="c1"># Reset the passwowrd on POST</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">resetPassword</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;reset.html&#39;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="home">
+<a class="viewcode-back" href="../source/app.html#app.home">[docs]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/home&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">home</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Handles the home page request.</span>
+
+<span class="sd">    If the user is not logged in, they are redirected to the login page.</span>
+<span class="sd">    If the user&#39;s type is &quot;Customer&quot;, they are redirected based on the </span>
+<span class="sd">    checkUserType function.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    - A redirect to the &#39;login&#39; page if the user is not logged in.</span>
+<span class="sd">    - A redirect based on the checkUserType function if the user is a &quot;Customer&quot;.</span>
+<span class="sd">    - The &#39;home.html&#39; template if the user is logged in and has the correct user type.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Redirect to login if not logged in</span>
+    <span class="k">if</span> <span class="s1">&#39;user_id&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">))</span>
+
+    <span class="c1"># Redirect if wrong user type</span>
+    <span class="k">if</span> <span class="n">checkUserType</span><span class="p">(</span><span class="s2">&quot;Customer&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">checkUserType</span><span class="p">(</span><span class="s2">&quot;Customer&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;home.html&#39;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="invalid_page">
+<a class="viewcode-back" href="../source/app.html#app.invalid_page">[docs]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/404&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">invalid_page</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Renders the 404 error page.</span>
+
+<span class="sd">    This function is triggered when the user tries to access a non-existent </span>
+<span class="sd">    or invalid page. It returns the &#39;404.html&#39; template to notify the user </span>
+<span class="sd">    that the page was not found.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    - The &#39;404.html&#39; template.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;404.html&#39;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="driver">
+<a class="viewcode-back" href="../source/app.html#app.driver">[docs]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/driver&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">driver</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Handles the driver&#39;s order acceptance process.</span>
+
+<span class="sd">    This function manages the drivers interaction with available orders. If the driver</span>
+<span class="sd">    has already accepted an order, they are redirected to the driver status page. If the driver</span>
+<span class="sd">    is not logged in or has the wrong user type, they are redirected to the login page or appropriate user page.</span>
+<span class="sd">    On a POST request, if the driver accepts an order, it updates the order&#39;s status to &quot;Accepted&quot; </span>
+<span class="sd">    and stores the order ID in the session.</span>
+
+<span class="sd">    If no order is accepted, the driver can view all available orders.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    - Redirects to the &#39;driverStatus&#39; page if an order is accepted.</span>
+<span class="sd">    - Renders the &#39;driver.html&#39; template with a list of available orders if no order is accepted.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># if we have already accepted an order</span>
+    <span class="k">if</span> <span class="s1">&#39;accepted_order_id&#39;</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;driverStatus&#39;</span><span class="p">))</span>
+
+    <span class="c1"># Redirect to login if not logged in</span>
+    <span class="k">if</span> <span class="s1">&#39;user_id&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">))</span>
+
+    <span class="c1"># Redirect if wrong user type</span>
+    <span class="k">if</span> <span class="n">checkUserType</span><span class="p">(</span><span class="s2">&quot;Driver&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">checkUserType</span><span class="p">(</span><span class="s2">&quot;Driver&quot;</span><span class="p">)</span>
+
+    <span class="c1"># if we accept an order</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="c1"># add accepted order to session</span>
+        <span class="n">session</span><span class="p">[</span><span class="s1">&#39;accepted_order_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;orderID&#39;</span><span class="p">)</span>
+
+        <span class="c1"># update accepted order&#39;s order status</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">update</span><span class="p">(</span><span class="n">Orders</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Orders</span><span class="o">.</span><span class="n">OrderID</span> <span class="o">==</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="s1">&#39;accepted_order_id&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="n">OrderStatus</span><span class="o">=</span><span class="s2">&quot;Accepted&quot;</span><span class="p">))</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;driverStatus&#39;</span><span class="p">))</span>
+
+    <span class="c1"># find all available orders</span>
+    <span class="n">orders</span> <span class="o">=</span> <span class="n">findAvailableOrders</span><span class="p">(</span><span class="s2">&quot;Created&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;driver.html&#39;</span><span class="p">,</span> <span class="n">orders</span><span class="o">=</span><span class="n">orders</span><span class="p">)</span></div>
+
+
+<span class="c1"># For when a driver accepts an order</span>
+
+
+<div class="viewcode-block" id="driverStatus">
+<a class="viewcode-back" href="../source/app.html#app.driverStatus">[docs]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/driverStatus&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">driverStatus</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Manages the driver&#39;s current order status and actions.</span>
+
+<span class="sd">    This function handles the driver&#39;s view and interaction with their accepted order. If the driver</span>
+<span class="sd">    is not logged in or has not accepted an order, they are redirected to the login page or the driver</span>
+<span class="sd">    page. If the driver has accepted an order, they can update the order&#39;s status (e.g., mark it as &quot;Pickup&quot; </span>
+<span class="sd">    or &quot;Delivered&quot;) based on the current status of the order.</span>
+
+<span class="sd">    On a POST request:</span>
+<span class="sd">    - If the order is in the &quot;Ready&quot; status, the driver can update it to &quot;Pickup.&quot;</span>
+<span class="sd">    - If the order is in the &quot;Pickup&quot; status, the driver can mark it as &quot;Delivered&quot; and then be redirected back to the driver page.</span>
+
+<span class="sd">    If no action is taken, the function displays the current order details and associated restaurant.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    - Redirects to the &#39;driver&#39; page if the order is delivered.</span>
+<span class="sd">    - Renders the &#39;driverStatus.html&#39; template with the current order details and restaurant if no action is taken.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># ? Potential Implementation here for a chat room with the ordering user</span>
+
+    <span class="c1"># if were not logged in redirect</span>
+    <span class="k">if</span> <span class="s1">&#39;user_id&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">))</span>
+
+    <span class="c1"># if we have not already accepted an order</span>
+    <span class="k">if</span> <span class="s1">&#39;accepted_order_id&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;driver&#39;</span><span class="p">))</span>
+
+    <span class="c1"># Redirect if wrong user type</span>
+    <span class="k">if</span> <span class="n">checkUserType</span><span class="p">(</span><span class="s2">&quot;Driver&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">checkUserType</span><span class="p">(</span><span class="s2">&quot;Driver&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Changing the order status</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="c1"># Get order ID and desired action from the form data</span>
+        <span class="n">order_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;order_id&#39;</span><span class="p">)</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;action&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">order_id</span><span class="p">:</span>
+            <span class="c1"># Fetch the order by ID</span>
+            <span class="n">order</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">Orders</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                <span class="n">Orders</span><span class="o">.</span><span class="n">OrderID</span> <span class="o">==</span> <span class="n">order_id</span><span class="p">))</span><span class="o">.</span><span class="n">scalar_one_or_none</span><span class="p">()</span>
+
+            <span class="c1"># Check which action to perform and update the order status accordingly</span>
+            <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="s2">&quot;Pickup&quot;</span> <span class="ow">and</span> <span class="n">order</span><span class="o">.</span><span class="n">OrderStatus</span> <span class="o">==</span> <span class="s2">&quot;Ready&quot;</span><span class="p">:</span>
+                <span class="c1"># update accepted order&#39;s order status</span>
+                <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">update</span><span class="p">(</span><span class="n">Orders</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                    <span class="n">Orders</span><span class="o">.</span><span class="n">OrderID</span> <span class="o">==</span> <span class="n">order</span><span class="o">.</span><span class="n">OrderID</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="n">OrderStatus</span><span class="o">=</span><span class="s2">&quot;Pickup&quot;</span><span class="p">))</span>
+                <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="n">action</span> <span class="o">==</span> <span class="s2">&quot;Deliver&quot;</span> <span class="ow">and</span> <span class="n">order</span><span class="o">.</span><span class="n">OrderStatus</span> <span class="o">==</span> <span class="s2">&quot;Pickup&quot;</span><span class="p">:</span>
+                <span class="c1"># update accepted order&#39;s order status</span>
+                <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">update</span><span class="p">(</span><span class="n">Orders</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                    <span class="n">Orders</span><span class="o">.</span><span class="n">OrderID</span> <span class="o">==</span> <span class="n">order</span><span class="o">.</span><span class="n">OrderID</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="n">OrderStatus</span><span class="o">=</span><span class="s2">&quot;Delivered&quot;</span><span class="p">))</span>
+                <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;accepted_order_id&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;driver&#39;</span><span class="p">))</span>
+
+    <span class="c1"># get variables for driver status</span>
+    <span class="n">current_order</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">Orders</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+        <span class="n">Orders</span><span class="o">.</span><span class="n">OrderID</span> <span class="o">==</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;accepted_order_id&#39;</span><span class="p">)))</span><span class="o">.</span><span class="n">scalar_one_or_none</span><span class="p">()</span>
+    <span class="n">curr_restaurant</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">Store</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+        <span class="n">Store</span><span class="o">.</span><span class="n">StoreID</span> <span class="o">==</span> <span class="n">current_order</span><span class="o">.</span><span class="n">StoreID</span><span class="p">))</span><span class="o">.</span><span class="n">scalar_one_or_none</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;driverStatus.html&#39;</span><span class="p">,</span> <span class="n">current_order</span><span class="o">=</span><span class="n">current_order</span><span class="p">,</span> <span class="n">curr_restaurant</span><span class="o">=</span><span class="n">curr_restaurant</span><span class="p">)</span></div>
+
+
+<span class="c1"># Store owner home page</span>
+
+
+<div class="viewcode-block" id="storeOwner">
+<a class="viewcode-back" href="../source/app.html#app.storeOwner">[docs]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/storeOwner&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">storeOwner</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Manages the store owner&#39;s ability to accept, update, and complete orders.</span>
+
+<span class="sd">    This function allows the store owner to interact with orders in various stages. The store owner can:</span>
+<span class="sd">    - Accept an order and mark it as &quot;In Progress.&quot;</span>
+<span class="sd">    - Complete an order and mark it as &quot;Ready&quot; for pickup.</span>
+
+<span class="sd">    If the store owner is not logged in or has the wrong user type, they are redirected to the login page or </span>
+<span class="sd">    the appropriate user page. When a POST request is made, the function processes the order ID and the desired </span>
+<span class="sd">    action to update the order status accordingly.</span>
+
+<span class="sd">    The function also retrieves and categorizes orders based on their current status:</span>
+<span class="sd">    - &quot;Accepted&quot;: Orders that a driver has accepted but the store has not yet processed.</span>
+<span class="sd">    - &quot;In Progress&quot;: Orders that are being processed by the store.</span>
+<span class="sd">    - &quot;Ready&quot;: Orders that are completed and awaiting pickup by a driver.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    - Renders the &#39;storeOwner.html&#39; template with categorized orders: waiting orders, in-progress orders, and ready orders.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Redirect to login if not logged in</span>
+    <span class="k">if</span> <span class="s1">&#39;user_id&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">))</span>
+
+    <span class="c1"># Redirect if wrong user type</span>
+    <span class="k">if</span> <span class="n">checkUserType</span><span class="p">(</span><span class="s2">&quot;StoreOwner&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">checkUserType</span><span class="p">(</span><span class="s2">&quot;StoreOwner&quot;</span><span class="p">)</span>
+
+    <span class="c1"># determine how we are manipulating the orders</span>
+    <span class="c1"># this will update order status&#39; correctly depending on request information</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="c1"># Get order ID and desired action from the form data</span>
+        <span class="n">order_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;orderID&#39;</span><span class="p">)</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;action&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">order_id</span><span class="p">:</span>
+            <span class="c1"># Fetch the order by ID</span>
+            <span class="n">order</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">Orders</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                <span class="n">Orders</span><span class="o">.</span><span class="n">OrderID</span> <span class="o">==</span> <span class="n">order_id</span><span class="p">))</span><span class="o">.</span><span class="n">scalar_one_or_none</span><span class="p">()</span>
+
+            <span class="c1"># Check which action to perform and update the order status accordingly</span>
+            <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="s2">&quot;accept&quot;</span> <span class="ow">and</span> <span class="n">order</span><span class="o">.</span><span class="n">OrderStatus</span> <span class="o">==</span> <span class="s2">&quot;Accepted&quot;</span><span class="p">:</span>
+                <span class="c1"># update accepted order&#39;s order status</span>
+                <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">update</span><span class="p">(</span><span class="n">Orders</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                    <span class="n">Orders</span><span class="o">.</span><span class="n">OrderID</span> <span class="o">==</span> <span class="n">order</span><span class="o">.</span><span class="n">OrderID</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="n">OrderStatus</span><span class="o">=</span><span class="s2">&quot;In Progress&quot;</span><span class="p">))</span>
+                <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="n">action</span> <span class="o">==</span> <span class="s2">&quot;complete&quot;</span> <span class="ow">and</span> <span class="n">order</span><span class="o">.</span><span class="n">OrderStatus</span> <span class="o">==</span> <span class="s2">&quot;In Progress&quot;</span><span class="p">:</span>
+                <span class="c1"># update accepted order&#39;s order status</span>
+                <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">update</span><span class="p">(</span><span class="n">Orders</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                    <span class="n">Orders</span><span class="o">.</span><span class="n">OrderID</span> <span class="o">==</span> <span class="n">order</span><span class="o">.</span><span class="n">OrderID</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="n">OrderStatus</span><span class="o">=</span><span class="s2">&quot;Ready&quot;</span><span class="p">))</span>
+                <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+    <span class="c1"># find all &quot;Accpeted&quot; Orders -&gt; A driver has selected it</span>
+    <span class="n">waiting_orders</span> <span class="o">=</span> <span class="n">findAvailableOrders</span><span class="p">(</span><span class="s2">&quot;Accepted&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">waiting_orders</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">waiting_orders</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># find all &quot;In Progress&quot; Orders -&gt; The Store has accepted it</span>
+    <span class="n">in_progress_orders</span> <span class="o">=</span> <span class="n">findAvailableOrders</span><span class="p">(</span><span class="s2">&quot;In Progress&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_progress_orders</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">in_progress_orders</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># find all &quot;Ready&quot; order -&gt; Awaiting Pickup</span>
+    <span class="n">ready_orders</span> <span class="o">=</span> <span class="n">findAvailableOrders</span><span class="p">(</span><span class="s2">&quot;Ready&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ready_orders</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">ready_orders</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;storeOwner.html&#39;</span><span class="p">,</span> <span class="n">waiting_orders</span><span class="o">=</span><span class="n">waiting_orders</span><span class="p">,</span> <span class="n">in_progress_orders</span><span class="o">=</span><span class="n">in_progress_orders</span><span class="p">,</span> <span class="n">ready_orders</span><span class="o">=</span><span class="n">ready_orders</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="search">
+<a class="viewcode-back" href="../source/app.html#app.search">[docs]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/search&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">search</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Handles the search functionality for customers to find stores based on a query.</span>
+
+<span class="sd">    This function checks if the current user is a customer and redirects to the appropriate page if so. </span>
+<span class="sd">    It also checks if an order ID exists in the session, in which case it redirects to the order status page. </span>
+
+<span class="sd">    If a search query is provided through the URL&#39;s `query` parameter, the function queries the database </span>
+<span class="sd">    for stores whose names match the search query (case-insensitive). If no query is provided, all stores </span>
+<span class="sd">    are returned.</span>
+
+<span class="sd">    The results are passed to the &#39;search.html&#39; template for rendering.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    - Renders the &#39;search.html&#39; template with the stores that match the search query or all stores if no query is provided.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Redirect if wrong user type</span>
+    <span class="k">if</span> <span class="n">checkUserType</span><span class="p">(</span><span class="s2">&quot;Customer&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">checkUserType</span><span class="p">(</span><span class="s2">&quot;Customer&quot;</span><span class="p">)</span>
+
+    <span class="c1"># redirection to order status if order exists</span>
+    <span class="k">if</span> <span class="s1">&#39;order_id&#39;</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">))</span>
+
+    <span class="c1"># Get the &#39;query&#39; parameter from the URL</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;query&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">query</span><span class="p">:</span>
+        <span class="c1"># Query the database for stores matching the query</span>
+        <span class="n">stores</span> <span class="o">=</span> <span class="n">Store</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">Store</span><span class="o">.</span><span class="n">StoreName</span><span class="o">.</span><span class="n">ilike</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;%</span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s1">%&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># pass all stores</span>
+        <span class="n">stores</span> <span class="o">=</span> <span class="n">Store</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;search.html&#39;</span><span class="p">,</span> <span class="n">stores</span><span class="o">=</span><span class="n">stores</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="restaurant">
+<a class="viewcode-back" href="../source/app.html#app.restaurant">[docs]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/restaurant&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">restaurant</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Handles the restaurant page where customers can view the menu and add items to their order.</span>
+
+<span class="sd">    This function first checks the user&#39;s type and redirects if the user is a customer, or if an order already exists in the session. </span>
+<span class="sd">    If an order item ID is provided, the function deletes the specified order item.</span>
+
+<span class="sd">    It then retrieves the restaurant name from the URL query string and ensures that the restaurant is valid. If the restaurant name </span>
+<span class="sd">    is not provided, the user is redirected to the homepage.</span>
+
+<span class="sd">    The function looks up the restaurant&#39;s details, menu, and associated menu items, and if the user is adding an item to their order, </span>
+<span class="sd">    it calls the function to add the item. The function then returns the current or new order to the user.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    - Renders the restaurant&#39;s menu and items, either returning the existing order or a new order depending on user interaction.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Redirect if wrong user type</span>
+    <span class="k">if</span> <span class="n">checkUserType</span><span class="p">(</span><span class="s2">&quot;Customer&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">checkUserType</span><span class="p">(</span><span class="s2">&quot;Customer&quot;</span><span class="p">)</span>
+
+    <span class="c1"># redirect if existing order</span>
+    <span class="k">if</span> <span class="s1">&#39;order_id&#39;</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">))</span>
+
+    <span class="c1"># Request for deleting an order item</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;order_item_id&#39;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">deleteOrderItem</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+
+    <span class="c1"># Get the &#39;restaurant&#39; parameter from the URL query string</span>
+    <span class="n">restaurant_name</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;restaurant&#39;</span><span class="p">)</span>
+
+    <span class="c1"># if restaurant page is accessed without a parameter well redirect to avoid erroring</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">restaurant_name</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;index&#39;</span><span class="p">))</span>
+
+    <span class="n">curr_restaurant</span> <span class="o">=</span> <span class="n">Store</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter_by</span><span class="p">(</span>
+        <span class="n">StoreName</span><span class="o">=</span><span class="n">restaurant_name</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>  <span class="c1"># Look up the current restaurant</span>
+    <span class="c1"># Look up menu associated with current restaurant</span>
+    <span class="n">menu</span> <span class="o">=</span> <span class="n">Menu</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">curr_restaurant</span><span class="o">.</span><span class="n">StoreID</span><span class="p">)</span>
+    <span class="c1"># Look up all menu items associated with the current menu</span>
+    <span class="n">menu_items</span> <span class="o">=</span> <span class="n">MenuItems</span><span class="o">.</span><span class="n">query</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">MenuItems</span><span class="o">.</span><span class="n">MenuID</span> <span class="o">==</span> <span class="n">menu</span><span class="o">.</span><span class="n">MenuID</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+    <span class="c1"># if were adding an item to our order</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="n">addOrder</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">curr_restaurant</span><span class="p">)</span>
+
+    <span class="c1"># return existing order or new order</span>
+    <span class="k">return</span> <span class="n">checkPotentialOrder</span><span class="p">(</span><span class="n">curr_restaurant</span><span class="p">,</span> <span class="n">menu_items</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="status">
+<a class="viewcode-back" href="../source/app.html#app.status">[docs]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/status&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">status</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Handles the order status page where customers can view the current status of their order.</span>
+
+<span class="sd">    This function first checks the user&#39;s type and redirects if the user is a customer. If the user is not logged in, they are redirected </span>
+<span class="sd">    to the login page. It also checks if the order is already associated with the user and assigns the user ID to the order if not.</span>
+
+<span class="sd">    On the first visit to the status page, the potential order ID is converted into an actual order and the order status is updated to </span>
+<span class="sd">    &quot;Created&quot; in the database. If the order status is &quot;Delivered&quot;, the order ID is removed from the session, indicating the completion of </span>
+<span class="sd">    the order.</span>
+
+<span class="sd">    The function retrieves the current order from the session and fetches the associated restaurant details to display to the user.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    - Renders the &#39;status.html&#39; template displaying the current order status and associated restaurant details.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Redirect if wrong user type</span>
+    <span class="k">if</span> <span class="n">checkUserType</span><span class="p">(</span><span class="s2">&quot;Customer&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">checkUserType</span><span class="p">(</span><span class="s2">&quot;Customer&quot;</span><span class="p">)</span>
+
+    <span class="c1"># add redirection to login if not logged in -&gt; hold potential current order ID</span>
+    <span class="k">if</span> <span class="s1">&#39;user_id&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;login&#39;</span><span class="p">))</span>
+
+    <span class="c1"># add the user id to the order if it is not already set in the database</span>
+    <span class="n">is_user_null</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">Orders</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Orders</span><span class="o">.</span><span class="n">OrderID</span> <span class="o">==</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="s1">&#39;potential_order_id&#39;</span><span class="p">),</span> <span class="n">Orders</span><span class="o">.</span><span class="n">UserID</span> <span class="o">==</span> <span class="kc">None</span><span class="p">))</span><span class="o">.</span><span class="n">scalar_one_or_none</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">is_user_null</span><span class="p">:</span>
+        <span class="n">is_user_null</span><span class="o">.</span><span class="n">UserID</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">)</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+    <span class="c1"># convert session potential order into order</span>
+    <span class="c1"># this will execute only on first visit to status</span>
+    <span class="k">if</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;potential_order_id&#39;</span><span class="p">):</span>
+        <span class="n">session</span><span class="p">[</span><span class="s1">&#39;order_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;potential_order_id&#39;</span><span class="p">)</span>
+        <span class="n">session</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;potential_order_id&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="c1"># update order status in db</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">update</span><span class="p">(</span><span class="n">Orders</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+            <span class="n">Orders</span><span class="o">.</span><span class="n">OrderID</span> <span class="o">==</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;order_id&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="n">OrderStatus</span><span class="o">=</span><span class="s2">&quot;Created&quot;</span><span class="p">))</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+    <span class="c1"># get current order from session</span>
+    <span class="n">current_order</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">Orders</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+        <span class="n">Orders</span><span class="o">.</span><span class="n">OrderID</span> <span class="o">==</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;order_id&#39;</span><span class="p">)))</span><span class="o">.</span><span class="n">scalar_one_or_none</span><span class="p">()</span>
+
+    <span class="c1"># Remove restrictions if order is completed</span>
+    <span class="k">if</span> <span class="n">current_order</span><span class="o">.</span><span class="n">OrderStatus</span> <span class="o">==</span> <span class="s2">&quot;Delivered&quot;</span><span class="p">:</span>
+        <span class="n">session</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;order_id&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="c1"># Remove restrictions if order is completed</span>
+    <span class="k">if</span> <span class="n">current_order</span><span class="o">.</span><span class="n">OrderStatus</span> <span class="o">==</span> <span class="s2">&quot;Delivered&quot;</span><span class="p">:</span>
+        <span class="n">session</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;order_id&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="c1"># get resteraunt from current order</span>
+    <span class="n">curr_restaurant</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">select</span><span class="p">(</span><span class="n">Store</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+        <span class="n">Store</span><span class="o">.</span><span class="n">StoreID</span> <span class="o">==</span> <span class="n">current_order</span><span class="o">.</span><span class="n">StoreID</span><span class="p">))</span><span class="o">.</span><span class="n">scalar_one_or_none</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;status.html&#39;</span><span class="p">,</span> <span class="n">current_order</span><span class="o">=</span><span class="n">current_order</span><span class="p">,</span> <span class="n">curr_restaurant</span><span class="o">=</span><span class="n">curr_restaurant</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="checkout">
+<a class="viewcode-back" href="../source/app.html#app.checkout">[docs]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/checkout&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">checkout</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Handles the checkout process for users placing an order.</span>
+
+<span class="sd">    This function first checks if the user is the correct type (non-customer) and redirects them accordingly. If an order already exists </span>
+<span class="sd">    in the session, the user is redirected to the status page. If there is no potential order in the session, the user is redirected </span>
+<span class="sd">    to the home page.</span>
+
+<span class="sd">    If the request method is POST, it checks for an order deletion request and processes it accordingly. Otherwise, it proceeds to </span>
+<span class="sd">    display the relevant checkout information.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    - Renders the checkout information if no deletion occurs, or processes an order deletion if a POST request is made.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Redirect if wrong user type</span>
+    <span class="k">if</span> <span class="n">checkUserType</span><span class="p">(</span><span class="s2">&quot;Customer&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">checkUserType</span><span class="p">(</span><span class="s2">&quot;Customer&quot;</span><span class="p">)</span>
+
+    <span class="c1"># redirection to order status if order exists</span>
+    <span class="k">if</span> <span class="s1">&#39;order_id&#39;</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">))</span>
+
+    <span class="c1"># must have potential order to access checkout</span>
+    <span class="k">if</span> <span class="s1">&#39;potential_order_id&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">session</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;home&#39;</span><span class="p">))</span>
+
+    <span class="c1"># check if were deleting an order</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">deleteOrder</span><span class="p">()</span>
+
+    <span class="c1"># return relevent order information</span>
+    <span class="k">return</span> <span class="n">checkoutInformation</span><span class="p">()</span></div>
+
+
+<span class="c1"># Function to wipe session variables on program start -&gt; Forces user cookie dump</span>
+
+
+<div class="viewcode-block" id="clear_session">
+<a class="viewcode-back" href="../source/app.html#app.clear_session">[docs]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">before_request</span>
+<span class="k">def</span> <span class="nf">clear_session</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Clears the session data on the first request to the application.</span>
+
+<span class="sd">    This function is executed before every request. On the first request, it clears the session data to ensure a clean session </span>
+<span class="sd">    state for the user. It also sets a flag to indicate that the first request has been processed, preventing subsequent </span>
+<span class="sd">    requests from clearing the session again.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    - None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check if this is the first request</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="s1">&#39;has_run_before&#39;</span><span class="p">):</span>
+        <span class="c1"># Clear the session on the first request</span>
+        <span class="n">session</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="c1"># Mark that the first request has been processed</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">has_run_before</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">pass</span></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1"># Parse arguments passed with python execution</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Run the Flask app with optional database reset.&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--reset-db&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Reset the database (drop and create tables).&quot;</span><span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="c1"># if we find the reset db flag has been passed we will execute reset</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">reset_db</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">app_context</span><span class="p">():</span>
+            <span class="n">reset_database</span><span class="p">()</span>
+
+    <span class="c1"># Find a free port from 5000-5004</span>
+    <span class="c1"># dont need any more for our use cases at the moment</span>
+    <span class="n">free_port</span> <span class="o">=</span> <span class="n">find_free_port</span><span class="p">(</span><span class="mi">5000</span><span class="p">,</span> <span class="mi">5004</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">free_port</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;App Running on port: </span><span class="si">{</span><span class="n">free_port</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">free_port</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No free port found in range </span><span class="si">{</span><span class="n">start_port</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">end_port</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, FreakyFood.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
