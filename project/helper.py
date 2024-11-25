@@ -1,3 +1,9 @@
+'''
+
+    This file will contain the helper functions to assist the controller in executing logic
+
+'''
+
 from flask import Flask, render_template, request, redirect, url_for, session
 
 import re
@@ -7,15 +13,9 @@ import bcrypt
 from db.server import app, db
 from sqlalchemy import *
 
-from db.schema.Users import Users
-from db.schema.UserTypes import UserTypes
-from db.schema.Orders import Orders
-from db.schema.OrderItems import OrderItems
-from db.schema.Store import Store
-from db.schema.Menu import Menu
-from db.schema.MenuItems import MenuItems
+from db.schema import Users, Store, Menu, Orders, OrderItems, MenuItems, UserTypes
 
-def verifySignup(request):
+def verifySignup():
     # Define allowed user types
     allowed_user_types = ['Driver', 'Customer', 'StoreOwner']
 
@@ -56,7 +56,7 @@ def verifySignup(request):
     if new_password != new_password_two:
         return render_template('signup.html', error="Passwords Do Not Match")
 
-def createUser(request):
+def createUser():
     # Get values from form and remove whitespace
     new_email = request.form["Email"].strip()
     new_password = request.form["Password"].strip()
@@ -89,7 +89,9 @@ def createUser(request):
     db.session.execute(create_user)
     db.session.commit()
 
-def resetPassword(request):
+    return redirect(url_for('login'))
+
+def resetPassword():
     #checks current password and changes it to new password.
     user_id = session.get('user_id')
     current_password = request.form["CurrentPassword"]
@@ -111,7 +113,7 @@ def resetPassword(request):
     else:
         return render_template('reset.html', error="Current password is incorrect.")
 
-def deleteOrderItem(request):
+def deleteOrderItem():
     order_item_id = request.form.get('order_item_id') # We are removing an item from a potential order
     
     db.session.execute(delete(OrderItems).where(OrderItems.OrderItemID == order_item_id))
@@ -127,7 +129,7 @@ def deleteOrderItem(request):
 
     return render_template('restaurant.html', curr_restaurant=curr_restaurant, potential_items=potential_items, menu_items=menu_items) 
 
-def addOrder(reqeust, curr_restaurant):
+def addOrder(curr_restaurant):
     # We are adding an item or creating a potential order
     requested_quantity = request.form['quantity'] # get requested amount
     requested_item_id = request.form['item_id'] # get requested item id
@@ -194,7 +196,7 @@ def deleteOrder():
 
     return redirect(url_for('home'))
 
-def checkoutInformation():
+def genCheckoutTemplate():
     # get potential order id from session
     potential_order_id = session.get('potential_order_id')
         
@@ -328,3 +330,135 @@ def findAvailableOrders(orderStatus):
             available_orders.append((order, store, user, order_items))
     
     return available_orders
+
+def acceptOrder():
+    # add accepted order to session
+    session['accepted_order_id'] = request.form.get('orderID')
+
+    # update accepted order's order status
+    db.session.execute(update(Orders).where(Orders.OrderID == session.get('accepted_order_id')).values(OrderStatus="Accepted"))
+    db.session.commit()
+
+    return redirect(url_for('driverStatus'))
+
+def tryLogin():
+    # from request.form extract password and Email
+    entered_pass = request.form["Password"]
+    entered_email = request.form["Email"]
+
+    # find user associated with email
+    user_query = select(Users).where(Users.Email == entered_email)
+    user = db.session.execute(user_query).scalar_one_or_none()
+
+    # Check if the user exists and the password matches
+    if user and bcrypt.checkpw(entered_pass.encode(), user.Password.encode()):
+        # set our session user id -> this allows for us to keep track of the current user throughout pages
+        session['user_id'] = user.UserID 
+
+        return redirect(url_for('home'))  
+    else:
+        return render_template('login.html', error="Invalid email or password.")
+
+def deleteAccount():
+    # get the type of user which is being deleted
+    user_type = db.session.execute(select(UserTypes).where(UserTypes.UserTypeID == request.form.get('userID'))).scalar_one_or_none()
+
+    match user_type.TypeName:
+        case "Driver":
+            return deleteDriver()
+        case "Customer":
+            return deleteUser()
+        case "StoreOwner":
+            return deleteStoreOwner()
+
+def updateDriverOrderStatus():
+    # Get order ID and desired action from the form data
+    order_id = request.form.get('order_id')
+    action = request.form.get('action')
+    
+    if order_id:
+        # Fetch the order by ID
+        order = db.session.execute(select(Orders).where(Orders.OrderID == order_id)).scalar_one_or_none()
+
+        # Check which action to perform and update the order status accordingly
+        if action == "Pickup" and order.OrderStatus == "Ready":
+            # update accepted order's order status
+            db.session.execute(update(Orders).where(Orders.OrderID == order.OrderID).values(OrderStatus="Pickup"))
+            db.session.commit()
+        elif action == "Deliver" and order.OrderStatus == "Pickup":
+            # update accepted order's order status
+            db.session.execute(update(Orders).where(Orders.OrderID == order.OrderID).values(OrderStatus="Delivered"))
+            db.session.commit()
+            session.pop('accepted_order_id', None)
+            return redirect(url_for('driver'))
+    return None
+
+def updateStoreOrderStatus():
+    # Get order ID and desired action from the form data
+    order_id = request.form.get('orderID')
+    action = request.form.get('action')
+    
+    if order_id:
+        # Fetch the order by ID
+        order = db.session.execute(select(Orders).where(Orders.OrderID == order_id)).scalar_one_or_none()
+
+        # Check which action to perform and update the order status accordingly
+        if action == "accept" and order.OrderStatus == "Accepted":
+            # update accepted order's order status
+            db.session.execute(update(Orders).where(Orders.OrderID == order.OrderID).values(OrderStatus="In Progress"))
+            db.session.commit()
+        elif action == "complete" and order.OrderStatus == "In Progress":
+            # update accepted order's order status
+            db.session.execute(update(Orders).where(Orders.OrderID == order.OrderID).values(OrderStatus="Ready"))
+            db.session.commit()
+
+def genStoreTemplate():
+    # find all "Accpeted" Orders -> A driver has selected it
+    waiting_orders = findAvailableOrders("Accepted")
+    if len(waiting_orders) == 0: waiting_orders = None
+
+    # find all "In Progress" Orders -> The Store has accepted it
+    in_progress_orders = findAvailableOrders("In Progress")
+    if len(in_progress_orders) == 0: in_progress_orders = None
+
+    # find all "Ready" order -> Awaiting Pickup
+    ready_orders = findAvailableOrders("Ready")
+    if len(ready_orders) == 0: ready_orders = None
+    
+    return render_template('storeOwner.html', waiting_orders=waiting_orders, in_progress_orders=in_progress_orders, ready_orders=ready_orders)
+
+def genSearchTemplate():
+    # Get the 'query' parameter from the URL
+    query = request.args.get('query')
+
+    if query:
+        # Query the database for stores matching the query
+        stores = Store.query.filter(Store.StoreName.ilike(f'%{query}%')).all()
+    else:
+        # pass all stores
+        stores = Store.query.all()
+
+    return render_template('search.html', stores=stores)
+
+def genDriverStatusTemplate():
+    # get variables for driver status
+    current_order = db.session.execute(select(Orders).where(Orders.OrderID == session.get('accepted_order_id'))).scalar_one_or_none()
+    curr_restaurant = db.session.execute(select(Store).where(Store.StoreID == current_order.StoreID)).scalar_one_or_none()
+
+    return render_template('driverStatus.html', current_order=current_order, curr_restaurant=curr_restaurant)
+
+def convertOrder():
+    if session.get('potential_order_id'):
+        session['order_id'] = session.get('potential_order_id')
+        session.pop('potential_order_id', None)
+
+        # update order status in db
+        db.session.execute(update(Orders).where(Orders.OrderID == session.get('order_id')).values(OrderStatus="Created"))
+        db.session.commit()
+
+def commitUserOrder():
+    # add the user id to the order if it is not already set in the database
+    is_user_null = db.session.execute(select(Orders).where(Orders.OrderID == session.get('potential_order_id'), Orders.UserID == None)).scalar_one_or_none()
+    if is_user_null:
+        is_user_null.UserID = session.get('user_id')
+        db.session.commit()
