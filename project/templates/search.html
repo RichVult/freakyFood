@@ -21,23 +21,19 @@
         <title>Search - FreakyFood</title>
         <link rel="stylesheet" href="/static/search.css">
     </header>
-
     <body>
+        <a href='/'><img class="logo" src="/static/images/FFLogo.png" alt="Freaky Food Logo"></a>
         <!-- Redirect With New Query Back to Search -->
         <div class="search-bar">
             <form action="/search" method="get">
-                <input type="text" id="query" name="query" placeholder="What are you craving?" />
-                <button type="submit">Search</button>
+                <input type="text" id="query" name="query" placeholder="What are you craving?" />  <button type="submit">Search</button>
             </form>
         </div>
-
         <h2>Stores:</h2>
         {% if stores %}
             {% for store in stores %}
             <ul>
-                <li><strong>StoreID:</strong> {{ store.StoreID }}</li>
-                <li><strong>UserID:</strong> {{ store.UserID }}</li>
-                <li><strong>Store Name:</strong> {{ store.StoreName }}</li>
+                <li><strong>{{ store.StoreName }}</strong></li>
                 <form action="/restaurant" method="get">
                     <input type="hidden" name="restaurant" value="{{ store.StoreName }}">
                     <button type="submit" style="border: none; background: none;">

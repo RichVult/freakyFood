@@ -1,3 +1,13 @@
+<!--
+
+    This is the reset password page
+
+    This page should only be accessable when logged in.
+
+    This page should be accessable through different means for each user type.
+
+-->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -38,6 +48,11 @@
             </button>
         </a>
     </footer>
-
+    <!-- Display alert if there is an error -->
+    {% if error %}
+    <script>
+        alert("{{ error }}");
+    </script>
+    {% endif %}
 </body>
 </html>

@@ -1,9 +1,7 @@
 <!--
-
     THIS IS OUR SIGNUP PAGE
 
     This page posts information to our database
-
 -->
 
 <!DOCTYPE html>
@@ -16,24 +14,32 @@
 
 <body>
     <div id="container">
-        <img src="/static/images/FFLogo.png" alt=" logo" width-="100">
+        <img src="/static/images/FFLogo.png" alt="logo" width="100">
         <h1>Sign Up</h1>
         
         <form method="POST" style="text-align: left;">
             <label for="FirstName" class="field_name">First Name:</label><br>
-            <input type="text" class="field" id="FirstName" name="FirstName" minlength="2" pattern="[A-Za-z]+" required><br>
+            <input type="text" class="field" id="FirstName" name="FirstName" minlength="2" 
+                   pattern="[A-Za-z]+" title="First Name should contain only letters." required><br>
 
             <label for="LastName" class="field_name">Last Name:</label><br>
-            <input type="text" class="field" id="LastName" name="LastName" minlength="2"pattern="[A-Za-z]+" required><br>
+            <input type="text" class="field" id="LastName" name="LastName" minlength="2" 
+                   pattern="[A-Za-z]+" title="Last Name should contain only letters." required><br>
 
             <label for="Email" class="field_name">Email Address:</label><br>
-            <input type="text" class="field" id="Email" name="Email" pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" required><br>
+            <input type="text" class="field" id="Email" name="Email" 
+                   pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" 
+                   title="Email should be in the format: example@example.com" required><br>
 
             <label for="Password" class="field_name">Password:</label><br>
-            <input type="password" class="field" id="password" name="Password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}" required><br>
+            <input type="password" class="field" id="password" name="Password" 
+                   pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}" 
+                   title="Password must be at least 8 characters long, include at least one number, one uppercase letter, one lowercase letter, and one special character." required><br>
 
             <label for="PasswordTwo" class="field_name">Re-enter Password:</label><br>
-            <input type="password" class="field" id="PasswordTwo" name="PasswordTwo" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}" required>
+            <input type="password" class="field" id="PasswordTwo" name="PasswordTwo" 
+                   pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}" 
+                   title="Password must be at least 8 characters long, include at least one number, one uppercase letter, one lowercase letter, and one special character." required>
 
             <p id="submit-hero">How Do You Use FreakyFood?</p>
             <div id="radioelements">
@@ -46,8 +52,14 @@
         </form>
 
         <a href="/"><button type="button">Back</button></a>
-     
     </div>
+
+    <!-- Display alert if there is an error -->
+    {% if error %}
+    <script>
+        alert("{{ error }}");
+    </script>
+    {% endif %}
 </body>
 
 </html>
