@@ -111,7 +111,7 @@ button[type="submit"], a button {
 }
 
 button[type="submit"]:hover, a button:hover {
-    background-color: #007bff;
+    background-color: #074180;
 }
 
 .order-items {
@@ -166,6 +166,15 @@ button[type="submit"]:hover, a button:hover {
 .order-items button:hover {
     background-color: #c82333;
 }
+
+.checkout button {
+    background-color: green;
+}
+
+.checkout button:hover {
+    background-color: lightgreen;
+}
+
 
 hr {
     border: 0;
