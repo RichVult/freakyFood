@@ -1,0 +1,109 @@
+/* General Styling */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f8f8;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+/* Outer container with blue side margins */
+.content-wrapper {
+    background-color: #95c7fc;
+    padding: 20px;
+}
+
+/* Inner content container */
+.container {
+    background-color: #fff;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Blue header section */
+.blue-header {
+    text-align: center;
+    background-color: #ffffff;
+    color: white;
+    padding: 30px 20px;
+    border-radius: 10px 10px 0 0;
+}
+
+.logo {
+    width: 120px;
+    display: block;
+    margin: 0 auto 15px;
+}
+
+/* Restaurant Header */
+.restaurant-header h1 {
+    margin: 10px 0;
+    font-size: 28px;
+}
+
+.restaurant-image {
+    display: block;
+    margin: 0 auto;
+    width: 200px;
+    height: auto;
+    border-radius: 8px;
+}
+
+/* Order Info Section */
+.order-info {
+    text-align: center;
+    padding: 20px;
+}
+
+.order-info h1 {
+    color: #333;
+    font-size: 24px;
+}
+
+hr {
+    border: 0;
+    border-top: 2px solid #ddd;
+    margin: 20px 0;
+}
+
+
+@media (max-width: 600px) {
+    .content-wrapper {
+        padding: 10px;
+    }
+
+    .restaurant-header h1 {
+        font-size: 22px;
+    }
+
+    .restaurant-image {
+        width: 150px;
+    }
+}
+/* Footer Styling */
+.footer {
+    text-align: center;
+    margin-top: 30px;
+}
+
+/* Add Tip Button */
+.add-tip-button {
+    background-color: #28a745;  
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Button Hover Effect */
+.add-tip-button:hover {
+    background-color: #218838;
+}
