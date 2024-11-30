@@ -379,12 +379,12 @@ def editAccount():
     db.session.execute(update(Users).where(Users.UserID==user_id).values(
         FirstName=request.form.get('FirstName'), 
         LastName=request.form.get('LastName'),
-        Email=request.form.get('PhoneNumber'),
+        Email=request.form.get('Email'),
+        PhoneNumber=request.form.get('PhoneNumber'),
         Street=request.form.get('Street'),
         City=request.form.get('City'),
         State=request.form.get('State'),
         ZipCode=request.form.get('ZipCode'),
-        Card=request.form.get('City'),
         CardNumber=request.form.get('CardNumber')
         ))
     ##db.session.execute(update(Users).where(Orders.OrderID == order.OrderID).values(OrderStatus="Pickup"))

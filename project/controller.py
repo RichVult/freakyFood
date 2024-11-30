@@ -70,7 +70,6 @@ def handleAccount():
     user = db.session.execute(select(Users).where(Users.UserID == user_id)).scalar_one_or_none()
 
     return render_template('account.html', user=user)
-    
 
 def handleLogout():
     # Drop any user specific session informaion
