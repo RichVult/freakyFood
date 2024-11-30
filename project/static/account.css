@@ -95,11 +95,28 @@ body {
     width: 100px;
 }
 
+.profilePic {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 80px;
+    width: 80px;
+    border-radius: 8px;
+}
+
 #index {
     margin-right: 30px;
 }
 
 .reset-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.edit-buttons {
     display: flex;
     align-items: center;
     justify-content: center;
