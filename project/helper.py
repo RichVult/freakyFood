@@ -371,6 +371,26 @@ def deleteAccount():
         case "StoreOwner":
             return deleteStoreOwner()
 
+def editAccount():
+    #get the values of what the user is trying to edit
+    user_id=session.get('user_id')
+
+    ##Update User that has the user ID of the current session, update by replaceing values within the form
+    db.session.execute(update(Users).where(Users.UserID==user_id).values(
+        FirstName=request.form.get('FirstName'), 
+        LastName=request.form.get('LastName'),
+        Email=request.form.get('PhoneNumber'),
+        Street=request.form.get('Street'),
+        City=request.form.get('City'),
+        State=request.form.get('State'),
+        ZipCode=request.form.get('ZipCode'),
+        Card=request.form.get('City'),
+        CardNumber=request.form.get('CardNumber')
+        ))
+    ##db.session.execute(update(Users).where(Orders.OrderID == order.OrderID).values(OrderStatus="Pickup"))
+    db.session.commit()
+
+    
 def updateDriverOrderStatus():
     # Get order ID and desired action from the form data
     order_id = request.form.get('order_id')

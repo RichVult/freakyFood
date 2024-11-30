@@ -35,7 +35,6 @@ def login():
 @app.route('/account', methods=['GET', 'POST'])
 def account():
     return handleAccount()
-
 '''
     Access: Logged In | Purpose: Logout of current account | TODO: Nothing
 '''
