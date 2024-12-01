@@ -1,0 +1,181 @@
+/* General Body Styling */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Logo */
+a img.logo {
+    width: 100px;
+    margin: 20px 0;
+    display: block;
+    transition: transform 0.3s;
+}
+
+a img.logo:hover {
+    transform: scale(1.1);
+}
+
+/* Restaurant Header */
+.restaurant-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.restaurant-header h1 {
+    font-size: 2.5rem;
+    color: #444;
+    margin-bottom: 15px;
+}
+
+.restaurant-header img {
+    width: 300px;
+    height: 300px;
+    border-radius: 10px;
+    border: 3px solid #ddd;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Order Section */
+h1 {
+    font-size: 2rem;
+    color: #444;
+    margin: 20px 0;
+    text-align: center;
+}
+
+.order-items {
+    width: 80%;
+    max-width: 700px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+}
+
+.order-items h2 {
+    font-size: 2rem;
+    color: #444;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 10px;
+}
+
+.order-items ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.order-items li {
+    margin-bottom: 15px;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.order-items li:last-child {
+    border-bottom: none;
+}
+
+.order-items strong {
+    font-size: 1.2rem;
+    color: #333;
+}
+
+.order-items span {
+    display: block;
+    margin: 5px 0;
+    color: #666;
+}
+
+/* Buttons */
+button, a button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+}
+
+button:hover, a button:hover {
+    background-color: #0056b3;
+}
+
+.delete-buttons button {
+    background-color: #dc3545;
+}
+
+.delete-buttons button:hover {
+    background-color: #c82333;
+}
+
+hr {
+    border: 0;
+    border-top: 1px solid #ddd;
+    margin: 20px 0;
+}
+
+/* No Items Message */
+p {
+    font-size: 1.2rem;
+    color: #999;
+    margin: 20px 0;
+    text-align: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .order-items {
+        width: 90%;
+    }
+
+    button, a button {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
+}
+
+footer {
+    width: 100%;
+    background-color: #333;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: auto;
+    border: none;
+    box-shadow: none;
+}
+
+.footer-links {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    background-color: transparent;
+    padding: 0;
+}
+
+.footer-links a {
+    color: #ffccbc;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+    color: #fff;
+}

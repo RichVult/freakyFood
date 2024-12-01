@@ -23,7 +23,7 @@
     </header>
     <body>
         <a href='/'><img class="logo" src="/static/images/FFLogo.png" alt="Freaky Food Logo"></a>
-        <!-- Redirect With New Query Back to Search -->
+       
         <div class="search-bar">
             <form action="/search" method="get">
                 <input type="text" id="query" name="query" placeholder="What are you craving?" />  <button type="submit">Search</button>
@@ -44,10 +44,19 @@
             {% endfor %}
         {% else %}
             <p>No stores found.</p>
-        {% endif %}
+        {% endif %} 
+   
+    <footer class="footer">
+        <p style="margin-left: 15px;">&copy; 2024 Freaky Food. All rights reserved.</p>
+        <ul class="footer-links">
+            <li><a href="/404">Privacy Policy</a></li>
+            <li><a href="/404">Terms of Service</a></li>
+            <li><a href="/404">Contact Us</a></li>
+        </ul>
+    </footer>
+     
+        
     </body>
 
-    <footer>
 
-    </footer>
 </html>
