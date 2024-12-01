@@ -53,7 +53,7 @@
     </div>
 
     {% if potential_items %}
-    <class="order-items">
+    <div class="order-items">
         <h2>Your Order</h2>
         <ul>
             {% for item in potential_items %}
@@ -71,7 +71,9 @@
             {% endfor %}
         </ul>
         <hr>
-        <a href='/checkout'><button>Checkout</button></a>
+        <div class="checkout">
+            <a href='/checkout' style="background-color: green;"><button>Checkout</button></a>
+        </div>
     </div>
     {% else %}
     <p>No items in your order yet.</p>
