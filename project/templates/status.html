@@ -2,7 +2,6 @@
 
     This is the order status page, will pass an order id to this page and display all the information
 
-    Hard code a timer which flicks through each order status progress
 
     Maybe include fake map / graphics eventually
 
@@ -19,11 +18,37 @@
     <link rel="stylesheet" href="/static/status.css">
 </head>
 <body>
-    <a href='/'><img class="logo" src="/static/images/FFLogo.png" alt="Freaky Food Logo"></a>
-    <div class="restaurant-header">
-        <h1>{{ curr_restaurant.StoreName }}</h1>
-        <img src="{{ url_for('static', filename='images/' + curr_restaurant.StoreImage) }}" alt="Store Image" style="width: 300px; height: 300px;"/>
+    <div class="content-wrapper">
+        <div class="container">
+
+            <!-- Logo and Restaurant Header -->
+            <header class="blue-header">
+                <a href="{{ url_for('index') }}">
+                    <img class="logo" src="/static/images/FFLogo.png" alt="Freaky Food Logo">
+                </a>
+                <div class="restaurant-header">
+                    <h1>{{ curr_restaurant.StoreName }}</h1>
+                    <img src="{{ url_for('static', filename='images/' + curr_restaurant.StoreImage) }}" 
+                         alt="{{ curr_restaurant.StoreName }} Image" class="restaurant-image"/>
+                </div>
+            </header>
+
+           
+            <!-- V DO NOT TOUCH V -->
+           
+                <h1>Order #{{ current_order.OrderID }}</h1>
+                <hr>
+                <h1>Order Status: {{ current_order.OrderStatus }}</h1>
+            
+            <!-- ^ DO NOT TOUCH ^ -->
+             
+             <!-- Footer with Add Tip Button -->
+            <footer class="footer">
+                <button class="add-tip-button">Add Tip</button>
+            </footer>
+        </div>
     </div>
+<<<<<<< HEAD
     <h1> ORDER # {{current_order.OrderID}}</h1>
     <hr>
     <h1> ORDER STATUS: {{current_order.OrderStatus}}</h1>
@@ -36,5 +61,7 @@
             <li><a href="/404">Contact Us</a></li>
         </ul>
     </footer>
+=======
+>>>>>>> 4b66c3b8c04dce7e924704e255f74601f3c2e2b3
 </body>
 </html>

@@ -8,6 +8,8 @@
 
     This page will provide functions/redirects to update information
 
+    ADD PROFILE IMAGE
+
 -->
 
 <!DOCTYPE html>
@@ -21,46 +23,52 @@
 <body>
     <div class="fixed-header">
         <a href='/home'><img class="logo" src="/static/images/FFLogo.png" alt="Freaky Food Logo"></a>
+        <img class="profilePic" src="/static/images/default_profile.png" alt="default_profile">
         <div id="index">
             <a href="/home"><button type="button">Home</button></a>
             <a href="/logout"><button type="button">Sign out</button></a>
             <a href="/404"><button type="button">Help</button></a>
         </div>
     </div>
+
     <h1>Your Account Information</h1>
 
     <div>
-        <table>
+        <form action="/account" method="POST">
+            <input type="hidden" name="action" value="edit">
             <!-- Column Names -->
-            <tr>
-                <th>User ID</th>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Email</th>
-                <th>Phone Number</th>
-                <th>Street</th>
-                <th>City</th>
-                <th>State</th>
-                <th>ZipCode</th>
-                <th>Card Number</th>
-            </tr>
-            <!-- display user information -->
-            <tr>
-                <td>{{ user.UserID }}</td>
-                <td>{{ user.FirstName }}</td>
-                <td>{{ user.LastName }}</td>
-                <td>{{ user.Email }}</td>
-                <td>{{ user.PhoneNumber }}</td>
-                <td>{{ user.Street }}</td>
-                <td>{{ user.City }}</td>
-                <td>{{ user.State }}</td>
-                <td>{{ user.ZipCode }}</td>
-                <td>{{ user.CardNumber}}</td>
-            </tr>
-        </table>
+             <table>
+                <tr>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Email</th>
+                    <th>Phone Number</th>
+                    <th>Street</th>
+                    <th>City</th>
+                    <th>State</th>
+                    <th>ZipCode</th>
+                    <th>Card Number</th>
+                </tr>
+                <!-- display user information -->
+                <tr>
+                    <td><input type="text" name="FirstName" value="{{ user.FirstName }}" required></td>
+                    <td><input type="text" name="LastName" value="{{ user.LastName }}" required></td>
+                    <td><input type="email" name="Email" value="{{ user.Email }}" required></td>
+                    <td><input type="text" name="PhoneNumber" value="{{ user.PhoneNumber }}" required></td>
+                    <td><input type="text" name="Street" value="{{ user.Street }}" required></td>
+                    <td><input type="text" name="City" value="{{ user.City }}" required></td>
+                    <td><input type="text" name="State" value="{{ user.State }}" required></td>
+                    <td><input type="text" name="ZipCode" value="{{ user.ZipCode }}" required></td>
+                    <td><input type="text" name="CardNumber" value="{{ user.CardNumber }}" required></td>
+                </tr>
+            </table>
     </div>
-
-    <!-- Return to home page -->
+    <!--edit-->
+    <div class="edit-buttons">
+        <button type="submit" onclick="return confirm('Are you sure you want to save these changes?')">Save Changes</button>
+    </div>
+</form>
+<!-- Return to home page -->
     <br>
     <div class="reset-buttons">
     <a href="/home"><button type="button" id="home">Home</button></a>
@@ -74,6 +82,7 @@
 
     <form action="/account" method="POST" style="display:inline;">
         <input type="hidden" name="action" value="delete">
+        <input type="hidden" name="userID" value="{{ user.UserTypeID }}">
         <div class="reset-buttons">
             <button type="submit" onclick="return confirm('Are you sure you want to delete your account?')">Delete Account</button>
         </div>
@@ -88,6 +97,13 @@
         <li><a href="/404">Terms of Service</a></li>
         <li><a href="/404">Contact Us</a></li>
     </ul>
+
+    <!-- Display alert if there is an error -->
+    {% if error %}
+    <script>
+        alert("{{ error }}");
+    </script>
+    {% endif %}
 </footer>
 
 </html>

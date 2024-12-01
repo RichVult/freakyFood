@@ -1,13 +1,3 @@
-<!--
-
-    This is the homepage for drivers.
-
-    Here drivers can see their dashboard and see incoming orders
-
-    This page will redirect to other non implemented pages such as driver account information or order completing pages
-
--->
-
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -15,67 +5,55 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Driver - Freaky Food</title>
         <link rel="stylesheet" href="/static/home.css">
+        <link rel="stylesheet" href="/static/driver.css">
     </head>
 
     <body>
         <div class="fixed-header">
             <img class="logo" src="/static/images/FFLogo.png" alt="logo">
             <div id="index">
-                <a href="/search"><button type="button">Restaurants</button></a>
                 <a href="/account"><button type="button">My Account</button></a>
             </div>
         </div>
-
+        
         <section class="hero" style="margin-top: 60px;">
-            <h1 style="font-size: 16px; text-align: left; margin: 0; padding: 10px;">Driver Dashboard</h1>
-            <p style="font-size: 14px; text-align: left; margin: 0; padding: 0 10px;">Your Stats</p>
+            <h1 id="driver-header">Driver Dashboard</h1>
+            <p id="driver-stats-header">Your Stats</p>
 
             <div class="delivery-stats" style="padding: 10px;">
-                <div class="stat-item" style="font-size: 14px; text-align: left; margin-bottom: 10px;">
+                <div class="stat-item">
                     <h2 style="font-size: 14px; margin: 0;">Total Deliveries</h2>
                     <p id="deliveries-count" style="font-size: 12px; margin: 0;">20</p>
                 </div>
-                <div class="stat-item" style="font-size: 14px; text-align: left;">
+                <div class="stat-item">
                     <h2 style="font-size: 14px; margin: 0;">Total Earnings</h2>
                     <p id="earnings-amount" style="font-size: 12px; margin: 0;">$150.00</p>
                 </div>
             </div>
         </section>
 
-        <div style="display: flex; justify-content: center; align-items: flex-start; margin-top: 15px;">
-            <div style="border: 1px solid #ddd; border-radius: 8px; padding: 20px; width: 80%; max-width: 600px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); background-color: #f9f9f9;">
-                <h3 style="font-size: 18px; text-align: center; margin-bottom: 15px;">Available Orders</h3>
-                
-                <div style="max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; justify-content: flex-start;">
-                    <div style="border-bottom: 1px solid #eee; padding: 10px 0;">
-                        <p style="font-size: 14px; margin: 0;"><strong>Restaurant:</strong> Pizza Palace</p>
-                        <p style="font-size: 14px; margin: 0;"><strong>Location:</strong> 123 Main St</p>
-                        <p style="font-size: 14px; margin: 0;"><strong>Order Price:</strong> $25.00</p>
-                    </div>
+        <div id="order-wrapper">
+            <div id="inside-wrapper">
+                <h3 id="order-header">Available Orders</h3>
+                <div id="order-list">
+                    {% for order, store, user, order_items in orders %}
+                        <div id = "order-ul-div">
+                            <p class="order-item"><strong>Order ID:</strong> {{ order.OrderID }}</p>
+                            <p class="order-item"><strong>Store:</strong> {{ store.StoreName }}</p>
+                            <p class="order-item"><strong>Order Price:</strong> Not implemented</p>
 
-                    <div style="border-bottom: 1px solid #eee; padding: 10px 0;">
-                        <p style="font-size: 14px; margin: 0;"><strong>Restaurant:</strong> Sushi World</p>
-                        <p style="font-size: 14px; margin: 0;"><strong>Location:</strong> 456 Oak Ave</p>
-                        <p style="font-size: 14px; margin: 0;"><strong>Order Price:</strong> $32.50</p>
-                    </div>
-
-                    <div style="border-bottom: 1px solid #eee; padding: 10px 0;">
-                        <p style="font-size: 14px; margin: 0;"><strong>Restaurant:</strong> Burger Town</p>
-                        <p style="font-size: 14px; margin: 0;"><strong>Location:</strong> 789 Pine Blvd</p>
-                        <p style="font-size: 14px; margin: 0;"><strong>Order Price:</strong> $18.75</p>
-                    </div>
-
-                    <div style="border-bottom: 1px solid #eee; padding: 10px 0;">
-                        <p style="font-size: 14px; margin: 0;"><strong>Restaurant:</strong> Taco Fiesta</p>
-                        <p style="font-size: 14px; margin: 0;"><strong>Location:</strong> 101 Elm St</p>
-                        <p style="font-size: 14px; margin: 0;"><strong>Order Price:</strong> $20.00</p>
-                    </div>
-
-                    <div style="border-bottom: 1px solid #eee; padding: 10px 0;">
-                        <p style="font-size: 14px; margin: 0;"><strong>Restaurant:</strong> Salad Express</p>
-                        <p style="font-size: 14px; margin: 0;"><strong>Location:</strong> 202 Maple Rd</p>
-                        <p style="font-size: 14px; margin: 0;"><strong>Order Price:</strong> $15.50</p>
-                    </div>
+                            <!-- Accept Order Form -->
+                            <form action="/driver" method="POST" style="display:inline;">
+                                <input type="hidden" name="action" value="accept">
+                                <input type="hidden" name="orderID" value="{{ order.OrderID }}">
+                                <div class="accept-order">
+                                    <button type="submit" onclick="return confirm('Are you sure you want to accept this order?')">Accept Order</button>
+                                </div>
+                            </form>
+                        </div>
+                    {% else %}
+                        <p>No orders available.</p>
+                    {% endfor %}
                 </div>
             </div>
         </div>
