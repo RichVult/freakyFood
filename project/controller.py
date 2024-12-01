@@ -61,7 +61,7 @@ def handleLogin():
 
 def handleAccount():
     if request.method == 'POST' and request.form.get('action') == 'delete': deleteAccount()
-    
+    if request.method== 'POST' and request.form.get('action') == 'edit': editAccount()
     # Redirect to login if not logged in
     if 'user_id' not in session: return redirect(url_for('login'))
     
