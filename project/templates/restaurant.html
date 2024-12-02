@@ -53,7 +53,7 @@
     </div>
 
     {% if potential_items %}
-    <class="order-items">
+    <div class="order-items">
         <h2>Your Order</h2>
         <ul>
             {% for item in potential_items %}
@@ -71,10 +71,21 @@
             {% endfor %}
         </ul>
         <hr>
-        <a href='/checkout'><button>Checkout</button></a>
+        <div class="checkout">
+            <a href='/checkout' style="background-color: green;"><button>Checkout</button></a>
+        </div>
     </div>
     {% else %}
     <p>No items in your order yet.</p>
     {% endif %}
+
+    <footer class="footer">
+        <p style="margin-left: 15px;">&copy; 2024 Freaky Food. All rights reserved.</p>
+        <ul class="footer-links">
+            <li><a href="/404">Privacy Policy</a></li>
+            <li><a href="/404">Terms of Service</a></li>
+            <li><a href="/404">Contact Us</a></li>
+        </ul>
+    </footer>
 </body>
 </html>
