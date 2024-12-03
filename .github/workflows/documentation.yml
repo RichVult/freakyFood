@@ -11,21 +11,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-      - name: Install dependencies2
+      - name: Install dependencies from requirements.txt
         run: pip install -r docs/requirements.txt
-      - name: Install dependencies
+      - name: Install additional dependencies
         run: |
           pip install sphinx sphinx_rtd_theme myst_parser
       - name: Check Documentation Directory
         run: ls -la docs/sphinx  
       - name: Sphinx build
         run: |
-          sphinx-build docs/sphinx docs/sphinx/_build
+          sphinx-build docs/sphinx docs/sphinx/_build/html
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         with:
           publish_branch: gh-pages
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: docs/sphinx/_build/
+          publish_dir: docs/sphinx/_build/html
           force_orphan: true
