@@ -1,7 +1,7 @@
 import pytest
 from flask import Flask,request
 from db.server import app, db
-from project.helper import verifySignup,createUser,addOrder,deleteOrderItem
+from helper import verifySignup,createUser,addOrder,deleteOrderItem
 from db.schema.Users import Users
 from db.schema.Orders import Orders
 from db.schema.OrderItems import OrderItems
@@ -10,7 +10,7 @@ from db.schema.Menu import Menu
 from db.schema.MenuItems import MenuItems
 from sqlalchemy import *
 import bcrypt
-from project.testStuff.stuffForTests import * #full of mock data for testing
+from db.scripts.testData import * 
 
 app.secret_key = 'ewe'
 
