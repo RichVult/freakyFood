@@ -117,7 +117,6 @@ def resetPassword():
 
 def deleteOrderItem():
     order_item_id = request.form.get('order_item_id') # We are removing an item from a potential order
-    
     db.session.execute(delete(OrderItems).where(OrderItems.OrderItemID == order_item_id))
     db.session.commit()
 
