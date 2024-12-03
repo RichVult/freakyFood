@@ -61,8 +61,9 @@ def handleLogin():
 
 def handleAccount():
     if request.method == 'POST' and request.form.get('action') == 'delete': deleteAccount()
-    if request.method== 'POST' and request.form.get('action') == 'edit': editAccount()
-    # Redirect to login if not logged in
+    if request.method == 'POST' and request.form.get('action') == 'edit': editAccount()
+    if request.method == 'POST' and request.form.get('action') == 'picture': updateProfilePic()
+    # Redirect to login if not logged inhandleAccount
     if 'user_id' not in session: return redirect(url_for('login'))
     
     # Fetch user details from the database using the user ID
@@ -182,10 +183,13 @@ def handleStatus():
     # get resteraunt from current order
     curr_restaurant = db.session.execute(select(Store).where(Store.StoreID == current_order.StoreID)).scalar_one_or_none()
 
+    # get current orders' order items
+    order_items = OrderItems.query.filter(OrderItems.OrderID == current_order.OrderID).all()
+
     # Remove restrictions if order is completed
     if current_order.OrderStatus == "Delivered": session.pop('order_id', None)
 
-    return render_template('status.html', current_order=current_order, curr_restaurant=curr_restaurant)
+    return render_template('status.html', current_order=current_order, curr_restaurant=curr_restaurant, order_items=order_items)
 
 def handleCheckout():
     # Redirect if wrong user type

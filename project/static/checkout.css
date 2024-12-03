@@ -81,11 +81,11 @@ body {
 }
 
 /* Buttons */
-button {
+.container button {
     width: 120px;
     padding: 10px;
     margin-top: 10px;
-    background-color: #ff5a5f;
+    background-color: #27bc45;
     color: #fff;
     border: none;
     font-size: 16px;
@@ -96,15 +96,15 @@ button {
     transition: background-color 0.3s ease;
 }
 
-button:hover {
+.container button:hover {
     background-color: #e04848;
 }
 
-.edit-button {
-    background-color: #4CAF50;
+.container .edit-button {
+    background-color: #18a8d4;
 }
 
-.delete-button {
+.container .delete-button {
     background-color: #f44336;
     margin-top: 15px;
 }

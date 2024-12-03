@@ -1,17 +1,19 @@
-/* General Styling */
 body {
     font-family: Arial, sans-serif;
-    background-color: #f8f8f8;
+    background-color: #95c7fc;
     color: #333;
     margin: 0;
     padding: 0;
 }
-/* Outer container with blue side margins */
+
+/* Content Wrapper */
 .content-wrapper {
-    background-color: #95c7fc;
+    margin-top: 140px;
     padding: 20px;
+    margin-bottom: 140px;
 }
-/* Inner content container */
+
+/* Container */
 .container {
     background-color: #fff;
     max-width: 800px;
@@ -20,24 +22,21 @@ body {
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
-/* Blue header section */
+
+/* Blue Header */
 .blue-header {
     text-align: center;
     background-color: #ffffff;
-    color: white;
+    color: black;
     padding: 30px 20px;
     border-radius: 10px 10px 0 0;
 }
-.logo {
-    width: 120px;
-    display: block;
-    margin: 0 auto 15px;
-}
-/* Restaurant Header */
+
 .restaurant-header h1 {
     margin: 10px 0;
     font-size: 28px;
 }
+
 .restaurant-image {
     display: block;
     margin: 0 auto;
@@ -45,50 +44,63 @@ body {
     height: auto;
     border-radius: 8px;
 }
-/* Order Info Section */
-.order-info {
+
+/* Order Wrapper */
+#order-wrapper {
     text-align: center;
-    padding: 20px;
+    margin-top: 20px;
 }
-.order-info h1 {
-    color: #333;
-    font-size: 24px;
+
+.order-status {
+    font-size: 18px;
+    margin: 10px 0;
 }
-hr {
-    border: 0;
-    border-top: 2px solid #ddd;
-    margin: 20px 0;
+
+/* Order Items */
+.order-items h2 {
+    font-size: 22px;
+    margin-bottom: 15px;
+    text-align: left;
 }
-@media (max-width: 600px) {
-    .content-wrapper {
-        padding: 10px;
-    }
-    .restaurant-header h1 {
-        font-size: 22px;
-    }
-    .restaurant-image {
-        width: 150px;
-    }
+
+.order-items ul {
+    list-style: none;
+    padding: 0;
 }
-/* Footer Styling */
+
+.order-item {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+/* Footer */
 .footer {
     text-align: center;
     margin-top: 30px;
+    background-color: #333;
+    color: #fff;
+    padding: 20px;
+    font-size: 14px;
 }
-/* Add Tip Button */
-.add-tip-button {
-    background-color: #28a745;  
-    color: white;
-    border: none;
-    padding: 12px 25px;
-    font-size: 18px;
-    font-weight: bold;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+.footer-links {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    padding: 0;
+    margin-top: 10px;
 }
-/* Button Hover Effect */
-.add-tip-button:hover {
-    background-color: #218838;
+
+.footer-links a {
+    color: #ffccbc;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+    color: #fff;
 }

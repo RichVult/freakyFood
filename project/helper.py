@@ -9,6 +9,8 @@ from flask import Flask, render_template, request, redirect, url_for, session
 import re
 import socket
 import bcrypt
+import os
+from werkzeug.utils import secure_filename
 
 from db.server import app, db
 from sqlalchemy import *
@@ -488,3 +490,31 @@ def commitUserOrder():
     if is_user_null:
         is_user_null.UserID = session.get('user_id')
         db.session.commit()
+
+def updateProfilePic():
+    folder_location = 'static/images/profile_pics'
+    # Handle profile picture upload
+    if 'file' not in request.files:
+        return render_template('account.html', error="No file Selected")
+
+    file = request.files['file']
+    if file.filename == '':
+        return render_template('account.html', error="No selected file")
+
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        upload_path = os.path.join(app.config['UPLOAD_FOLDER'], 'images/profile_pics')
+        os.makedirs(upload_path, exist_ok=True)
+        file.save(os.path.join(upload_path, filename))
+
+        # Update user's profile picture in the database
+        user_id = session.get('user_id')
+        user = db.session.execute(select(Users).where(Users.UserID == user_id)).scalar_one_or_none()
+        db.session.execute(update(Users).where(Users.UserID == user_id).values(ProfileImage=filename))
+        db.session.commit()
+    else:
+        return render_template('account.html', user=user, error="Invalid file type")
+
+def allowed_file(filename):
+    allowed_extensions = {'png', 'jpg', 'jpeg', 'gif'}
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions

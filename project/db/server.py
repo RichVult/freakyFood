@@ -4,11 +4,10 @@ import os, dotenv, random, string
 from flask import Flask, session
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
+from werkzeug.utils import secure_filename
 
 # import our queries
 from db.scripts.dummyData import *
-
-
 
 # import environment variables from .env
 dotenv.load_dotenv()
@@ -32,6 +31,9 @@ app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
 
 # Secret Key Needed for Session Control
 app.secret_key = os.getenv('SECRET_KEY', 'your_default_secret_key_here')
+
+# Set the upload folder
+app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'static')
 
 # Initialize Database Instance
 db = SQLAlchemy(app)

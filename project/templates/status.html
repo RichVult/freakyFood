@@ -1,52 +1,58 @@
-<!--
-
-    This is the order status page, will pass an order id to this page and display all the information
-
-
-    Maybe include fake map / graphics eventually
-
-    only accessable when order id exists and logged in
-
--->
-
+<!-- Order Status Page -->
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Status - FreakyFood</title>
-    <link rel="stylesheet" href="../static/status.css">
-</head>
-<body>
-    <div class="content-wrapper">
-        <div class="container">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Order Status - FreakyFood</title>
+        <link rel="stylesheet" href="../static/status.css">
+    </head>
+    <body>
+        <!-- Content Wrapper -->
+        <div class="content-wrapper">
+            <div class="container">
+                <!-- Restaurant Header -->
+                <header class="blue-header">
+                    <div class="restaurant-header">
+                        <img 
+                            src="{{ url_for('static', filename='images/' + curr_restaurant.StoreImage) }}" 
+                            alt="{{ curr_restaurant.StoreName }} Image" 
+                            class="restaurant-image"
+                        />
+                        <h1>{{ curr_restaurant.StoreName }}</h1>
+                    </div>
+                </header>
 
-            <!-- Logo and Restaurant Header -->
-            <header class="blue-header">
-                <a href="{{ url_for('index') }}">
-                    <img class="logo" src="/static/images/FFLogo.png" alt="Freaky Food Logo">
-                </a>
-                <div class="restaurant-header">
-                    <h1>{{ curr_restaurant.StoreName }}</h1>
-                    <img src="{{ url_for('static', filename='images/' + curr_restaurant.StoreImage) }}" 
-                         alt="{{ curr_restaurant.StoreName }} Image" class="restaurant-image"/>
+                <!-- Order Information -->
+                <div id="order-wrapper">
+                    <h1>Order #{{ current_order.OrderID }}</h1>
+                    <p class="order-status">Status: <strong>{{ current_order.OrderStatus }}</strong></p>
+
+                    <!-- Order Items -->
+                    <section class="order-items">
+                        <h2>Order Items:</h2>
+                        <ul>
+                            {% for item in order_items %}
+                            <li class="order-item">
+                                <p><strong>{{ item.OrderItemName }}</strong></p>
+                                <p>Quantity: {{ item.ItemQuantity }}</p>
+                                <p>Price: ${{ item.ItemPrice }}</p>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </section>
                 </div>
-            </header>
-
-           
-            <!-- V DO NOT TOUCH V -->
-           
-                <h1>Order #{{ current_order.OrderID }}</h1>
-                <hr>
-                <h1>Order Status: {{ current_order.OrderStatus }}</h1>
-            
-            <!-- ^ DO NOT TOUCH ^ -->
-             
-             <!-- Footer with Add Tip Button -->
-            <footer class="footer">
-                <button class="add-tip-button">Add Tip</button>
-            </footer>
+            </div>
         </div>
-    </div>
-</body>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2024 Freaky Food. All rights reserved.</p>
+            <ul class="footer-links">
+                <li><a href="/404">Privacy Policy</a></li>
+                <li><a href="/404">Terms of Service</a></li>
+                <li><a href="/404">Contact Us</a></li>
+            </ul>
+        </footer>
+    </body>
 </html>

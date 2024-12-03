@@ -23,12 +23,19 @@
 <body>
     <div class="fixed-header">
         <a href='/home'><img class="logo" src="/static/images/FFLogo.png" alt="Freaky Food Logo"></a>
-        <img class="profilePic" src="/static/images/default_profile.png" alt="default_profile">
         <div id="index">
             <a href="/home"><button type="button">Home</button></a>
             <a href="/logout"><button type="button">Sign out</button></a>
             <a href="/404"><button type="button">Help</button></a>
         </div>
+    </div>
+    <div class="profilePic">
+        <form action="/account" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="action" value="picture">
+            <input type="file" name="file" accept="image/*" required>
+            <button type="submit">Upload New Profile Picture</button>
+        </form>
+        <img src="../static/images/profile_pics/{{ user.ProfileImage }}" alt="profile_picture">
     </div>
 
     <h1>Your Account Information</h1>
