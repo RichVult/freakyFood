@@ -1,55 +1,3 @@
-<<<<<<< HEAD
-/* General Body Styling */
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f8f9fa;
-    color: #333;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-/* Logo */
-a img.logo {
-    width: 100px;
-    margin: 20px 0;
-    display: block;
-    transition: transform 0.3s;
-}
-
-a img.logo:hover {
-    transform: scale(1.1);
-}
-
-/* Restaurant Header */
-.restaurant-header {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.restaurant-header h1 {
-    font-size: 2.5rem;
-    color: #444;
-    margin-bottom: 15px;
-}
-
-.restaurant-header img {
-    width: 300px;
-    height: 300px;
-    border-radius: 10px;
-    border: 3px solid #ddd;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* Order Section */
-h1 {
-    font-size: 2rem;
-    color: #444;
-    margin: 20px 0;
-    text-align: center;
-=======
 /* General Styling */
 body {
     font-family: Arial, sans-serif;
@@ -58,13 +6,11 @@ body {
     margin: 0;
     padding: 0;
 }
-
 /* Outer container with blue side margins */
 .content-wrapper {
     background-color: #95c7fc;
     padding: 20px;
 }
-
 /* Inner content container */
 .container {
     background-color: #fff;
@@ -74,7 +20,6 @@ body {
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
-
 /* Blue header section */
 .blue-header {
     text-align: center;
@@ -83,19 +28,16 @@ body {
     padding: 30px 20px;
     border-radius: 10px 10px 0 0;
 }
-
 .logo {
     width: 120px;
     display: block;
     margin: 0 auto 15px;
 }
-
 /* Restaurant Header */
 .restaurant-header h1 {
     margin: 10px 0;
     font-size: 28px;
 }
-
 .restaurant-image {
     display: block;
     margin: 0 auto;
@@ -103,135 +45,27 @@ body {
     height: auto;
     border-radius: 8px;
 }
-
 /* Order Info Section */
 .order-info {
     text-align: center;
     padding: 20px;
 }
-
 .order-info h1 {
     color: #333;
     font-size: 24px;
->>>>>>> 4b66c3b8c04dce7e924704e255f74601f3c2e2b3
 }
-
 hr {
     border: 0;
-<<<<<<< HEAD
-    border-top: 1px solid #ddd;
-    margin: 20px 0;
-}
-
-/* Order Status */
-h1:nth-of-type(2) {
-    font-size: 1.8rem;
-    color: #007bff;
-    margin-top: 10px;
-    text-transform: uppercase;
-}
-
-/* Timed Progress Styling */
-.timer {
-    width: 80%;
-    max-width: 700px;
-    background-color: #fff;
-    padding: 20px;
-    margin-top: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    color: #666;
-}
-
-/* Add Animation for Status Updates */
-.timer span {
-    font-weight: bold;
-    color: #28a745;
-    font-size: 1.5rem;
-    animation: pulse 2s infinite ease-in-out;
-}
-
-@keyframes pulse {
-    0%, 100% {
-        opacity: 1;
-    }
-    50% {
-        opacity: 0.5;
-    }
-}
-
-/* Map Placeholder (Future Graphics) */
-.map-placeholder {
-    width: 80%;
-    max-width: 700px;
-    height: 300px;
-    background-color: #ddd;
-    border: 2px dashed #bbb;
-    border-radius: 8px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.2rem;
-    color: #888;
-    margin-top: 20px;
-}
-
-.map-placeholder:hover {
-    border-color: #999;
-    color: #666;
-    background-color: #eee;
-}
-
-footer {
-    width: 100%;
-    background-color: #333;
-    color: #fff;
-    padding: 20px;
-    text-align: center;
-    font-size: 14px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    margin-top: auto;
-    border: none;
-    box-shadow: none;
-}
-
-.footer-links {
-    list-style: none;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 15px;
-    background-color: transparent;
-    padding: 0;
-}
-
-.footer-links a {
-    color: #ffccbc;
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-.footer-links a:hover {
-    color: #fff;
-=======
     border-top: 2px solid #ddd;
     margin: 20px 0;
 }
-
-
 @media (max-width: 600px) {
     .content-wrapper {
         padding: 10px;
     }
-
     .restaurant-header h1 {
         font-size: 22px;
     }
-
     .restaurant-image {
         width: 150px;
     }
@@ -241,7 +75,6 @@ footer {
     text-align: center;
     margin-top: 30px;
 }
-
 /* Add Tip Button */
 .add-tip-button {
     background-color: #28a745;  
@@ -255,9 +88,7 @@ footer {
     transition: background-color 0.3s ease;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
-
 /* Button Hover Effect */
 .add-tip-button:hover {
     background-color: #218838;
->>>>>>> 4b66c3b8c04dce7e924704e255f74601f3c2e2b3
 }

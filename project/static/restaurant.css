@@ -34,7 +34,6 @@ a img.logo {
     margin-top: 10px;
 }
 
-/* Menu Section */
 .menu-items {
     width: 80%;
     max-width: 700px;
@@ -223,4 +222,46 @@ footer {
 
 .footer-links a:hover {
     color: #fff;
+}
+
+.fixed-header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: #007bff;
+    height: 70px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    font-size: 1.5em;
+    z-index: 1000;
+}
+
+.logo {
+    height: 100px;
+    width: 100px;
+}
+
+#index {
+    display: flex;
+    flex-direction: row;
+    gap: .7rem;
+    margin-right: 20px;
+}
+
+#index button {
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 1px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
 }

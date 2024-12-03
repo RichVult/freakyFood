@@ -22,14 +22,30 @@
         <link rel="stylesheet" href="/static/search.css">
     </header>
     <body>
-        <a href='/'><img class="logo" src="/static/images/FFLogo.png" alt="Freaky Food Logo"></a>
+        <div class="fixed-header">
+            <a href="/"><img class="logo" src="/static/images/FFLogo.png" alt="Freaky Food Logo"></a>
+            <div id="index">
+                {% if user_id %}
+                    <a href="/search"><button type="button">Restaurants</button></a>
+                    <a href="/404"><button type="button">Help</button></a>
+                    <a href="/404"><button type="button">Deals</button></a>
+                    <a href="/account"><button type="button">Home</button></a>
+                {% else %}
+                    <a href="/search"><button type="button">Restaurants</button></a>
+                    <a href="/404"><button type="button">Deals</button></a>
+                    <a href="/404"><button type="button">Help</button></a>
+                    <a href="/login"><button type="button">Login</button></a>
+                    <a href="/signup"><button type="button">Signup</button></a>
+                {% endif %}
+            </div>
+        </div>
        
         <div class="search-bar">
             <form action="/search" method="get">
                 <input type="text" id="query" name="query" placeholder="What are you craving?" />  <button type="submit">Search</button>
             </form>
         </div>
-        <h2>Stores:</h2>
+        <h2>Results:</h2>
         {% if stores %}
             {% for store in stores %}
             <ul>
@@ -37,7 +53,7 @@
                 <form action="/restaurant" method="get">
                     <input type="hidden" name="restaurant" value="{{ store.StoreName }}">
                     <button type="submit" style="border: none; background: none;">
-                        <img src="{{ url_for('static', filename='images/' + store.StoreImage) }}" alt="Store Image" style="width: 200px; height: 200px;"/>
+                        <img src="{{ url_for('static', filename='images/' + store.StoreImage) }}" alt="Store Image">
                     </button>
                 </form>
             </ul>

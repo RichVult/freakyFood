@@ -160,6 +160,9 @@ def addOrder(curr_restaurant):
     db.session.commit()
 
 def checkPotentialOrder(curr_restaurant, menu_items):
+    # grab user id
+    user_id = session.get('user_id')
+
     # Check potential order and redirect accordingly
     if 'potential_order_id' in session:
         # get from session
@@ -180,9 +183,9 @@ def checkPotentialOrder(curr_restaurant, menu_items):
             return redirect(url_for('checkout'))
         else:
             # render template with current potential order
-            return render_template('restaurant.html', curr_restaurant=curr_restaurant, potential_items=potential_items, menu_items=menu_items) 
+            return render_template('restaurant.html', curr_restaurant=curr_restaurant, potential_items=potential_items, menu_items=menu_items, user_id=user_id) 
 
-    return render_template('restaurant.html', curr_restaurant=curr_restaurant, potential_items=None, menu_items=menu_items)
+    return render_template('restaurant.html', curr_restaurant=curr_restaurant, potential_items=None, menu_items=menu_items, user_id=user_id)
 
 def deleteOrder():
     # delete order items from db
@@ -451,6 +454,9 @@ def genSearchTemplate():
     # Get the 'query' parameter from the URL
     query = request.args.get('query')
 
+    # Get User id in session to see if were logged in
+    user_id = session.get('user_id')
+
     if query:
         # Query the database for stores matching the query
         stores = Store.query.filter(Store.StoreName.ilike(f'%{query}%')).all()
@@ -458,7 +464,7 @@ def genSearchTemplate():
         # pass all stores
         stores = Store.query.all()
 
-    return render_template('search.html', stores=stores)
+    return render_template('search.html', stores=stores, user_id=user_id)
 
 def genDriverStatusTemplate():
     # get variables for driver status
