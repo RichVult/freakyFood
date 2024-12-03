@@ -20,7 +20,7 @@ jobs:
         run: ls -la docs/sphinx  
       - name: Sphinx build
         run: |
-          sphinx-build docs/sphinx docs/sphinx/_build/html
+          sphinx-build ./docs/sphinx ./docs/sphinx/_build/html
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
