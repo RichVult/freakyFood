@@ -104,3 +104,21 @@ body {
 .footer-links a:hover {
     color: #fff;
 }
+
+.mark-delivered-btn button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    width: 150px;
+    height: 50px;
+    margin-left: 20px;
+}
+
+.mark-delivered-btn button:hover {
+    background-color: #007bff;
+}

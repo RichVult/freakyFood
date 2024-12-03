@@ -33,7 +33,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = db_uri
 app.secret_key = os.getenv('SECRET_KEY', 'your_default_secret_key_here')
 
 # Set the upload folder
-app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'static')
+app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'project/static')
 
 # Initialize Database Instance
 db = SQLAlchemy(app)

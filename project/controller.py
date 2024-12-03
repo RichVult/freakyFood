@@ -60,8 +60,13 @@ def handleLogin():
     return render_template('login.html')
 
 def handleAccount():
+    # flag to determine if were erroring out
+    editError = None
+
     if request.method == 'POST' and request.form.get('action') == 'delete': deleteAccount()
-    if request.method == 'POST' and request.form.get('action') == 'edit': editAccount()
+    if request.method == 'POST' and request.form.get('action') == 'edit': 
+        if editAccount() == False:
+            editError = "Incorrect Information Format, Please Follow Highlighted Requirements"
     if request.method == 'POST' and request.form.get('action') == 'picture': updateProfilePic()
     # Redirect to login if not logged inhandleAccount
     if 'user_id' not in session: return redirect(url_for('login'))
@@ -70,7 +75,7 @@ def handleAccount():
     user_id = session.get('user_id')
     user = db.session.execute(select(Users).where(Users.UserID == user_id)).scalar_one_or_none()
 
-    return render_template('account.html', user=user)
+    return render_template('account.html', user=user, error=editError)
 
 def handleLogout():
     # Drop any user specific session informaion

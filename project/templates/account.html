@@ -30,12 +30,12 @@
         </div>
     </div>
     <div class="profilePic">
+        <img src="../static/images/profile_pics/{{ user.ProfileImage }}" alt="profile_picture" id="profileImage">
         <form action="/account" method="POST" enctype="multipart/form-data">
             <input type="hidden" name="action" value="picture">
-            <input type="file" name="file" accept="image/*" required>
+            <input type="file" id="fileInput" name="file" accept="image/*" required>
             <button type="submit">Upload New Profile Picture</button>
         </form>
-        <img src="../static/images/profile_pics/{{ user.ProfileImage }}" alt="profile_picture">
     </div>
 
     <h1>Your Account Information</h1>
@@ -58,15 +58,30 @@
                 </tr>
                 <!-- display user information -->
                 <tr>
-                    <td><input type="text" name="FirstName" value="{{ user.FirstName }}" required></td>
-                    <td><input type="text" name="LastName" value="{{ user.LastName }}" required></td>
-                    <td><input type="email" name="Email" value="{{ user.Email }}" required></td>
-                    <td><input type="text" name="PhoneNumber" value="{{ user.PhoneNumber }}" required></td>
-                    <td><input type="text" name="Street" value="{{ user.Street }}" required></td>
-                    <td><input type="text" name="City" value="{{ user.City }}" required></td>
-                    <td><input type="text" name="State" value="{{ user.State }}" required></td>
-                    <td><input type="text" name="ZipCode" value="{{ user.ZipCode }}" required></td>
-                    <td><input type="text" name="CardNumber" value="{{ user.CardNumber }}" required></td>
+                    <td><input type="text" name="FirstName" value="{{ user.FirstName }}" 
+                               minlength="2" 
+                               pattern="[A-Za-z]+" 
+                               title="First Name should contain only letters."
+                               required></td>
+                    <td><input type="text" name="LastName" value="{{ user.LastName }}" 
+                               minlength="2" 
+                               pattern="[A-Za-z]+" 
+                               title="Last Name should contain only letters."
+                               required></td>
+                    <td><input type="email" name="Email" value="{{ user.Email }}" 
+                               pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" 
+                               title="Email should be in the format: example@example.com"
+                               required></td>
+                    <td><input type="text" name="PhoneNumber" value="{{ user.PhoneNumber }}" 
+                               title="Enter a valid phone number (e.g., +1 (123) 456-7890 or 123-456-7890)."
+                               ></td>
+                    <td><input type="text" name="Street" value="{{ user.Street }}" ></td>
+                    <td><input type="text" name="City" value="{{ user.City }}" ></td>
+                    <td><input type="text" name="State" value="{{ user.State }}" ></td>
+                    <td><input type="text" name="ZipCode" value="{{ user.ZipCode }}" ></td>
+                    <td><input type="text" name="CardNumber" value="{{ user.CardNumber }}" 
+                               title="Enter a valid credit card number (e.g., 1234567812345678)"
+                               ></td>
                 </tr>
             </table>
     </div>
@@ -112,5 +127,33 @@
     </script>
     {% endif %}
 </footer>
+<script>
+    const profileImage = document.getElementById('profileImage');
+    const fileInput = document.getElementById('fileInput');
+
+    // Trigger file input click when profile image is clicked
+    profileImage.addEventListener('click', () => {
+        fileInput.click();
+    });
+
+    // Optional: Preview the selected image (if desired)
+    fileInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                profileImage.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+<!-- Display alert if there is an error -->
+{% if error != None %}
+<script>
+    alert("{{ error }}");
+</script>
+{% endif %}
+
 
 </html>

@@ -376,24 +376,60 @@ def deleteAccount():
             return deleteStoreOwner()
 
 def editAccount():
-    #get the values of what the user is trying to edit
+    # get the values of what the user is trying to edit
     user_id=session.get('user_id')
 
-    ##Update User that has the user ID of the current session, update by replaceing values within the form
-    db.session.execute(update(Users).where(Users.UserID==user_id).values(
-        FirstName=request.form.get('FirstName'), 
-        LastName=request.form.get('LastName'),
-        Email=request.form.get('Email'),
-        PhoneNumber=request.form.get('PhoneNumber'),
-        Street=request.form.get('Street'),
-        City=request.form.get('City'),
-        State=request.form.get('State'),
-        ZipCode=request.form.get('ZipCode'),
-        CardNumber=request.form.get('CardNumber')
-        ))
-    ##db.session.execute(update(Users).where(Orders.OrderID == order.OrderID).values(OrderStatus="Pickup"))
-    db.session.commit()
+    # check if we match the regex
+    if checkAccountRegex() == False:
+        return False
+    else:
+        # Update User that has the user ID of the current session, update by replaceing values within the form
+        db.session.execute(update(Users).where(Users.UserID==user_id).values(
+            FirstName=request.form.get('FirstName'), 
+            LastName=request.form.get('LastName'),
+            Email=request.form.get('Email'),
+            PhoneNumber=request.form.get('PhoneNumber'),
+            Street=request.form.get('Street'),
+            City=request.form.get('City'),
+            State=request.form.get('State'),
+            ZipCode=request.form.get('ZipCode'),
+            CardNumber=request.form.get('CardNumber')
+            ))
+        db.session.commit()
+        return True
 
+def checkAccountRegex():
+    # Get values from form and remove whitespace
+    new_email = request.form["Email"].strip()
+    new_first_name = request.form["FirstName"].strip()
+    new_last_name = request.form["LastName"].strip()
+    new_phone_number = request.form["PhoneNumber"].strip()
+    new_card_number = request.form["CardNumber"].strip()
+
+    # Backend Check if REGEX was matched
+    email_pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+    password_pattern = r"^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}$"
+    name_pattern = r"^[A-Za-z]+$"
+    phone_pattern = r"^\d{10}$"
+    card_pattern = r"^\d{16}$" 
+
+    if not re.match(email_pattern, new_email):
+        return False
+
+    if not re.match(name_pattern, new_first_name):
+        return False
+
+    if not re.match(name_pattern, new_last_name):
+        return False
+
+    if new_phone_number != 'None' and not re.match(phone_pattern, new_phone_number) :
+        return False
+
+    if new_card_number != 'None' and not re.match(card_pattern, new_card_number):
+        return False
+    
+    # if we make it through return true
+    return True
     
 def updateDriverOrderStatus():
     # Get order ID and desired action from the form data
@@ -472,7 +508,10 @@ def genDriverStatusTemplate():
     current_order = db.session.execute(select(Orders).where(Orders.OrderID == session.get('accepted_order_id'))).scalar_one_or_none()
     curr_restaurant = db.session.execute(select(Store).where(Store.StoreID == current_order.StoreID)).scalar_one_or_none()
 
-    return render_template('driverStatus.html', current_order=current_order, curr_restaurant=curr_restaurant)
+    # get current orders' order items
+    order_items = OrderItems.query.filter(OrderItems.OrderID == current_order.OrderID).all()
+
+    return render_template('driverStatus.html', current_order=current_order, curr_restaurant=curr_restaurant, order_items=order_items)
 
 def convertOrder():
     if session.get('potential_order_id'):
@@ -491,7 +530,6 @@ def commitUserOrder():
         db.session.commit()
 
 def updateProfilePic():
-    folder_location = 'static/images/profile_pics'
     # Handle profile picture upload
     if 'file' not in request.files:
         return render_template('account.html', error="No file Selected")
@@ -505,6 +543,7 @@ def updateProfilePic():
         upload_path = os.path.join(app.config['UPLOAD_FOLDER'], 'images/profile_pics')
         os.makedirs(upload_path, exist_ok=True)
         file.save(os.path.join(upload_path, filename))
+        print(f"File saved to: {os.path.join(upload_path, filename)}")
 
         # Update user's profile picture in the database
         user_id = session.get('user_id')
